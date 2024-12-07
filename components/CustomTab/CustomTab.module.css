@@ -1,0 +1,95 @@
+/* Default styles (mobile) */
+.link {
+  width: 15%;
+  height: 100%;
+}
+
+.tab_button {
+  /* width: 25%; */
+  width: 100%;
+  height: 100%;
+  border: none;
+  cursor: pointer;
+  border-bottom: rem(2.5) solid transparent; /* Transparent border by default */
+
+  &.active {
+    z-index: 1;
+    border-bottom: rem(2.5) solid var(--mantine-primary-color-5); /* Blue bottom border when active */
+    color: var(--mantine-color-white);
+
+    .icon {
+      color: var(--mantine-primary-color-5); /* Icon color when active */
+    }
+
+    .label {
+      color: var(--mantine-color-white); /* Label color when active */
+    }
+  }
+
+  &:active {
+    transform: none; /* Remove default button press effect */
+    background-color: transparent;
+  }
+
+  &:hover {
+    background-color: transparent;
+  }
+
+  .icon {
+    width: rem(32);
+    height: rem(32);
+    margin-bottom: 0px;
+    font-weight: 200;
+    stroke-width: 1.5;
+    color: var(--mantine-color-gray-5); /* Default icon color */
+  }
+
+  .label {
+    font-size: rem(10);
+    font-weight: 700;
+    color: var(--mantine-color-gray-5); /* Default label color */
+  }
+}
+
+/* Desktop styles */
+@media (min-width: 768px) {
+  .link {
+    /* width: 15%;
+    height: 100%; */
+    min-width: max-content; /* Ensures the element is at least the width of its content */
+    width: rem(140); /* Ensures the element is at least 140px or the width of its content, whichever is larger */
+  }
+
+  .tab_button {
+    width: 100%;
+
+    &:hover {
+      background-color: transparent;
+      border-bottom: rem(2.5) solid var(--mantine-primary-color-5); /* Blue bottom border on hover */
+    }
+
+    .icon_label_container {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      gap: var(--mantine-spacing-xs);
+      padding: 0 var(--mantine-spacing-md);
+    }
+
+    .icon {
+      width: rem(30);
+      height: rem(30);
+      margin-bottom: 0px;
+      font-weight: 200;
+      stroke-width: 1.5;
+      color: var(--mantine-color-gray-5); /* Default icon color */
+    }
+
+    .label {
+      font-size: var(--mantine-font-size-sm);;
+      font-weight: 500;
+      color: var(--mantine-color-gray-5); /* Default label color */
+    }
+  }
+}

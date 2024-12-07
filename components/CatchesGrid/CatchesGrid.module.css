@@ -1,0 +1,10 @@
+.grid_wrapper {
+  height: calc(100vh - var(--app-shell-header-offset));
+}
+
+.ag-theme-quarz .ag-cell-value {
+  line-height: 20px !important;
+  word-break: normal; /* prevent words from breaking */
+  padding-top: 5px; /* space top */
+  padding-bottom: 5px; /* space bottom */
+}

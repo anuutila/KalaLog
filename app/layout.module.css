@@ -1,0 +1,41 @@
+.header {
+  background-color: light-dark(var(--mantine-color-white), var(--mantine-color-dark-8));
+  /* position: fixed; */
+}
+
+/* Default styles */
+.title_container {
+  height: 100%;
+  align-items: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.title {
+  font-size: rem(26);
+  font-weight: 900;
+  color: var(--mantine-primary-color-5);
+  margin-left: var(--mantine-spacing-md);
+  letter-spacing: rem(-1);
+  display: flex;
+}
+
+.tabs_group {
+  height: 100%;
+  gap: 0;
+  justify-content: flex-end;
+}
+
+/* Desktop styles */
+@media (min-width: 768px) {
+  
+
+  
+
+  .tabs_group {
+    justify-content: flex-end;
+    gap: var(--mantine-spacing-md);
+  }
+
+}

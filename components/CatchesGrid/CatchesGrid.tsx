@@ -47,7 +47,7 @@ import {
   Title,
   useCombobox,
 } from '@mantine/core';
-import { IconChevronDown, IconChevronRight } from '@tabler/icons-react';
+import { IconAdjustments, IconChevronDown, IconChevronRight } from '@tabler/icons-react';
 import { useDisclosure } from '@mantine/hooks';
 import StatsBadges from './StatsBadges/StatsBadges';
 
@@ -419,12 +419,12 @@ export default function CatchesGrid({ catches }: CatchesGridProps) {
   return (
     <Container p={0} className={classes.catches_page_content_wrapper}>
 
-      <Stack pb={'sm'} pt={'sm'} pl={'xs'} pr={'xs'} gap={'sm'} align='flex-start'>
+      <Stack pb={'md'} pt={'sm'} pl={0} pr={0} gap={'sm'} align='flex-start'>
         <Drawer.Root opened={opened} onClose={close} size="xs">
           <Drawer.Overlay />
           <Drawer.Content>
             <Drawer.Header>
-              <Drawer.Title fz={'var(--mantine-font-size-lg)'} fw='var(--mantine-heading-font-weight)'>Taulun asetukset</Drawer.Title>
+              <Drawer.Title fz={'var(--mantine-font-size-lg)'} fw='var(--mantine-heading-font-weight)'>Taulukon asetukset</Drawer.Title>
               <Drawer.CloseButton />
             </Drawer.Header>
             <Drawer.Body>
@@ -507,32 +507,27 @@ export default function CatchesGrid({ catches }: CatchesGridProps) {
             </Drawer.Body>
           </Drawer.Content>
         </Drawer.Root>
-        <Button variant="default" onClick={open} radius={'md'} bg="var(--mantine-color-dark-7)">
-          Taulun asetukset
-        </Button>
+        <Box pl={'xs'}>
+          <Button variant="default" onClick={open} radius={'md'} bg="var(--mantine-color-dark-7)" leftSection={<IconAdjustments  size={20} />}>
+            Taulukon asetukset
+          </Button>
+        </Box>
 
-        <Card
+        <Stack
           c="var(--mantine-color-text)"
-          padding={0}
-          radius="var(--mantine-spacing-sm)"
-          bg="var(--mantine-color-dark-7)"
+          p={0}
           w='100%'
-          pb={'sm'}
+          gap={0}
         >
-          <Stack p={'sm'} pb={6} gap={0}>
-            <Text fw={600} c="white">Yhteenveto</Text>
-            <Group gap="md">
-              <Text>Kausi: {selectedYear}</Text>
-              <Text>Saaliit: {rowCount}</Text>
-            </Group>
-          </Stack>
+          <Text fw={600} c="white" p={0} pb={6} pl={'xs'} pr={'xs'}>Saaliit ajalta: {selectedYear}</Text>
 
           <Box style={{ position: "relative" }}>
             <ScrollArea
               viewportRef={scrollRef}
               type="never"
             >
-              <Group gap="xs" wrap="nowrap" pl={'sm'} pr={30}>
+              <Group gap="xs" wrap="nowrap" pl={'xs'} pr={30}>
+                <Badge classNames={{ root: classes.badge }} variant='outline' data-content={`Yhteensä: ${rowCount}`}>{rowCount}</Badge>
                 <StatsBadges filteredCatches={filteredCatches} />
               </Group>
             </ScrollArea>
@@ -545,7 +540,7 @@ export default function CatchesGrid({ catches }: CatchesGridProps) {
                   top: 0,
                   left: 0,
                   height: "100%",
-                  background: "linear-gradient(to right, var(--mantine-color-dark-7), transparent)",
+                  background: "linear-gradient(to right, var(--mantine-color-body), transparent)",
                   pointerEvents: "none",
                 }}
               />
@@ -558,13 +553,13 @@ export default function CatchesGrid({ catches }: CatchesGridProps) {
                   right: 0,
                   height: "100%",
                   width: "40px",
-                  background: "linear-gradient(to left, var(--mantine-color-dark-7), transparent)",
+                  background: "linear-gradient(to left, var(--mantine-color-body), transparent)",
                   pointerEvents: "none",
                 }}
               />
           </Box>
 
-        </Card>
+        </Stack>
 
       </Stack>
       

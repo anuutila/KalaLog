@@ -5,10 +5,13 @@ import '../styles.css';
 
 import React, { useState } from 'react';
 import { IconChartBar, IconCirclePlus, IconFish, IconUserCircle } from '@tabler/icons-react';
+import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 import { AppShell, ColorSchemeScript, Group, MantineProvider, rem, Text, Title } from '@mantine/core';
 import CustomTab from '../components/CustomTab/CustomTab';
 import { theme } from '../theme';
 import classes from './layout.module.css';
+import { usePathname, useRouter } from 'next/navigation';
 
 const tabs = [
   { value: 'new_catch', icon: IconCirclePlus, label: 'Uusi saalis', path: '/new_catch' },
@@ -18,7 +21,7 @@ const tabs = [
 ];
 
 export default function RootLayout({ children }: { children: any }) {
-  const [activeTab, setActiveTab] = useState('new_catch');
+  const pathname = usePathname();
 
   return (
     <html lang="en" suppressHydrationWarning>
@@ -52,8 +55,7 @@ export default function RootLayout({ children }: { children: any }) {
                     path={tab.path}
                     icon={tab.icon}
                     label={tab.label}
-                    isActive={activeTab === tab.value}
-                    onClick={() => setActiveTab(tab.value)}
+                    isActive={pathname  === tab.path}
                   />
                 ))}
               </Group>
@@ -61,6 +63,8 @@ export default function RootLayout({ children }: { children: any }) {
             <AppShell.Main>{children}</AppShell.Main>
           </AppShell>
         </MantineProvider>
+        <SpeedInsights />
+        <Analytics />
       </body>
     </html>
   );

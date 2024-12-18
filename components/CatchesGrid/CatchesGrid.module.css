@@ -1,10 +1,13 @@
-.grid_wrapper {
-  height: calc(100vh - var(--app-shell-header-offset));
+.catches_page_content_wrapper {
+  height: calc(100dvh - var(--app-shell-header-offset));
+  /* height: 100dvh; */
 }
 
-.ag-theme-quarz .ag-cell-value {
-  line-height: 20px !important;
-  word-break: normal; /* prevent words from breaking */
-  padding-top: 5px; /* space top */
-  padding-bottom: 5px; /* space bottom */
+.input_label {
+  --input-label-size: var(--mantine-font-size-md);
+  margin-bottom: rem(6);
+}
+
+.switch_input_label {
+  --label-fz: var(--mantine-font-size-md);
 }

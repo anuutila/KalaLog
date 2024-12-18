@@ -28,7 +28,7 @@ const config = {
     {
       files: '*.mdx',
       options: {
-        printWidth: 70,
+        printWidth: 120,
       },
     },
   ],

@@ -9,15 +9,13 @@ interface CustomTabProps {
   path: string;
   label: string;
   isActive: boolean;
-  onClick: () => void;
 }
 
-const CustomTab: React.FC<CustomTabProps> = ({ icon: Icon, path, label, isActive, onClick }) => (
-  <Link href={path} passHref className={classes.link}>
+const CustomTab: React.FC<CustomTabProps> = ({ icon: Icon, path, label, isActive }) => (
+  <Link href={path} passHref className={classes.link} prefetch>
     <Button
       component="span"
       variant="subtle"
-      onClick={onClick}
       className={`${classes.tab_button} ${isActive ? classes.active : ''}`}
       radius={0}
       p={0}

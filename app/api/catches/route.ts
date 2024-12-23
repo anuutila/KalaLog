@@ -5,14 +5,17 @@ import { ICatch, ICatchSchema } from '@/lib/types/catch';
 import { z } from 'zod';
 import { authorize } from '@/lib/middleware/authorize';
 import { UserRole } from '@/lib/types/user';
-import { CatchesResponse, ErrorResponse } from '@/lib/types/responses';
+import { AuthorizationResponse, CatchCreaetedResponse, CatchesResponse, ErrorResponse } from '@/lib/types/responses';
 import { handleError } from '@/lib/utils/handleError';
+import { CustomError } from '@/lib/utils/customError';
 
 export async function GET(): Promise<NextResponse<CatchesResponse | ErrorResponse>> {
   await dbConnect();
 
   try {
     const catches = await Catch.find({}).lean();
+
+    console.log(`Found ${catches.length} catches`);
 
     // Validate and transform the data using Zod
     const validatedCatches: ICatch[] = catches.map((catchItem) => {
@@ -21,7 +24,7 @@ export async function GET(): Promise<NextResponse<CatchesResponse | ErrorRespons
           ...catchItem,
           id: catchItem._id?.toString(), // Convert MongoDB ObjectId to string
         });
-        console.log(parsed);
+        // console.log(parsed);
         return parsed;
       } catch (error) {
         console.error('Invalid catch item:', catchItem, error);
@@ -35,24 +38,30 @@ export async function GET(): Promise<NextResponse<CatchesResponse | ErrorRespons
   }
 }
 
-export async function POST(req: NextRequest): Promise<NextResponse<any>> {
+export async function POST(req: NextRequest): Promise<NextResponse<CatchCreaetedResponse | ErrorResponse>> {
   // Check if the user is authorized
-  const authResponse = await authorize(req, [UserRole.ADMIN, UserRole.EDITOR]);
-  if (authResponse) return authResponse; // Stop if unauthorized
+  const response = await authorize(req, [UserRole.ADMIN, UserRole.EDITOR]);
+  if (!response.ok) {
+    const errorResponse: ErrorResponse = await response.json();
+    throw new CustomError(errorResponse.message, response.status);
+  } else {
+    const authResponse: AuthorizationResponse = await response.json();
+    console.log(authResponse.message);
+  }
 
   try {
     await dbConnect();
     const data: ICatch = await req.json();
 
+    console.log('Creating new catch from data:', data);
+
     // Validate with Zod
     const validatedData = ICatchSchema.parse(data);
 
     // Save to MongoDB
-    const newCatch = await Catch.create(validatedData);
+    const newCatch: ICatch = await Catch.create(validatedData);
 
-    throw new Error('test error details'); // Optionally stop processing if there's invalid data
-
-    return NextResponse.json(newCatch, { status: 201 });
+    return NextResponse.json<CatchCreaetedResponse>({message: 'New catch created succesfully', data: newCatch}, { status: 201 });
   } catch (error: unknown) {
     return handleError(error, 'Failed to create a new catch');
   }

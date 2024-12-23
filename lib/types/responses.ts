@@ -14,9 +14,13 @@ export type UserInfoResponse = Required<BaseResponse<{
 
 export type CatchesResponse = Required<BaseResponse<ICatch[]>>;
 
+export type CatchCreaetedResponse = Required<BaseResponse<ICatch>>;
+
 export type SignUpResponse = BaseResponse;
 
 export type LoginResponse = BaseResponse;
+
+export type AuthorizationResponse = BaseResponse;
 
 
 // Common error response type

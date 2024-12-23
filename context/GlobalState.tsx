@@ -4,6 +4,7 @@ import { ICatch } from '@/lib/types/catch';
 import { JwtUser } from '@/lib/types/jwtUser';
 import { CatchesResponse, ErrorResponse, UserInfoResponse } from '@/lib/types/responses';
 import { IUser } from '@/lib/types/user';
+import { sortByDate, sortByTime } from '@/lib/utils/utils';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
 interface GlobalState {
@@ -58,7 +59,8 @@ export const GlobalStateProvider = ({ children }: { children: React.ReactNode })
       const response = await fetch('/api/catches');
       if (response.ok) {
         const catchesResponse: CatchesResponse = await response.json();
-        setCatches(catchesResponse.data);
+        const sortedCatches = sortByDate(sortByTime(catchesResponse.data)).reverse();
+        setCatches(sortedCatches);
         setCatchesError(null);
       } else {
         const errorResponse: ErrorResponse = await response.json();

@@ -1,6 +1,7 @@
 'use client';
 
 import { ICatch } from '@/lib/types/catch';
+import { CatchCreaetedResponse, ErrorResponse } from '@/lib/types/responses';
 import { useEffect, useState } from 'react';
 
 export default function Page() {
@@ -9,11 +10,11 @@ export default function Page() {
     date: '',
     length: undefined,
     weight: undefined,
-    lure: '',
+    lure: null,
     location: {
       bodyOfWater: 'Nerkoonjärvi',
-      spot: '',
-      coordinates: '',
+      spot: null,
+      coordinates: null,
     },
     time: '',
     caughtBy: { name: '', userId: null },
@@ -133,8 +134,8 @@ export default function Page() {
     try {
       const parsedFormData = {
         ...formData,
-        length: inputValues.length ? parseFloat(inputValues.length) : undefined,
-        weight: inputValues.weight ? parseFloat(inputValues.weight) : undefined,
+        length: inputValues.length ? parseFloat(inputValues.length) : null,
+        weight: inputValues.weight ? parseFloat(inputValues.weight) : null,
       };
       
       const response = await fetch('/api/catches', {
@@ -144,31 +145,36 @@ export default function Page() {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to create a new catch');
-      }
+        const errorResponse: ErrorResponse = await response.json();
+        console.error('Error:', errorResponse.message, errorResponse.details);
+        // TODO: notify user of error
+        alert(`${errorResponse.message}. ${errorResponse.details}.`);
+      } else {
+        const catchCreatedResponse: CatchCreaetedResponse = await response.json();
+        console.log(catchCreatedResponse.message, catchCreatedResponse.data);
 
-      const data = await response.json();
-      console.log('Catch successfully created:', data);
-
-      // Reset the form
-      setFormData({
-        species: '',
-        date: '',
-        length: undefined,
-        weight: undefined,
-        lure: '',
-        location: { bodyOfWater: '', spot: '', coordinates: '' },
-        time: '',
-        caughtBy: { name: '', userId: null },
-      });
-      setInputValues({ length: '', weight: '' });
-      setUseGps(false);
-      if (watchId !== null) {
-        navigator.geolocation.clearWatch(watchId);
-        setWatchId(null);
+        // Reset the form
+        setFormData({
+          species: '',
+          date: '',
+          length: undefined,
+          weight: undefined,
+          lure: null,
+          location: { bodyOfWater: 'Nerkoonjärvi', spot: null, coordinates: null },
+          time: '',
+          caughtBy: { name: '', userId: null },
+        });
+        setInputValues({ length: '', weight: '' });
+        setUseGps(false);
+        if (watchId !== null) {
+          navigator.geolocation.clearWatch(watchId);
+          setWatchId(null);
+        }
       }
     } catch (error) {
-      console.error('Error creating new catch:', error);
+      console.error('Unexpected error occured while creating new catch:', error);
+      // TODO: notify user of error
+      alert('An unexpected error occurred while creating a new catch. Please try again.');
     }
   };
 
@@ -200,9 +206,9 @@ export default function Page() {
           onChange={handleChange}
           pattern="^\d*(\.\d*)?$" // Allow decimals
         />
-        <input type="text" name="lure" placeholder="Lure" value={formData.lure} onChange={handleChange} />
+        <input type="text" name="lure" placeholder="Lure" value={formData.lure ?? ''} onChange={handleChange} />
         {/* <input type="text" name="bodyOfWater" placeholder="Body of Water" value={formData.location.bodyOfWater} onChange={handleChange} required /> */}
-        <input type="text" name="spot" placeholder="Spot" value={formData.location.spot} onChange={handleChange} />
+        <input type="text" name="spot" placeholder="Spot" value={formData.location.spot ?? ''} onChange={handleChange} />
         <label>
           <input type="checkbox" checked={useGps} onChange={handleGpsToggle} />
           Use GPS Coordinates
@@ -213,7 +219,7 @@ export default function Page() {
             type="text"
             name="coordinates"
             placeholder="Coordinates"
-            value={formData.location.coordinates}
+            value={formData.location.coordinates ?? ''}
             onChange={handleChange}
           />
         )}

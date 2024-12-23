@@ -1,11 +1,11 @@
 import { ValueFormatterParams } from 'ag-grid-community';
 
 export function lengthFormatter(params: ValueFormatterParams) {
-  return isNaN(params.value) ? '-' : `${params.value} cm`;
+  return isNaN(params.value) || params.value === null ? '-' : `${params.value} cm`;
 }
 
 export function weightFormatter(params: ValueFormatterParams) {
-  return isNaN(params.value) ? '-' : `${params.value} kg`;
+  return isNaN(params.value) || params.value === null ? '-' : `${params.value} kg`;
 }
 
 export function upperCaseFormatter(params: ValueFormatterParams) {

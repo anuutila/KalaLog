@@ -3,13 +3,13 @@ import { z } from 'zod';
 export const ICatchSchema = z.object({
   species: z.string().min(1, "Species is required"),
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format (YYYY-MM-DD)"),
-  length: z.number().positive("Length must be greater than 0").optional(),
-  weight: z.number().positive("Weight must be greater than 0").optional(),
-  lure: z.string().optional(),
+  length: z.number().positive("Length must be greater than 0").optional().nullable(),
+  weight: z.number().positive("Weight must be greater than 0").optional().nullable(),
+  lure: z.string().optional().nullable(),
   location: z.object({
     bodyOfWater: z.string().min(1, "Body of water is required"),
-    spot: z.string().optional(),
-    coordinates: z.string().optional(),
+    spot: z.string().optional().nullable(),
+    coordinates: z.string().optional().nullable(),
   }),
   time: z.string().regex(/^\d{2}:\d{2}$/, "Invalid time format (HH:MM)").optional(),
   caughtBy: z.object({
@@ -20,12 +20,12 @@ export const ICatchSchema = z.object({
     .array(
       z.object({
         url: z.string().url("Invalid image URL"),
-        description: z.string().optional(),
+        description: z.string().optional().nullable(),
       })
     )
     .optional(),
-  createdBy: z.string().optional(),
-  createdAt: z.date().optional(),
+  createdBy: z.string().optional().nullable(),
+  createdAt: z.date().optional().nullable(),
   id: z.string().optional(),
 });
 

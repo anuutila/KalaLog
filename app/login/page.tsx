@@ -1,5 +1,6 @@
 'use client';
 
+import { useGlobalState } from '@/context/GlobalState';
 import { ErrorResponse, LoginResponse } from '@/lib/types/responses';
 import { Container } from '@mantine/core';
 import Link from 'next/link';
@@ -7,6 +8,8 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 export default function Page() {
+  const { jwtUser, isLoggedIn } = useGlobalState();
+
   const [formData, setFormData] = useState({ emailOrUsername: '', password: '' });
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -75,7 +78,7 @@ export default function Page() {
 
   return (
     <Container>
-      <div style={{ maxWidth: '400px', margin: '0 auto', padding: '1rem' }}>
+      { !isLoggedIn && <div style={{ maxWidth: '400px', margin: '0 auto', padding: '1rem' }}>
         <h2>Login</h2>
         <form onSubmit={handleSubmit}>
           <div>
@@ -108,8 +111,8 @@ export default function Page() {
           <Link href="/signup">
             <span style={{ color: '#0070f3', textDecoration: 'underline' }}>Register here</span>
           </Link>
-        </p>
-      </div>
+        </p> 
+      </div> }
       <div><button onClick={handleLogout}>Log Out</button></div>
     </Container>
   );

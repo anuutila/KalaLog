@@ -20,7 +20,7 @@ export default function CatchesGrid({
   updateRowCountAndFilteredCatches,
   onGridReady,
 }: CatchesGridProps) {
-  const { catches, jwtUser, isLoggedIn, catchesError } = useGlobalState();
+  const { catches, jwtUser, isLoggedIn, catchesError, loadingCatches } = useGlobalState();
 
   const noRowsOverlayComponentParams = useMemo(() => {
     return {
@@ -42,6 +42,7 @@ export default function CatchesGrid({
         onFilterChanged={updateRowCountAndFilteredCatches}
         noRowsOverlayComponent={CustomNoRowsOverlay}
         noRowsOverlayComponentParams={noRowsOverlayComponentParams}
+        loading={loadingCatches}
       />
     </div>
   )

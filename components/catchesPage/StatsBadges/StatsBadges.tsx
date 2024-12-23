@@ -16,7 +16,7 @@ enum FishColors {
   kiiski = "cyan",
 }
 
-const additionalColors = ["wheat", "snow", "pink", "teal", "peru"];
+const additionalColors = ["orange", "wheat", "snow", "pink", "teal", "peru"];
 
 export default function StatsBadges({ filteredCatches }: StatsBadgesProps) {
 

@@ -5,6 +5,7 @@ import { JwtUser } from '@/lib/types/jwtUser';
 import { CatchesResponse, ErrorResponse, UserInfoResponse } from '@/lib/types/responses';
 import { IUser } from '@/lib/types/user';
 import { sortByDate, sortByTime } from '@/lib/utils/utils';
+import { set } from 'mongoose';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
 interface GlobalState {
@@ -12,6 +13,7 @@ interface GlobalState {
   jwtUser: JwtUser | null;
   catches: ICatch[];
   catchesError: string | null;
+  loadingCatches: boolean;
   setJwtUser: (user: JwtUser) => void;
   fetchCatches: () => Promise<void>;
   logout: () => Promise<void>;
@@ -24,11 +26,13 @@ export const GlobalStateProvider = ({ children }: { children: React.ReactNode })
   const [jwtUser, setJwtUser] = useState<JwtUser | null>(null);
   const [catches, setCatches] = useState<ICatch[]>([]);
   const [catchesError, setCatchesError] = useState<string | null>(null);
+  const [loadingCatches, setLoadingCatches] = useState(false);
 
   // Fetch login status
   useEffect(() => {
     const checkAuth = async () => {
       try {
+        setLoadingCatches(true);
         const response = await fetch('/api/userInfo');
         if (response.ok) {
           const userInfoResponse: UserInfoResponse = await response.json();
@@ -47,6 +51,8 @@ export const GlobalStateProvider = ({ children }: { children: React.ReactNode })
         alert('An unexpected error occurred while fetching user info. Please try again.');
         setIsLoggedIn(false);
         setJwtUser(null);
+      } finally {
+        setLoadingCatches(false);
       }
     };
 
@@ -104,6 +110,7 @@ export const GlobalStateProvider = ({ children }: { children: React.ReactNode })
         jwtUser,
         catches,
         catchesError,
+        loadingCatches,
         setJwtUser,
         fetchCatches,
         logout,

@@ -1,28 +1,29 @@
 import mongoose, { Schema, Document } from 'mongoose';
 import { ICatch } from '@lib/types/catch';
+import { capitalizeFirstLetter } from '@/lib/utils/utils';
 
 interface ICatchModel extends Document, Omit<ICatch, 'id'> {}
 
 const CatchSchema: Schema<ICatchModel> = new Schema({
-  species: { type: String, required: true },
+  species: { type: String, required: true, set: (value: string) => capitalizeFirstLetter(value) },
   date: { type: String, required: true },
   length: { type: Number, required: false, default: null },
   weight: { type: Number, required: false, default: null },
-  lure: { type: String, required: false, default: null, set: (value: string | null) => (value === "" ? null : value) },
+  lure: { type: String, required: false, default: null, set: (value: string | null) => (value === "" ? null : capitalizeFirstLetter(value)) },
   location: {
-    bodyOfWater: { type: String, required: true, default: 'Nerkoonjärvi' },
-    spot: { type: String, required: false, default: null, set: (value: string | null) => (value === "" ? null : value) },
+    bodyOfWater: { type: String, required: true, default: 'Nerkoonjärvi', set: (value: string) => capitalizeFirstLetter(value) },
+    spot: { type: String, required: false, default: null, set: (value: string | null) => (value === "" ? null : capitalizeFirstLetter(value)) },
     coordinates: { type: String, required: false, default: null, set: (value: string | null) => (value === "" ? null : value) },
   },
   time: { type: String, required: true },
   caughtBy: {
-    name: { type: String, required: true },
+    name: { type: String, required: true, set: (value: string) => capitalizeFirstLetter(value) },
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null, required: false },
   },
   images: [
     {
       url: { type: String, required: false, default: null },
-      description: { type: String, required: false, default: null, set: (value: string | null) => (value === "" ? null : value) },
+      description: { type: String, required: false, default: null, set: (value: string | null) => (value === "" ? null : capitalizeFirstLetter(value)) },
     },
   ],
   createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: false, default: null },

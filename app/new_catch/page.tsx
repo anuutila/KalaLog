@@ -5,9 +5,11 @@ import { CatchCreaetedResponse, ErrorResponse } from '@/lib/types/responses';
 import { useEffect, useState } from 'react';
 
 export default function Page() {
+  const currentDate = new Date().toISOString().split('T')[0]; // Get current date in YYYY-MM-DD format
+
   const [formData, setFormData] = useState<Omit<ICatch, 'id' | 'createdAt' | 'images'>>({
     species: '',
-    date: '',
+    date: currentDate,
     length: undefined,
     weight: undefined,
     lure: null,
@@ -156,7 +158,7 @@ export default function Page() {
         // Reset the form
         setFormData({
           species: '',
-          date: '',
+          date: currentDate,
           length: undefined,
           weight: undefined,
           lure: null,

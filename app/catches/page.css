@@ -1,0 +1,9 @@
+.location-cell-custom-class {
+  & .ag-cell-wrapper {
+    width: 100%;
+
+    & .ag-cell-value {
+      width: 100%;
+    }
+  }
+}

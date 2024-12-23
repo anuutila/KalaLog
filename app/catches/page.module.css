@@ -1,0 +1,3 @@
+.catches_page_content_wrapper {
+  height: calc(100dvh - var(--app-shell-header-offset));
+}

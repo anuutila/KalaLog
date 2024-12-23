@@ -1,0 +1,8 @@
+.input_label {
+  --input-label-size: var(--mantine-font-size-md);
+  margin-bottom: rem(6);
+}
+
+.switch_input_label {
+  --label-fz: var(--mantine-font-size-md);
+}

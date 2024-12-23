@@ -25,9 +25,9 @@ export default function StatsBadges({ filteredCatches }: StatsBadgesProps) {
     additionalColors[Math.floor(Math.random() * additionalColors.length)];
 
   const fishCounts = filteredCatches.reduce((acc, row) => {
-    const fishKey = row.fish.toLowerCase().trim();
+    const fishKey = row.species.toLowerCase().trim();
     if (!acc[fishKey]) {
-      acc[fishKey] = { count: 0, displayName: row.fish };
+      acc[fishKey] = { count: 0, displayName: row.species };
     }
     acc[fishKey].count += 1;
     return acc;

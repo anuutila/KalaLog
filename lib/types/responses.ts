@@ -1,5 +1,5 @@
 import { ICatch } from "./catch";
-import { JwtUser } from "./jwtUser";
+import { JwtUserInfo } from "./jwtUserInfo";
 
 // Common response type
 export interface BaseResponse<T = undefined> {
@@ -9,7 +9,7 @@ export interface BaseResponse<T = undefined> {
 
 export type UserInfoResponse = Required<BaseResponse<{
   loggedIn: boolean;
-  jwtUser: JwtUser | null;
+  jwtUserInfo: JwtUserInfo | null;
 }>>;
 
 export type CatchesResponse = Required<BaseResponse<ICatch[]>>;
@@ -18,10 +18,11 @@ export type CatchCreaetedResponse = Required<BaseResponse<ICatch>>;
 
 export type SignUpResponse = BaseResponse;
 
-export type LoginResponse = BaseResponse;
+export type LoginResponse = Required<BaseResponse<JwtUserInfo>>;
 
 export type AuthorizationResponse = BaseResponse;
 
+export type LogoutResponse = BaseResponse;
 
 // Common error response type
 export interface ErrorResponse {

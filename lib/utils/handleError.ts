@@ -5,15 +5,18 @@ import { CustomError } from './customError';
 
 export const handleError = (
   error: unknown,
-  message: string = 'An unexpected error occurred',
-  statusCode: number = 500
+  defaultMessage: string = 'An unexpected error occurred',
+  defaultStatusCode: number = 500
 ): NextResponse<ErrorResponse> => {
   console.error('Error: ', error);
 
+  let statusCode = defaultStatusCode;
   let errorCode = 'UnknownError'; // Default error code
-  let details: any[] = []; // Default empty details array
+  let message = defaultMessage;  // Default message
+  let details: any[] = [];       // Additional error details
 
   if (error instanceof ZodError) {
+    // Handle Zod validation errors
     errorCode = 'ValidationError';
     details = error.errors.map((e) => ({
       path: e.path,
@@ -22,12 +25,15 @@ export const handleError = (
     message = 'Validation failed';
     statusCode = 400;
   } else if (error instanceof CustomError) {
+    // Handle custom errors
     errorCode = error.name;
+    message = error.message || defaultMessage;
     details = [error.message];
     statusCode = error.statusCode;
   } else if (error instanceof Error) {
-    // Handle general errors
+    // Handle generic errors
     errorCode = error.name;
+    message = error.message || defaultMessage;
     details = [error.message];
   }
   const response: ErrorResponse = {
@@ -36,5 +42,5 @@ export const handleError = (
     details,
   };
 
-  return NextResponse.json(response, { status: statusCode });
+  return NextResponse.json<ErrorResponse>(response, { status: statusCode });
 };

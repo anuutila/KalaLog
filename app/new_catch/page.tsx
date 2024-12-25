@@ -1,15 +1,17 @@
 'use client';
 
+import { showNotification } from '@/lib/notifications/notifications';
 import { ICatch } from '@/lib/types/catch';
 import { CatchCreaetedResponse, ErrorResponse } from '@/lib/types/responses';
+import { Button, rem } from '@mantine/core';
+import { notifications } from '@mantine/notifications';
+import { IconAlertTriangle, IconCheck, IconExclamationMark, IconInfoSmall, IconX } from '@tabler/icons-react';
 import { useEffect, useState } from 'react';
 
 export default function Page() {
-  const currentDate = new Date().toISOString().split('T')[0]; // Get current date in YYYY-MM-DD format
-
   const [formData, setFormData] = useState<Omit<ICatch, 'id' | 'createdAt' | 'images'>>({
     species: '',
-    date: currentDate,
+    date: new Date().toISOString().split('T')[0],
     length: undefined,
     weight: undefined,
     lure: null,
@@ -26,6 +28,9 @@ export default function Page() {
     length: '',
     weight: '',
   });
+
+  console.log('FormData on render:', formData);
+
 
   const [useGps, setUseGps] = useState(false); // State for GPS checkbox
   const [gpsError, setGpsError] = useState<string | null>(null); // State for GPS error message
@@ -74,50 +79,52 @@ export default function Page() {
   };
 
   const handleGpsToggle = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUseGps(e.target.checked);
+    if (typeof navigator !== 'undefined') {
+      setUseGps(e.target.checked);
 
-    if (e.target.checked) {
-      try {
-        // Start watching the user's position
-        const id = navigator.geolocation.watchPosition(
-          (position) => {
-            const { latitude, longitude } = position.coords;
-            setFormData((prevData) => ({
-              ...prevData,
-              location: {
-                ...prevData.location,
-                coordinates: `${latitude}, ${longitude}`,
-              },
-            }));
-            setGpsError(null); // Clear any previous errors
+      if (e.target.checked) {
+        try {
+          // Start watching the user's position
+          const id = navigator.geolocation.watchPosition(
+            (position) => {
+              const { latitude, longitude } = position.coords;
+              setFormData((prevData) => ({
+                ...prevData,
+                location: {
+                  ...prevData.location,
+                  coordinates: `${latitude}, ${longitude}`,
+                },
+              }));
+              setGpsError(null); // Clear any previous errors
+            },
+            (error) => {
+              setGpsError('Unable to retrieve GPS coordinates. Please enable location access.');
+              console.error('GPS error:', error);
+            },
+            {
+              enableHighAccuracy: true, // Use the most accurate location available
+              maximumAge: 0, // Do not use cached locations
+              timeout: 15000, // Timeout after 10 seconds if no location is retrieved
+            }
+          );
+          setWatchId(id); // Save the watch ID to clear it later
+        } catch (error) {
+          setGpsError('Geolocation API is not supported.');
+          console.error('Geolocation API error:', error);
+        }
+      } else {
+        // Clear GPS coordinates and stop watching position
+        setFormData((prevData) => ({
+          ...prevData,
+          location: {
+            ...prevData.location,
+            coordinates: '',
           },
-          (error) => {
-            setGpsError('Unable to retrieve GPS coordinates. Please enable location access.');
-            console.error('GPS error:', error);
-          },
-          {
-            enableHighAccuracy: true, // Use the most accurate location available
-            maximumAge: 0, // Do not use cached locations
-            timeout: 15000, // Timeout after 10 seconds if no location is retrieved
-          }
-        );
-        setWatchId(id); // Save the watch ID to clear it later
-      } catch (error) {
-        setGpsError('Geolocation API is not supported in this browser.');
-        console.error('Geolocation API error:', error);
-      }
-    } else {
-      // Clear GPS coordinates and stop watching position
-      setFormData((prevData) => ({
-        ...prevData,
-        location: {
-          ...prevData.location,
-          coordinates: '',
-        },
-      }));
-      if (watchId !== null) {
-        navigator.geolocation.clearWatch(watchId); // Stop watching the user's position
-        setWatchId(null);
+        }));
+        if (watchId !== null) {
+          navigator.geolocation.clearWatch(watchId); // Stop watching the user's position
+          setWatchId(null);
+        }
       }
     }
   };
@@ -139,7 +146,7 @@ export default function Page() {
         length: inputValues.length ? parseFloat(inputValues.length) : null,
         weight: inputValues.weight ? parseFloat(inputValues.weight) : null,
       };
-      
+
       const response = await fetch('/api/catches', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -149,16 +156,16 @@ export default function Page() {
       if (!response.ok) {
         const errorResponse: ErrorResponse = await response.json();
         console.error('Error:', errorResponse.message, errorResponse.details);
-        // TODO: notify user of error
-        alert(`${errorResponse.message}. ${errorResponse.details}.`);
+        showNotification('error', errorResponse.message, { withTitle: true });
       } else {
         const catchCreatedResponse: CatchCreaetedResponse = await response.json();
         console.log(catchCreatedResponse.message, catchCreatedResponse.data);
+        showNotification('success', catchCreatedResponse.message, { withTitle: false });
 
         // Reset the form
         setFormData({
           species: '',
-          date: currentDate,
+          date: new Date().toISOString().split('T')[0],
           length: undefined,
           weight: undefined,
           lure: null,
@@ -175,10 +182,11 @@ export default function Page() {
       }
     } catch (error) {
       console.error('Unexpected error occured while creating new catch:', error);
-      // TODO: notify user of error
-      alert('An unexpected error occurred while creating a new catch. Please try again.');
+      showNotification('error', 'An unexpected error occurred while creating a new catch. Please try again.', { withTitle: true });
     }
   };
+
+  // TODO: disable if not logged in
 
   return (
     <div>
@@ -216,7 +224,7 @@ export default function Page() {
           Use GPS Coordinates
         </label>
         {gpsError && <p style={{ color: 'red' }}>{gpsError}</p>}
-        {useGps && (
+        {useGps ? (
           <input
             type="text"
             name="coordinates"
@@ -224,7 +232,7 @@ export default function Page() {
             value={formData.location.coordinates ?? ''}
             onChange={handleChange}
           />
-        )}
+        ) : null}
         <input type="time" name="time" value={formData.time} onChange={handleChange} required />
         <input type="text" name="caughtBy" placeholder="Caught By" value={formData.caughtBy.name} onChange={handleChange} required />
         <button type="submit">Submit</button>

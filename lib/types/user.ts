@@ -38,7 +38,7 @@ export const IUserSchema = z.object({
     .url("Invalid URL")
     .max(200, "Profile picture URL cannot exceed 200 characters")
     .optional(),
-  createdAt: z.string().optional(), // ISO date string for creation timestamp
+  createdAt: z.date().optional(), // ISO date string for creation timestamp
   id: z.string().optional(),
 });
 

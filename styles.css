@@ -1,3 +1,11 @@
+:root {
+  --success-notification-color: var(--mantine-color-green-filled);
+  --error-notification-color: var(--mantine-color-red-filled);
+  --info-notification-color: var(--mantine-color-blue-filled);
+  --warning-notification-color: var(--mantine-color-orange-filled);
+}
+
+
 /* For light mode */
 :root[data-mantine-color-scheme="light"] {
   --mantine-color-body: var(--mantine-color-white) !important;
@@ -7,21 +15,3 @@
 :root[data-mantine-color-scheme="dark"] {
   --mantine-color-body: var(--mantine-color-dark-9) !important;
 }
-
-
-/* Global cell styling for ag-grid */
-/* .ag-theme-quartz-dark {
-  --ag-font-size: 12px !important;
-} */
-
-/* .ag-ltr .ag-cell {
-  display: flex;
-  align-items: center;
-}
-
-.ag-cell-value {
-  line-height: 20px;
-  word-break: normal;
-  padding-top: 5px;
-  padding-bottom: 5px;
-} */

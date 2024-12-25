@@ -18,7 +18,7 @@ export async function POST(req: NextRequest): Promise<NextResponse<SignUpRespons
     // Check if the email or username is already in use
     const existingUser = await User.findOne({ $or: [{ email: userData.email }, { username: userData.username }] });
     if (existingUser) {
-      throw new CustomError('Email or username already exists', 400);
+      throw new CustomError('Signup failed. Email or username already in use.', 400);
     }
     
     // Hash the password
@@ -30,8 +30,8 @@ export async function POST(req: NextRequest): Promise<NextResponse<SignUpRespons
       password: hashedPassword, // Store hashed password
     });
 
-    return NextResponse.json<SignUpResponse>({ message: 'User created successfully' }, { status: 201 });
+    return NextResponse.json<SignUpResponse>({ message: 'New user account created successfully' }, { status: 201 });
   } catch (error) {
-    return handleError(error, 'Signup failed');
+    return handleError(error, 'An unexpected error occurred while creating the user account. Please try again later.');
   }
 }

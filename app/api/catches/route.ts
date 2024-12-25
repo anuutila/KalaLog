@@ -13,43 +13,59 @@ export async function GET(): Promise<NextResponse<CatchesResponse | ErrorRespons
   await dbConnect();
 
   try {
+    console.log('Fetching all catches');
     const catches = await Catch.find({}).lean();
 
     console.log(`Found ${catches.length} catches`);
 
+    const validatedCatches: ICatch[] = [];
+    const invalidCatches: unknown[] = [];
+
     // Validate and transform the data using Zod
-    const validatedCatches: ICatch[] = catches.map((catchItem) => {
+    for (const catchItem of catches) {
       try {
         const parsed = ICatchSchema.parse({
           ...catchItem,
           id: catchItem._id?.toString(), // Convert MongoDB ObjectId to string
         });
-        // console.log(parsed);
-        return parsed;
+        validatedCatches.push(parsed);
       } catch (error) {
         console.error('Invalid catch item:', catchItem, error);
-        throw new Error('Invalid catch item'); // Optionally stop processing if there's invalid data
+        invalidCatches.push({ item: catchItem, error });
       }
-    });
+    }
 
-    return NextResponse.json<CatchesResponse>({ message: 'Catches retrieved successfully', data: validatedCatches}, { status: 200 });
+    // Construct response message based on validation results
+    const message =
+      invalidCatches.length === 0
+        ? 'All catches retrieved successfully.'
+        : `Catches retrieved, but ${invalidCatches.length} entries failed validation and were excluded.`;
+
+    return NextResponse.json<CatchesResponse>(
+      {
+        message,
+        data: validatedCatches,
+      },
+      { status: 200 }
+    );
   } catch (error: unknown) {
-    return handleError(error, 'Failed to fetch catches!');
+    return handleError(error, 'An unexpected error occurred while retrieving the catches. Please try again later.');
   }
 }
 
-export async function POST(req: NextRequest): Promise<NextResponse<CatchCreaetedResponse | ErrorResponse>> {
-  // Check if the user is authorized
-  const response = await authorize(req, [UserRole.ADMIN, UserRole.EDITOR]);
-  if (!response.ok) {
-    const errorResponse: ErrorResponse = await response.json();
-    throw new CustomError(errorResponse.message, response.status);
-  } else {
-    const authResponse: AuthorizationResponse = await response.json();
-    console.log(authResponse.message);
-  }
 
+export async function POST(req: NextRequest): Promise<NextResponse<CatchCreaetedResponse | ErrorResponse>> {
   try {
+    // Check if the user is authorized
+    const response = await authorize(req, [UserRole.ADMIN, UserRole.EDITOR]);
+    if (!response.ok) {
+      const errorResponse: ErrorResponse = await response.json();
+      throw new CustomError(errorResponse.message, response.status);
+    } else {
+      const authResponse: AuthorizationResponse = await response.json();
+      console.log(authResponse.message);
+    }
+
     await dbConnect();
     const data: ICatch = await req.json();
 
@@ -61,8 +77,8 @@ export async function POST(req: NextRequest): Promise<NextResponse<CatchCreaeted
     // Save to MongoDB
     const newCatch: ICatch = await Catch.create(validatedData);
 
-    return NextResponse.json<CatchCreaetedResponse>({message: 'New catch created succesfully', data: newCatch}, { status: 201 });
+    return NextResponse.json<CatchCreaetedResponse>({ message: 'New catch entry created successfully 🎣', data: newCatch }, { status: 201 });
   } catch (error: unknown) {
-    return handleError(error, 'Failed to create a new catch');
+    return handleError(error, 'Unable to create catch entry. Please try again later.');
   }
 }

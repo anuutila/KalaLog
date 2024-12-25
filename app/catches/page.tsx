@@ -32,8 +32,6 @@ import CatchesOverview from '@/components/catchesPage/CatchesOverview/CatchesOve
 import CatchesGrid from '@/components/catchesPage/CatchesGrid/CatchesGrid';
 
 export default function CatchesPage() {
-  console.log('test')
-
   const gridRef = useRef<AgGridReact<ICatch>>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 

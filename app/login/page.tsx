@@ -1,14 +1,15 @@
 'use client';
 
 import { useGlobalState } from '@/context/GlobalState';
-import { ErrorResponse, LoginResponse } from '@/lib/types/responses';
+import { showNotification } from '@/lib/notifications/notifications';
+import { ErrorResponse, LoginResponse, LogoutResponse } from '@/lib/types/responses';
 import { Container } from '@mantine/core';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 export default function Page() {
-  const { jwtUser, isLoggedIn } = useGlobalState();
+  const { jwtUserInfo, isLoggedIn, setIsLoggedIn, setJwtUserInfo } = useGlobalState();
 
   const [formData, setFormData] = useState({ emailOrUsername: '', password: '' });
   const [error, setError] = useState<string | null>(null);
@@ -39,17 +40,22 @@ export default function Page() {
         const errorResponse: ErrorResponse = await response.json();
         console.error('Error:', errorResponse.message, errorResponse.details);
         setError(errorResponse.message);
+        showNotification('error', errorResponse.message, { withTitle: true });
       } else {
         const loginResponse: LoginResponse = await response.json();
         console.log(loginResponse.message);
-        // TODO: notify user of successful login
+        showNotification('success', loginResponse.message, { withTitle: true });
+
+        // Update global state
+        setIsLoggedIn(true);
+        setJwtUserInfo(loginResponse.data);
 
         // Redirect to user page
         router.push('/user');
       }
     } catch (error) {
       console.error('Unexpected error logging in:', error);
-      alert('An unexpected error occurred while logging in. Please try again.');
+      showNotification('error', 'An unexpected error occurred while logging in. Please try again later.', { withTitle: true });
     } finally {
       setLoading(false);
     }
@@ -60,21 +66,26 @@ export default function Page() {
       const response = await fetch('/api/logout', { method: 'POST' });
 
       if (response.ok) {
-        // TODO: notify user of successful logout
-        console.log('Successfully logged out');
+        const logoutResponse: LogoutResponse = await response.json();
+        console.log(logoutResponse.message);
+        showNotification('success', `${logoutResponse.message} See you later ${jwtUserInfo?.firstname}! 👋`, { withTitle: false });
+
+        // Update global state
+        setIsLoggedIn(false);
+        setJwtUserInfo(null);
+
         // Redirect to the login page
         router.push('/login');
-      } else {
-        // TODO: notify user of failed logout
-        console.error('Failed to log out:', await response.json());
+      } else {  
+        const errorResponse: ErrorResponse = await response.json();
+        console.error('Failed to log out:', errorResponse.message, errorResponse.details);
+        showNotification('error', 'An unexpected error occurred while logging out. Please try again.', { withTitle: true });
       }
     } catch (error) {
       console.error('Unexpected error logging out:', error);
-      alert('An unexpected error occurred while logging out. Please try again.');
+      showNotification('error', 'An unexpected error occurred while logging out. Please try again.', { withTitle: true });
     }
   };
-
-    
 
   return (
     <Container>
@@ -113,7 +124,7 @@ export default function Page() {
           </Link>
         </p> 
       </div> }
-      <div><button onClick={handleLogout}>Log Out</button></div>
+      { isLoggedIn && <div><button onClick={handleLogout}>Log Out</button></div> }
     </Container>
   );
 }

@@ -1,6 +1,7 @@
 'use client';
 
 import '@mantine/core/styles.css';
+import '@mantine/notifications/styles.css';
 import '../styles.css';
 
 import React, { useState } from 'react';
@@ -13,6 +14,7 @@ import { theme } from '../theme';
 import classes from './layout.module.css';
 import { usePathname } from 'next/navigation';
 import { GlobalStateProvider } from '@/context/GlobalState';
+import { Notifications } from '@mantine/notifications';
 
 const tabs = [
   { value: 'new_catch', icon: IconCirclePlus, label: 'Uusi saalis', path: '/new_catch' },
@@ -35,6 +37,7 @@ export default function RootLayout({ children }: { children: any }) {
       <body>
         <GlobalStateProvider>
           <MantineProvider theme={theme} defaultColorScheme="dark" forceColorScheme="dark">
+            <Notifications />
             <AppShell header={{ height: rem(60) }} padding="0">
               <AppShell.Header withBorder={false} className={classes.header}>
                 <Group classNames={{ root: classes.title_container }}>

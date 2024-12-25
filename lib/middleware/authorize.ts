@@ -8,18 +8,18 @@ import { CustomError } from '../utils/customError';
 const JWT_SECRET = process.env.JWT_SECRET as string;
 
 export const authorize = async (req: NextRequest, authorizedRoles: string[]): Promise<NextResponse<AuthorizationResponse | ErrorResponse>> => {
-  const cookieStore = await cookies();
-  const token = cookieStore.get('token')?.value;
-
-  if (!token) {
-    throw new CustomError('Unauthorized. Missing token.', 401);
-  }
-
   try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get('token')?.value;
+
+    if (!token) {
+      throw new CustomError('Unauthorized. Missing JWT token.', 401);
+    }
+
     const decoded = jwt.verify(token, JWT_SECRET) as JwtPayload & { role: string };
 
     if (!decoded.role || !authorizedRoles.includes(decoded.role)) {
-      throw new CustomError('Forbidden: Insufficient permissions', 403);
+      throw new CustomError('Uthorization failed. Insufficient permissions', 403);
     }
 
     // req.user = decoded;

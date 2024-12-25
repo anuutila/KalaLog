@@ -1,20 +1,20 @@
 'use client';
 
+import { showNotification } from '@/lib/notifications/notifications';
 import { ICatch } from '@/lib/types/catch';
-import { JwtUser } from '@/lib/types/jwtUser';
+import { JwtUserInfo } from '@/lib/types/jwtUserInfo';
 import { CatchesResponse, ErrorResponse, UserInfoResponse } from '@/lib/types/responses';
-import { IUser } from '@/lib/types/user';
 import { sortByDate, sortByTime } from '@/lib/utils/utils';
-import { set } from 'mongoose';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
 interface GlobalState {
   isLoggedIn: boolean;
-  jwtUser: JwtUser | null;
+  jwtUserInfo: JwtUserInfo | null;
   catches: ICatch[];
   catchesError: string | null;
   loadingCatches: boolean;
-  setJwtUser: (user: JwtUser) => void;
+  setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
+  setJwtUserInfo: React.Dispatch<React.SetStateAction<JwtUserInfo | null>>;
   fetchCatches: () => Promise<void>;
   logout: () => Promise<void>;
 }
@@ -23,7 +23,7 @@ const GlobalContext = createContext<GlobalState | undefined>(undefined);
 
 export const GlobalStateProvider = ({ children }: { children: React.ReactNode }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [jwtUser, setJwtUser] = useState<JwtUser | null>(null);
+  const [jwtUserInfo, setJwtUserInfo] = useState<JwtUserInfo | null>(null);
   const [catches, setCatches] = useState<ICatch[]>([]);
   const [catchesError, setCatchesError] = useState<string | null>(null);
   const [loadingCatches, setLoadingCatches] = useState(false);
@@ -32,51 +32,57 @@ export const GlobalStateProvider = ({ children }: { children: React.ReactNode })
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        setLoadingCatches(true);
         const response = await fetch('/api/userInfo');
         if (response.ok) {
           const userInfoResponse: UserInfoResponse = await response.json();
           console.log(userInfoResponse.message);
-          console.log('User info:', userInfoResponse.data?.jwtUser);
+          console.log('User info:', userInfoResponse.data?.jwtUserInfo);
           setIsLoggedIn(userInfoResponse.data.loggedIn);
-          setJwtUser(userInfoResponse.data.jwtUser);
+          setJwtUserInfo(userInfoResponse.data.jwtUserInfo);
         } else {
           const errorResponse: ErrorResponse = await response.json();
           console.error('Error:', errorResponse.message, errorResponse.details);
+          showNotification('error', errorResponse.message, { withTitle: true });
           setIsLoggedIn(false);
-          setJwtUser(null);
+          setJwtUserInfo(null);
         }
       } catch (error) {
         console.error('Unexpected error fetching user info:', error);
-        alert('An unexpected error occurred while fetching user info. Please try again.');
+        showNotification('error', 'An unexpected error occurred while fetching user info.', { withTitle: true });
         setIsLoggedIn(false);
-        setJwtUser(null);
-      } finally {
-        setLoadingCatches(false);
+        setJwtUserInfo(null);
       }
     };
 
     checkAuth();
   }, []);
 
-  // Fetch catches information
+  // Fetch all catches from the server
   const fetchCatches = async () => {
     try {
+      setLoadingCatches(true);
       const response = await fetch('/api/catches');
       if (response.ok) {
         const catchesResponse: CatchesResponse = await response.json();
         const sortedCatches = sortByDate(sortByTime(catchesResponse.data)).reverse();
         setCatches(sortedCatches);
         setCatchesError(null);
+        if (catchesResponse.message.includes('validation')) {
+          showNotification('warning', catchesResponse.message, { withTitle: true });
+        }
       } else {
         const errorResponse: ErrorResponse = await response.json();
         console.error('Error:', errorResponse.message, errorResponse.details);
-        // alert(`Error: ${errorData.message}`);
+        showNotification('error', errorResponse.message, { withTitle: true });
         setCatchesError(errorResponse.message);
       }
     } catch (error) {
       console.error('Unexpected error fetching catches:', error);
-      alert('An unexpected error occurred while fetching catches. Please try again.');
+      showNotification('error', 'An unexpected error occurred while fetching catches. Please try again.', {
+        withTitle: true,
+      });
+    } finally {
+      setLoadingCatches(false);
     }
   };
 
@@ -91,7 +97,7 @@ export const GlobalStateProvider = ({ children }: { children: React.ReactNode })
       if (response.ok) {
         // Clear global state
         setIsLoggedIn(false);
-        setJwtUser(null);
+        setJwtUserInfo(null);
       } else {
         const errorData = await response.json();
         console.error('Error:', errorData.message, errorData.details);
@@ -107,11 +113,12 @@ export const GlobalStateProvider = ({ children }: { children: React.ReactNode })
     <GlobalContext.Provider
       value={{
         isLoggedIn,
-        jwtUser,
+        jwtUserInfo,
         catches,
         catchesError,
         loadingCatches,
-        setJwtUser,
+        setIsLoggedIn,
+        setJwtUserInfo,
         fetchCatches,
         logout,
       }}

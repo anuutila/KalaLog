@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ErrorResponse, SignUpResponse } from '@/lib/types/responses';
 import { set } from 'mongoose';
+import { showNotification } from '@/lib/notifications/notifications';
 
 export default function Page() {
   const [formData, setFormData] = useState({
@@ -38,21 +39,21 @@ export default function Page() {
       });
 
       if (!response.ok) {
-        // TODO: notify user of error (error state in form?)
         const errorData: ErrorResponse = await response.json();
         console.error('Error:', errorData.message, errorData.details);
-        setError(`${errorData.message}. ${errorData.details}.`);
+        setError(`${errorData.message}`);
+        showNotification('error', errorData.message, { withTitle: true });
       } else {
-        // TODO: notify user of successful registration
         const signupResponse: SignUpResponse = await response.json();
         console.log(signupResponse.message);
+        showNotification('success', signupResponse.message, { withTitle: false });
   
-        // Redirect to sign-in page after successful registration
+        // Redirect to login page after successful registration
         router.push('/login');
       }
     } catch (err) {
-      console.error('Unexpexted error signing up:', err);
-      // TODO: notify user of error
+      console.error('An unexpected error occurred while signing up:', err);
+      showNotification('error', 'An unexpected error occurred while signing up. Please try again later.', { withTitle: true });
     } finally {
       setLoading(false);
     }

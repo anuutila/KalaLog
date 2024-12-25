@@ -10,11 +10,11 @@
   height: 100%;
   border: none;
   cursor: pointer;
-  border-bottom: rem(2.5) solid transparent; /* Transparent border by default */
+  border-bottom: rem(2.5) solid transparent;  /* Transparent border by default */
 
   &.active {
     z-index: 1;
-    border-bottom: rem(2.5) solid var(--mantine-primary-color-5); /* Blue bottom border when active */
+    /* border-bottom: rem(2.5) solid var(--mantine-primary-color-5); Blue bottom border when active */
     color: var(--mantine-color-white);
 
     .icon {
@@ -22,7 +22,7 @@
     }
 
     .label {
-      color: var(--mantine-color-white); /* Label color when active */
+      color: var(--mantine-primary-color-5); /* Label color when active */
     }
   }
 
@@ -52,7 +52,7 @@
 }
 
 /* Desktop styles */
-@media (min-width: 768px) {
+@media (min-width: $mantine-breakpoint-md) {
   .link {
     /* width: 15%;
     height: 100%; */

@@ -16,6 +16,7 @@ import classes from './page.module.css';
 
 import { ICatch } from '@lib/types/catch';
 import {
+  ActionIcon,
   Box,
   Button,
   Container,
@@ -30,10 +31,12 @@ import { getColumnOptions, getSelectAllOption, getYearOptions } from '@/componen
 import TableSettingsDrawer from '@/components/catchesPage/TableSettingsDrawer/TableSettingsDrawer';
 import CatchesOverview from '@/components/catchesPage/CatchesOverview/CatchesOverview';
 import CatchesGrid from '@/components/catchesPage/CatchesGrid/CatchesGrid';
+import { useHeaderActions } from '@/context/HeaderActionsContext';
 
 export default function CatchesPage() {
   const gridRef = useRef<AgGridReact<ICatch>>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const { setActions, setTest } = useHeaderActions();
 
   const [filteredCatches, setFilteredCatches] = useState<ICatch[]>([]);
   const [rowCount, setRowCount] = useState<number>(0);
@@ -69,6 +72,17 @@ export default function CatchesPage() {
       gridRef.current.api.setGridOption('defaultColDef', defaultColDef);
     }
   }, [defaultColDef]);
+
+  useEffect(() => {
+    // Set the header actions for this page
+    setActions(
+      <ActionIcon variant='default' onClick={open}><IconAdjustments size={20} /></ActionIcon>
+    );
+    setTest('test');
+
+    // Cleanup when leaving the page
+    return () => setActions(null);
+  }, []);
 
   const updateRowCount = useCallback(() => {
     const count = gridRef.current!.api.getDisplayedRowCount();
@@ -208,7 +222,7 @@ export default function CatchesPage() {
           setVisibleColumns={setVisibleColumns}
         />
 
-        <Box pl={'xs'}>
+        <Box pl={'xs'} visibleFrom='md'>
           <Button variant="default" onClick={open} radius={'md'} bg="var(--mantine-color-dark-7)" leftSection={<IconAdjustments size={20} />}>
             Taulukon asetukset
           </Button>

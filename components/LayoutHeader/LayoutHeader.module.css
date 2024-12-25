@@ -1,0 +1,48 @@
+.header {
+  background-color: light-dark(var(--mantine-color-white), var(--mantine-color-dark-8));
+  /* position: fixed; */
+}
+
+.logo_container {
+  display: none;
+}
+
+.logo_title {
+  font-size: rem(26);
+  font-weight: 900;
+  color: var(--mantine-primary-color-5);
+  margin-left: var(--mantine-spacing-md);
+  letter-spacing: rem(-1);
+  display: flex;
+}
+
+.tabs_group_header {
+  height: 100%;
+  gap: 0;
+  justify-content: flex-end;
+  display: none;
+}
+
+/* Desktop styles */
+@media (min-width: $mantine-breakpoint-md) {
+
+  .page_header_content {
+    display: none;
+  }
+
+  .logo_container {
+    display: flex;
+    height: 100%;
+    align-items: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+  
+  .tabs_group_header {
+    justify-content: flex-end;
+    gap: var(--mantine-spacing-md);
+    display: flex;
+  }
+
+}

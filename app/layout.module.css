@@ -1,5 +1,9 @@
 /* Default styles */
 
+.footer {
+  background-color: light-dark(var(--mantine-color-white), var(--mantine-color-dark-8));
+}
+
 .tabs_group_footer {
   height: 100%;
   gap: 0;

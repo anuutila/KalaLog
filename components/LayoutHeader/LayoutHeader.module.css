@@ -3,10 +3,6 @@
   /* position: fixed; */
 }
 
-.logo_container {
-  display: none;
-}
-
 .logo_title {
   font-size: rem(26);
   font-weight: 900;
@@ -20,15 +16,10 @@
   height: 100%;
   gap: 0;
   justify-content: flex-end;
-  display: none;
 }
 
 /* Desktop styles */
 @media (min-width: $mantine-breakpoint-md) {
-
-  .page_header_content {
-    display: none;
-  }
 
   .logo_container {
     display: flex;

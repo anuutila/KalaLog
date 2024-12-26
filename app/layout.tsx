@@ -54,7 +54,7 @@ export default function RootLayout({ children }: { children: any }) {
                   pathname={pathname}
                 />
                 <AppShell.Main>{children}</AppShell.Main>
-                <AppShell.Footer className={classes.footer}>
+                <AppShell.Footer hiddenFrom='md'>
                   <Group classNames={{ root: classes.tabs_group_footer }}>
                     {tabs.map((tab) => (
                       <CustomTab

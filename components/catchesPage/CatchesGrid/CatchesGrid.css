@@ -67,3 +67,16 @@
     display: none;
   }
 }
+
+/* Desktop styles */
+@media (min-width: $mantine-breakpoint-md) {
+
+  .grid-wrapper {
+  
+    & .ag-root-wrapper {
+      border-radius: var(--mantine-spacing-sm);
+      border: none;
+    }
+  }
+
+}

@@ -14,7 +14,5 @@
 /* Desktop styles */
 @media (min-width: $mantine-breakpoint-md) {
 
-  .footer {
-    display: none;
-  }
+  
 }

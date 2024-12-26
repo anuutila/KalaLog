@@ -68,6 +68,14 @@
       border-bottom: rem(2.5) solid var(--mantine-primary-color-5); /* Blue bottom border on hover */
     }
 
+    &.active {
+      border-bottom: rem(2.5) solid var(--mantine-primary-color-5); /* Blue bottom border when active */
+
+      .label {
+        color: var(--mantine-color-white); /* Label color when active */
+      }
+    }
+
     .icon_label_container {
       display: flex;
       flex-direction: row;

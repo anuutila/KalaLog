@@ -9,7 +9,7 @@ export default function LayoutHeader({ tabs, pathname }: { tabs: Tab[]; pathname
 
   return (
     <AppShell.Header withBorder={false} className={classes.header}>
-      <Group classNames={{ root: classes.logo_container }}>
+      <Group visibleFrom="md" classNames={{ root: classes.logo_container }}>
         <Title order={1} classNames={{ root: classes.logo_title }}>
           <Text inherit fs={'italic'} c="rgba(0, 157, 255, 1)" component="span">
             Kala
@@ -19,7 +19,7 @@ export default function LayoutHeader({ tabs, pathname }: { tabs: Tab[]; pathname
           </Text>
         </Title>
       </Group>
-      <Group className={classes.page_header_content} w={'100%'} h={'100%'} pl={'var(--mantine-spacing-xs)'} pr={'var(--mantine-spacing-xs)'} grow align='center' c={'white'}>
+      <Group hiddenFrom="md" className={classes.page_header_content} w={'100%'} h={'100%'} pl={'var(--mantine-spacing-xs)'} pr={'var(--mantine-spacing-xs)'} grow align='center' c={'white'}>
         <Group justify="start">{actions}</Group>
         <Group justify="center">
           <Text inherit fw={600}>
@@ -28,7 +28,7 @@ export default function LayoutHeader({ tabs, pathname }: { tabs: Tab[]; pathname
         </Group>
         <Group justify="end"></Group>
       </Group>
-      <Group classNames={{ root: classes.tabs_group_header }}>
+      <Group visibleFrom="md" classNames={{ root: classes.tabs_group_header }}>
         {tabs.map((tab) => (
           <CustomTab
             key={tab.value}

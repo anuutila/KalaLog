@@ -1,5 +1,5 @@
-.notifications {
-  bottom: calc(var(--mantine-spacing-md) + 45px);
+.root {
+  /* bottom: calc(var(--mantine-spacing-md) + 45px); */
   /* top: calc(var(--mantine-spacing-md) + 25px); */
 }
 

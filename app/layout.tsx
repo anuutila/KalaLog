@@ -46,7 +46,7 @@ export default function RootLayout({ children }: { children: any }) {
       <body>
         <GlobalStateProvider>
           <MantineProvider theme={theme} defaultColorScheme="dark" forceColorScheme="dark">
-            <Notifications />
+            <Notifications styles={{ root: {transform: 'translateY(-65px)'} }} /> {/* Move notifications up to prevent overlap with navigation bar */}
             <HeaderActionsProvider>
               <AppShell header={{ height: {base: rem(45), md: rem(60)} }} footer={{ height: rem(60) }} padding="0">
                 <LayoutHeader 

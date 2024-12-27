@@ -18,3 +18,8 @@
 :root[data-mantine-color-scheme="dark"] {
   --mantine-color-body: var(--mantine-color-dark-8) !important;
 }
+
+/* Adjust the notification position to avoid overlapping with the navigation bar */
+/* .mantine-Notifications-root[data-position="bottom-right"] {
+  bottom: 150px !important;
+} */

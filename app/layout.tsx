@@ -8,14 +8,14 @@ import React, { useState } from 'react';
 import { IconChartBar, IconCirclePlus, IconFish, IconUserCircle, TablerIcon } from '@tabler/icons-react';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
-import { AppShell, ColorSchemeScript, Group, MantineProvider, rem, Text, Title } from '@mantine/core';
+import { AppShell, ColorSchemeScript, Group, MantineProvider, rem } from '@mantine/core';
 import CustomTab from '../components/CustomTab/CustomTab';
 import { theme } from '../theme';
 import classes from './layout.module.css';
 import { usePathname } from 'next/navigation';
 import { GlobalStateProvider } from '@/context/GlobalState';
 import { Notifications } from '@mantine/notifications';
-import { HeaderActionsProvider, useHeaderActions } from '@/context/HeaderActionsContext';
+import { HeaderActionsProvider } from '@/context/HeaderActionsContext';
 import LayoutHeader from '@/components/LayoutHeader/LayoutHeader';
 
 export interface Tab {
@@ -53,8 +53,8 @@ export default function RootLayout({ children }: { children: any }) {
                   tabs={tabs}
                   pathname={pathname}
                 />
-                <AppShell.Main>{children}</AppShell.Main>
-                <AppShell.Footer hiddenFrom='md'>
+                <AppShell.Main c="var(--mantine-color-text)" >{children}</AppShell.Main>
+                <AppShell.Footer hiddenFrom='md' className={ classes.footer } bg={'var(--footer-background-color)'} >
                   <Group classNames={{ root: classes.tabs_group_footer }}>
                     {tabs.map((tab) => (
                       <CustomTab

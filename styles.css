@@ -3,6 +3,9 @@
   --error-notification-color: var(--mantine-color-red-filled);
   --info-notification-color: var(--mantine-color-blue-filled);
   --warning-notification-color: var(--mantine-color-orange-filled);
+
+  --header-background-color: var(--mantine-color-dark-7);
+  --footer-background-color: var(--mantine-color-dark-7);
 }
 
 
@@ -13,5 +16,5 @@
   
 /* For dark mode */
 :root[data-mantine-color-scheme="dark"] {
-  --mantine-color-body: var(--mantine-color-dark-9) !important;
+  --mantine-color-body: var(--mantine-color-dark-8) !important;
 }

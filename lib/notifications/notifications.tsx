@@ -1,6 +1,7 @@
 import { notifications } from '@mantine/notifications';
 import { IconX, IconCheck, IconExclamationMark, IconInfoSmall } from '@tabler/icons-react';
 import { rem } from '@mantine/core';
+import classes from './notifications.module.css';
 
 type NotificationType = 'success' | 'error' | 'warning' | 'info';
 
@@ -37,10 +38,12 @@ export function showNotification(
   notifications.show({
     color,
     icon,
+    classNames: { root: classes.notifications },
     withCloseButton: true,
-    classNames: { root: 'notification-root' },
     title: options?.withTitle !== false ? options?.title || defaultTitle : undefined,
     message,
+    position: 'bottom-right',
+    withBorder: true,
     autoClose: 5000
   });
 }

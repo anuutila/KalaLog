@@ -40,7 +40,7 @@ export default function StatsBadges({ filteredCatches }: StatsBadgesProps) {
   const fishBadges = sortedFishEntries.map(([fishKey, { count, displayName }]) => {
     const color = FishColors[fishKey as keyof typeof FishColors] || getRandomColor();
     return (
-      <Badge key={fishKey} color={color} variant="outline" classNames={classes}>
+      <Badge key={fishKey} color={color} variant="outline" classNames={{ root: classes.root, label: classes.label}}  size="md">
         {displayName}: {count}
       </Badge>
     );

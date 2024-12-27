@@ -8,6 +8,7 @@ import { UserRole } from '@/lib/types/user';
 import { AuthorizationResponse, CatchCreaetedResponse, CatchesResponse, ErrorResponse } from '@/lib/types/responses';
 import { handleError } from '@/lib/utils/handleError';
 import { CustomError } from '@/lib/utils/customError';
+import { CatchUtils } from '@/lib/utils/catchUtils';
 
 export async function GET(): Promise<NextResponse<CatchesResponse | ErrorResponse>> {
   await dbConnect();
@@ -27,6 +28,10 @@ export async function GET(): Promise<NextResponse<CatchesResponse | ErrorRespons
         const parsed = ICatchSchema.parse({
           ...catchItem,
           id: catchItem._id?.toString(), // Convert MongoDB ObjectId to string
+          caughtBy: {
+            name: catchItem.caughtBy.name,
+            userId: catchItem.caughtBy.userId?.toString(),
+          },
         });
         validatedCatches.push(parsed);
       } catch (error) {

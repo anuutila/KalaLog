@@ -8,7 +8,7 @@ export default function LayoutHeader({ tabs, pathname }: { tabs: Tab[]; pathname
   const { actions } = useHeaderActions();
 
   return (
-    <AppShell.Header withBorder={false} className={classes.header}>
+    <AppShell.Header withBorder={false} className={classes.header} bg={'var(--header-background-color)'}>
       <Group visibleFrom="md" classNames={{ root: classes.logo_container }}>
         <Title order={1} classNames={{ root: classes.logo_title }}>
           <Text inherit fs={'italic'} c="rgba(0, 157, 255, 1)" component="span">

@@ -1,17 +1,23 @@
 'use client';
 
+import { useGlobalState } from '@/context/GlobalState';
 import { showNotification } from '@/lib/notifications/notifications';
 import { ICatch } from '@/lib/types/catch';
 import { CatchCreaetedResponse, ErrorResponse } from '@/lib/types/responses';
-import { Button, rem } from '@mantine/core';
-import { notifications } from '@mantine/notifications';
-import { IconAlertTriangle, IconCheck, IconExclamationMark, IconInfoSmall, IconX } from '@tabler/icons-react';
-import { useEffect, useState } from 'react';
+import { UserRole } from '@/lib/types/user';
+import { CatchUtils } from '@/lib/utils/catchUtils';
+import { Alert, Autocomplete, Box, Button, Checkbox, ComboboxItem, Container, Fieldset, Group, NumberInput, OptionsFilter, rem, Stack, TextInput, Title } from '@mantine/core';
+import { TimeInput } from '@mantine/dates';
+import { useDisclosure } from '@mantine/hooks';
+import { IconCalendar, IconChevronCompactUp, IconChevronUp, IconClock, IconInfoCircle, IconSelector, IconX } from '@tabler/icons-react';
+import { set } from 'mongoose';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 export default function Page() {
+  const { catches, isLoggedIn, jwtUserInfo } = useGlobalState();
+
   const [formData, setFormData] = useState<Omit<ICatch, 'id' | 'createdAt' | 'images'>>({
     species: '',
-    date: new Date().toISOString().split('T')[0],
     length: undefined,
     weight: undefined,
     lure: null,
@@ -20,18 +26,32 @@ export default function Page() {
       spot: null,
       coordinates: null,
     },
-    time: '',
+    date: new Date().toISOString().split('T')[0],
+    time: new Date(new Date().getTime() + 120 * 60000).toISOString().split('T')[1].slice(0, 5),
     caughtBy: { name: '', userId: null },
   });
 
-  const [inputValues, setInputValues] = useState({
-    length: '',
-    weight: '',
-  });
+  const [speciesValue, setSpeciesValue] = useState<string>('');
+  const [filteredSpeciesOptions, setFiltereSpeciesOptions] = useState<string[]>([]);
+  const [speciesDropdownOpened, setSpeciesDropdownOpened] = useState<boolean>(false);
 
-  console.log('FormData on render:', formData);
+  const [weightValue, setWeightValue] = useState<string | number>('');
+  const [lengthValue, setLengthValue] = useState<string | number>('');
+
+  const [lureValue, setLureValue] = useState<string>('');
+  const [filteredLureOptions, setFilteredLureOptions] = useState<string[]>([]);
+  const [luresDropdownOpened, setLuresDropdownOpened] = useState<boolean>(false);
+
+  const [spotValue, setSpotValue] = useState<string>('');
+  const [filteredSpotOptions, setFilteredSpotOptions] = useState<string[]>([]);
+  const [spotsDropdownOpened, setSpotsDropdownOpened] = useState<boolean>(false);
+  
+  const [anglerName, setAnglerName] = useState<string>('');
+  const [filteredAnglerOptions, setFilteredAnglerOptions] = useState<string[]>([]);
+  const [anglersDropdownOpened, setAnglersDropdownOpened] = useState<boolean>(false);
 
 
+  const [isLoading, setIsLoading] = useState(false);
   const [useGps, setUseGps] = useState(false); // State for GPS checkbox
   const [gpsError, setGpsError] = useState<string | null>(null); // State for GPS error message
   const [watchId, setWatchId] = useState<number | null>(null);
@@ -39,34 +59,14 @@ export default function Page() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
 
-    if (name === 'length' || name === 'weight') {
-      // Update the temporary string state for number inputs
-      setInputValues((prev) => ({
-        ...prev,
-        [name]: value,
-      }));
-      return;
-    }
-
     setFormData((prevData) => {
-      if (name === 'bodyOfWater' || name === 'spot' || name === 'coordinates') {
+      if (name === 'bodyOfWater' || name === 'coordinates') {
         // Handle nested location object
         return {
           ...prevData,
           location: {
             ...prevData.location,
             [name]: value,
-          },
-        };
-      }
-
-      if (name === 'caughtBy') {
-        // Handle caughtBy object
-        return {
-          ...prevData,
-          caughtBy: {
-            ...prevData.caughtBy,
-            name: value,
           },
         };
       }
@@ -126,6 +126,8 @@ export default function Page() {
           setWatchId(null);
         }
       }
+    } else {
+      setGpsError('Geolocation API is not supported.');
     }
   };
 
@@ -140,12 +142,25 @@ export default function Page() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    setIsLoading(true);
     try {
       const parsedFormData = {
         ...formData,
-        length: inputValues.length ? parseFloat(inputValues.length) : null,
-        weight: inputValues.weight ? parseFloat(inputValues.weight) : null,
+        species: speciesValue,
+        length: typeof lengthValue === 'string' ? null : lengthValue,
+        weight: typeof weightValue === 'string' ? null : weightValue,
+        lure: lureValue,
+        location: {
+          ...formData.location,
+          spot: spotValue,
+        },
+        caughtBy: {
+          name: anglerName,
+          userId: jwtUserInfo?.userId ?? null,
+        },
       };
+
+      console.log('Submitting form data:', parsedFormData);
 
       const response = await fetch('/api/catches', {
         method: 'POST',
@@ -165,16 +180,22 @@ export default function Page() {
         // Reset the form
         setFormData({
           species: '',
-          date: new Date().toISOString().split('T')[0],
           length: undefined,
           weight: undefined,
           lure: null,
           location: { bodyOfWater: 'Nerkoonjärvi', spot: null, coordinates: null },
-          time: '',
+          date: new Date().toISOString().split('T')[0],
+          time: new Date(new Date().getTime() + 120 * 60000).toISOString().split('T')[1].slice(0, 5),
           caughtBy: { name: '', userId: null },
         });
-        setInputValues({ length: '', weight: '' });
+        setSpeciesValue('');
+        setLengthValue('');
+        setWeightValue('');
+        setLureValue('');
+        setSpotValue('');
         setUseGps(false);
+        setGpsError(null);
+        setAnglerName('');
         if (watchId !== null) {
           navigator.geolocation.clearWatch(watchId);
           setWatchId(null);
@@ -183,60 +204,231 @@ export default function Page() {
     } catch (error) {
       console.error('Unexpected error occured while creating new catch:', error);
       showNotification('error', 'An unexpected error occurred while creating a new catch. Please try again.', { withTitle: true });
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  // TODO: disable if not logged in
+  const speciesOptions = ['Ahven', 'Hauki', 'Kuha'];
+
+  const lureOptions = useMemo(() => 
+    CatchUtils.getUniqueLures(catches).map((lure) => lure.lure), 
+    [catches]
+  );
+
+  const spotOptions = useMemo(() =>
+    CatchUtils.getUniqueSpots(catches),
+    [catches]
+  );
+
+  const anglerOptions = useMemo(() =>
+    CatchUtils.getUniqueAnglers(catches).map((angler) => angler.name),
+    [catches]
+  );
+
+  const handleSpeciesChange = useCallback((value: string) => {
+    setSpeciesValue(value);
+    const filtered = speciesOptions.filter((option) =>
+      option.toLowerCase().includes(value.toLowerCase().trim())
+    );
+    setFiltereSpeciesOptions(filtered);
+    setSpeciesDropdownOpened(filtered.length > 0);
+  }, [speciesOptions]);
+
+  const speciesRightSection = useMemo(() => 
+    speciesDropdownOpened && (filteredSpeciesOptions.length > 0 || speciesValue === '') ? 
+      <IconSelector onClick={() => setSpeciesDropdownOpened(false)}/> : 
+      null
+  , [speciesDropdownOpened, filteredSpeciesOptions.length, speciesValue]);
+
+  const handleLureChange = useCallback((value: string) => {
+    setLureValue(value);
+    const filtered = lureOptions.filter((option) =>
+      option.toLowerCase().includes(value.toLowerCase().trim())
+    );
+    setFilteredLureOptions(filtered);
+    setLuresDropdownOpened(filtered.length > 0);
+  }, [lureOptions]);
+  
+  const lureRightSection = useMemo(() => 
+    luresDropdownOpened && (filteredLureOptions.length > 0 || lureValue === '') ? 
+      <IconSelector onClick={() => setLuresDropdownOpened(false)}/> : 
+      null
+  , [luresDropdownOpened, filteredLureOptions.length, lureValue]);
+
+  const handleSpotChange = useCallback((value: string) => {
+    setSpotValue(value);
+    const filtered = spotOptions.filter((option) =>
+      option.toLowerCase().includes(value.toLowerCase().trim())
+    );
+    setFilteredSpotOptions(filtered);
+    setSpotsDropdownOpened(filtered.length > 0);
+  } , [spotOptions]);
+
+  const spotRightSection = useMemo(() => 
+    spotsDropdownOpened && (filteredSpotOptions.length > 0 || spotValue === '') ? 
+      <IconSelector onClick={() => setSpotsDropdownOpened(false)}/> : 
+      null
+  , [spotsDropdownOpened, filteredSpotOptions.length, spotValue]);
+
+  const handleAnglerChange = useCallback((value: string) => {
+    setAnglerName(value);
+    const filtered = anglerOptions.filter((option) =>
+      option.toLowerCase().includes(value.toLowerCase().trim())
+    );
+    setFilteredAnglerOptions(filtered);
+    setAnglersDropdownOpened(filtered.length > 0);
+  }, [anglerOptions]);
+
+  const anglersRightSection = useMemo(() => 
+    anglersDropdownOpened && (filteredAnglerOptions.length > 0 || anglerName === '') ? 
+      <IconSelector onClick={() => setAnglersDropdownOpened(false)}/> : 
+      null
+  , [anglersDropdownOpened, filteredAnglerOptions.length, anglerName]);
 
   return (
-    <div>
-      <h1>New Catch</h1>
+    <Container size='sm' p={'md'}>
+      { (!isLoggedIn || jwtUserInfo?.role === UserRole.VIEWER )&& <Alert variant="light" color="red" radius="md" title="Huomio" icon={<IconInfoCircle />} mb={'md'}>
+        {jwtUserInfo?.role === UserRole.VIEWER ? 'Sinulla ei ole uuden saaliin lisäämiseen tarvittavia oikeuksia.' : 'Kirjaudu sisään lisätäksesi uuden saaliin.'}
+      </Alert> }
       <form onSubmit={handleSubmit}>
-        <input type="text" name="species" placeholder="Species" value={formData.species} onChange={handleChange} required />
-        <input type="date" name="date" value={formData.date} onChange={handleChange} required />
-        <input
-          type="number"
-          name="length"
-          step={0.01}
-          min={0}
-          max={999}
-          placeholder="Length (cm)"
-          value={inputValues.length}
-          onChange={handleChange}
-          pattern="^\d*(\.\d*)?$" // Allow decimals
-        />
-        <input
-          type="number"
-          name="weight"
-          step={0.01}
-          min={0}
-          max={999}
-          placeholder="Weight (kg)"
-          value={inputValues.weight}
-          onChange={handleChange}
-          pattern="^\d*(\.\d*)?$" // Allow decimals
-        />
-        <input type="text" name="lure" placeholder="Lure" value={formData.lure ?? ''} onChange={handleChange} />
-        {/* <input type="text" name="bodyOfWater" placeholder="Body of Water" value={formData.location.bodyOfWater} onChange={handleChange} required /> */}
-        <input type="text" name="spot" placeholder="Spot" value={formData.location.spot ?? ''} onChange={handleChange} />
-        <label>
-          <input type="checkbox" checked={useGps} onChange={handleGpsToggle} />
-          Use GPS Coordinates
-        </label>
-        {gpsError && <p style={{ color: 'red' }}>{gpsError}</p>}
-        {useGps ? (
-          <input
-            type="text"
-            name="coordinates"
-            placeholder="Coordinates"
-            value={formData.location.coordinates ?? ''}
-            onChange={handleChange}
-          />
-        ) : null}
-        <input type="time" name="time" value={formData.time} onChange={handleChange} required />
-        <input type="text" name="caughtBy" placeholder="Caught By" value={formData.caughtBy.name} onChange={handleChange} required />
-        <button type="submit">Submit</button>
+        <Fieldset disabled={!isLoggedIn || jwtUserInfo?.role === UserRole.VIEWER} variant='unstyled'>
+          <Stack gap={8}>
+            <Title order={3}>Saaliin tiedot</Title>
+            <Autocomplete
+              size='md'
+              type='text'
+              name='species'
+              label="Laji"
+              value={speciesValue}
+              required
+              onChange={handleSpeciesChange}
+              onFocus={() => setSpeciesDropdownOpened(true)}
+              onBlur={() => setSpeciesDropdownOpened(false)}
+              rightSection={speciesRightSection}
+              data={speciesOptions}
+              defaultDropdownOpened={false}
+            />
+            <Group grow>
+              <NumberInput
+                size='md'
+                name='length'
+                label="Pituus"
+                step={0.01}
+                min={0}
+                max={999}
+                placeholder="cm"
+                value={lengthValue}
+                suffix=' cm'
+                onChange={setLengthValue}
+                // pattern="^\d*(\.\d*)?$" // Allow decimals
+              />
+              <NumberInput
+                size='md'
+                name='weight'
+                label="Paino"
+                step={0.01}
+                min={0}
+                max={999}
+                placeholder="kg"
+                value={weightValue}
+                suffix=' kg'
+                onChange={setWeightValue}
+                // pattern="^\d*(\.\d*)?$" // Allow decimals
+              />
+            </Group>
+            <Autocomplete
+              size='md'
+              type='text'
+              label="Viehe"
+              name='lure'
+              value={lureValue}
+              onChange={handleLureChange}
+              onFocus={() => setLuresDropdownOpened(true)}
+              onBlur={() => setLuresDropdownOpened(false)}
+              rightSection={lureRightSection}
+              data={lureOptions}
+            />
+            <Autocomplete
+              size='md'
+              type='text'
+              name='spot'
+              label="Paikka"
+              placeholder="esim. Ahvenniemi"
+              value={spotValue}
+              onChange={handleSpotChange}
+              onFocus={() => setSpotsDropdownOpened(true)}
+              onBlur={() => setSpotsDropdownOpened(false)}
+              rightSection={spotRightSection}
+              data={spotOptions}
+              defaultDropdownOpened={false}
+            />
+            <Group grow>
+              <TextInput
+                size='md'
+                type='text'
+                name='coordinates'
+                label="Koordinaatit"
+                placeholder=""
+                value={formData.location.coordinates ?? ''}
+                onChange={handleChange}
+                disabled={!useGps || gpsError !== null}
+                pattern='^([-+]?\d{1,3}\.\d{1,12},\s*[-+]?\d{1,3}\.\d{1,12})?$' // GPS coordinates pattern
+              />
+              <Checkbox
+                size='md'
+                checked={useGps && gpsError === null}
+                onChange={handleGpsToggle}
+                label="GPS Koordinaatit"
+                error={gpsError}
+              />
+            </Group>
+            <Group grow>
+              <TextInput
+                size='md'
+                type='date'
+                name="date"
+                label="Päivämäärä"
+                rightSection={<Stack hiddenFrom='md'><IconCalendar /></Stack>}
+                rightSectionPointerEvents='none'
+                value={formData.date}
+                onChange={handleChange}
+                required
+              />
+              <TextInput
+                size='md'
+                type='time'
+                name="time"
+                label="Aika"
+                placeholder="--.--"
+                rightSection={<Stack hiddenFrom='md'><IconClock /></Stack>}
+                rightSectionPointerEvents='none'
+                value={formData.time}
+                onChange={handleChange}
+                required
+              />
+            </Group>
+            <Autocomplete
+              size='md'
+              type='text'
+              name='caughtBy'
+              label="Kalastajan nimi"
+              placeholder=""
+              value={anglerName}
+              required
+              onChange={handleAnglerChange}
+              onFocus={() => setAnglersDropdownOpened(true)}
+              onBlur={() => setAnglersDropdownOpened(false)}
+              rightSection={anglersRightSection}
+              data={anglerOptions}
+              defaultDropdownOpened={false}
+            />
+            <Button size='md' type="submit" loading={isLoading} loaderProps={{ type: 'dots' }} mt={'xs'} mb={'xs'}>
+              Submit
+            </Button>
+          </Stack>
+        </Fieldset>
       </form>
-    </div>
+    </Container>
   );
 }

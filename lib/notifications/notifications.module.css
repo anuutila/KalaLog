@@ -1,3 +1,9 @@
+.notifications {
+  bottom: calc(var(--mantine-spacing-md) + 45px);
+  /* top: calc(var(--mantine-spacing-md) + 25px); */
+}
+
+
 /* .root {
   background-color: var(--notification-color, var(--mantine-primary-color-filled));
 

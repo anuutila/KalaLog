@@ -1,3 +1,7 @@
+.root {
+  --badge-bd: 1px solid var(--badge-color) !important;
+}
+
 .label {
   overflow: visible;
 }

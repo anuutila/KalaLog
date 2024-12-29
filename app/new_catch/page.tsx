@@ -424,7 +424,7 @@ export default function Page() {
               defaultDropdownOpened={false}
             />
             <Button size='md' type="submit" loading={isLoading} loaderProps={{ type: 'dots' }} mt={'xs'} mb={'xs'}>
-              Submit
+              Lähetä
             </Button>
           </Stack>
         </Fieldset>

@@ -1,10 +1,10 @@
-import { Tab } from "@/app/layout";
+import { Page, Tab } from "@/app/layout";
 import { useHeaderActions } from "@/context/HeaderActionsContext";
 import { AppShell, Group, Text, Title } from "@mantine/core";
 import CustomTab from "../CustomTab/CustomTab";
 import classes from "./LayoutHeader.module.css";
 
-export default function LayoutHeader({ tabs, pathname }: { tabs: Tab[]; pathname: string }) {
+export default function LayoutHeader({ pages, tabs, pathname }: { pages: Page[]; tabs: Tab[]; pathname: string }) {
   const { actions } = useHeaderActions();
 
   return (
@@ -23,7 +23,7 @@ export default function LayoutHeader({ tabs, pathname }: { tabs: Tab[]; pathname
         <Group justify="start">{actions}</Group>
         <Group justify="center">
           <Text inherit fw={600}>
-            {tabs.find((tab) => tab.path === pathname)?.label}
+            {pages.find((page) => page.path === pathname)?.label}
           </Text>
         </Group>
         <Group justify="end"></Group>

@@ -36,7 +36,7 @@ import { useHeaderActions } from '@/context/HeaderActionsContext';
 export default function CatchesPage() {
   const gridRef = useRef<AgGridReact<ICatch>>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const { setActions, setTest } = useHeaderActions();
+  const { setActions } = useHeaderActions();
 
   const [filteredCatches, setFilteredCatches] = useState<ICatch[]>([]);
   const [rowCount, setRowCount] = useState<number>(0);
@@ -78,7 +78,6 @@ export default function CatchesPage() {
     setActions(
       <ActionIcon variant='default' onClick={open}><IconAdjustments size={20} /></ActionIcon>
     );
-    setTest('test');
 
     // Cleanup when leaving the page
     return () => setActions(null);

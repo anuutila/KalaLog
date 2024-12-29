@@ -18,6 +18,19 @@ import { Notifications } from '@mantine/notifications';
 import { HeaderActionsProvider } from '@/context/HeaderActionsContext';
 import LayoutHeader from '@/components/LayoutHeader/LayoutHeader';
 
+export interface Page {
+  path: string;
+  label: string;
+}
+
+const pages: Page[] = [
+  {path: '/new_catch', label: 'Uusi saalis'},
+  {path: '/catches', label: 'Saaliit'},
+  {path: '/statistics', label: 'Tilastot'},
+  {path: '/user', label: 'Käyttäjä'},
+  {path: '/login', label: 'Käyttäjä'},
+];
+
 export interface Tab {
   value: string;
   icon: TablerIcon;
@@ -29,14 +42,14 @@ const tabs: Tab[] = [
   { value: 'new_catch', icon: IconCirclePlus, label: 'Uusi saalis', path: '/new_catch' },
   { value: 'catches', icon: IconFish, label: 'Saaliit', path: '/catches' },
   { value: 'statistics', icon: IconChartBar, label: 'Tilastot', path: '/statistics' },
-  { value: 'login', icon: IconUserCircle, label: 'Kirjaudu', path: '/login' },
+  { value: 'login', icon: IconUserCircle, label: 'Käyttäjä', path: '/user' },
 ];
 
 export default function RootLayout({ children }: { children: any }) {
   const pathname = usePathname();
 
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="fi" suppressHydrationWarning>
       <head>
         <title>KalaLog</title>
         <ColorSchemeScript defaultColorScheme="dark" forceColorScheme="dark" />
@@ -50,6 +63,7 @@ export default function RootLayout({ children }: { children: any }) {
             <HeaderActionsProvider>
               <AppShell header={{ height: {base: rem(45), md: rem(60)} }} footer={{ height: rem(60) }} padding="0">
                 <LayoutHeader 
+                  pages={pages}
                   tabs={tabs}
                   pathname={pathname}
                 />

@@ -423,7 +423,7 @@ export default function Page() {
               data={anglerOptions}
               defaultDropdownOpened={false}
             />
-            <Button size='md' type="submit" loading={isLoading} loaderProps={{ type: 'dots' }} mt={'xs'} mb={'xs'}>
+            <Button size='md' type="submit" loading={isLoading} loaderProps={{ type: 'dots' }} mt={'xs'} mb={'md'}>
               Lähetä
             </Button>
           </Stack>

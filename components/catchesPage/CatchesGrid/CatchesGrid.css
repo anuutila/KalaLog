@@ -1,5 +1,5 @@
 .grid-wrapper {
-  height: calc(100% - 89.1px);
+  height: calc(100dvh - 89.1px - var(--app-shell-footer-offset, 0rem) - var(--app-shell-header-offset, 0rem) - env(safe-area-inset-bottom));
 
   & .ag-root-wrapper {
     border-radius: var(--mantine-spacing-sm) var(--mantine-spacing-sm) 0 0;

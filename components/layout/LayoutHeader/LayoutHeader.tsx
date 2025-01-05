@@ -1,7 +1,7 @@
-import { Page, Tab } from "@/app/layout";
+import { Page, Tab } from "@/components/layout/AppShellWrapper/AppShellWrapper";
 import { useHeaderActions } from "@/context/HeaderActionsContext";
 import { AppShell, Group, Text, Title } from "@mantine/core";
-import CustomTab from "../CustomTab/CustomTab";
+import CustomTab from "../../CustomTab/CustomTab";
 import classes from "./LayoutHeader.module.css";
 
 export default function LayoutHeader({ pages, tabs, pathname }: { pages: Page[]; tabs: Tab[]; pathname: string }) {

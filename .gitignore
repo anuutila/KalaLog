@@ -132,3 +132,10 @@ dist
 .DS_Store
 .vercel
 .env*.local
+
+# local env files
+.env
+
+# Auto Generated PWA files
+**/public/sw.js
+**/public/workbox-*.js

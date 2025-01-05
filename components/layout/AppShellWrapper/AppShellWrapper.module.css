@@ -1,0 +1,18 @@
+/* Default styles */
+
+.footer {
+  background-color: var(--mantine-color-body) !important;
+}
+
+.tabs_group_footer {
+  height: 100%;
+  gap: 0 !important;
+  display: flex !important;
+  justify-content: space-around !important;
+}
+
+/* Desktop styles */
+@media (min-width: $mantine-breakpoint-md) {
+
+  
+}

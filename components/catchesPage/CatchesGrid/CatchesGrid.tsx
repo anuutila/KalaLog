@@ -25,7 +25,7 @@ export default function CatchesGrid({
   const noRowsOverlayComponentParams = useMemo(() => {
     return {
       noRowsMessageFunc: () =>
-        catchesError ? catchesError : 'Ei näytettäviä rivejä', 
+        catchesError ? catchesError : 'Ei näytettäviä saaliita', 
     };
   }, [catchesError]);
   

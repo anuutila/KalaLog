@@ -86,6 +86,13 @@ export default function CatchesPage() {
   const updateRowCount = useCallback(() => {
     const count = gridRef.current!.api.getDisplayedRowCount();
     setRowCount(count);
+
+    // Show no rows overlay if there are no rows
+    if (count === 0) {
+      gridRef.current!.api.showNoRowsOverlay();
+    } else {
+      gridRef.current!.api.hideOverlay();
+    }
   }, []);
 
   const updateFilteredCatches = useCallback(() => {

@@ -17,7 +17,7 @@ export const fieldToDisplayLabelMap: Record<FieldIdentifier, string> = {
   [FieldIdentifier.Location]: '📍 Paikka',
   [FieldIdentifier.Time]: '🕑 Aika',
   [FieldIdentifier.Date]: '📅 Pvm.',
-  [FieldIdentifier.CaughtBy]: '🙋 Saaja',
+  [FieldIdentifier.CaughtBy]: '🙋 Kalastaja',
 };
 
 export const defaultVisibleColumns = [
@@ -32,4 +32,4 @@ export const displayLabelToFieldMap: Record<string, FieldIdentifier> = Object.fr
   Object.entries(fieldToDisplayLabelMap).map(([field, label]) => [label, field as FieldIdentifier])
 );
 
-export const years: string[] = ['2024', '2023', '2022', '2021', '2020', 'Kaikki vuodet'];
+export const years: string[] = ['2025', '2024', '2023', '2022', '2021', '2020', 'Kaikki vuodet'];

@@ -39,5 +39,5 @@ export const getColumnDefs = (): ColDef[] => [
   },
   { field: 'time', headerName: 'Aika', width: 75 },
   { field: 'date', headerName: 'Pvm.', width: 90, valueFormatter: dateFormatter, filter: true },
-  { field: 'caughtBy.name', headerName: 'Saaja', width: 82, valueFormatter: upperCaseFormatter },
+  { field: 'caughtBy.name', headerName: 'Kalastaja', width: 82, valueFormatter: upperCaseFormatter },
 ];

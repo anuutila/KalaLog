@@ -2,15 +2,14 @@
 
 import { useGlobalState } from '@/context/GlobalState';
 import { showNotification } from '@/lib/notifications/notifications';
-import { ErrorResponse, LoginResponse, LogoutResponse } from '@/lib/types/responses';
+import { ErrorResponse, LoginResponse } from '@/lib/types/responses';
 import { Button, Center, Container, Fieldset, PasswordInput, Stack, Text, TextInput, Title } from '@mantine/core';
-import { set } from 'mongoose';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 export default function Page() {
-  const { jwtUserInfo, isLoggedIn, setIsLoggedIn, setJwtUserInfo } = useGlobalState();
+  const { isLoggedIn, setIsLoggedIn, setJwtUserInfo } = useGlobalState();
 
   const [emailOrUsername, setEmailOrUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -91,7 +90,7 @@ export default function Page() {
           </Fieldset>
           <Stack align='center' lh={'xs'} ta={'center'} mt={'lg'}>
             <Text size='md'>
-              Ei käyttäjää?<br />
+              Ei vielä käyttäjätiliä?<br />
               <Link href="/signup">
                 <span style={{ color: '#0070f3', textDecoration: 'underline' }}>Rekisteröidy tästä</span>
               </Link>

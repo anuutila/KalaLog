@@ -29,6 +29,7 @@ const pages: Page[] = [
   {path: '/statistics', label: 'Tilastot'},
   {path: '/user', label: 'Käyttäjä'},
   {path: '/login', label: 'Käyttäjä'},
+  {path: '/signup', label: 'Käyttäjä'},
 ];
 
 export interface Tab {

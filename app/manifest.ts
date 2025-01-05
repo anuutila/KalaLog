@@ -3,8 +3,8 @@ import type { MetadataRoute } from 'next'
 export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "KalaLog",
-    short_name: "kalalog",
-    theme_color: "#4dabf7",
+    short_name: "KalaLog",
+    theme_color: "#242424",
     background_color: "#1f1f1f",
     display: "standalone",
     orientation: "portrait",

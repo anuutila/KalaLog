@@ -46,7 +46,7 @@ export default function AppShellWrapper({ children }: { children: any }) {
   return (
     <GlobalStateProvider>
       <MantineProvider theme={theme} defaultColorScheme="dark" forceColorScheme="dark">
-        <Notifications styles={{ root: { transform: 'translateY(-65px)' } }} />
+        <Notifications styles={{ root: { transform: 'translateY(calc(-65px - env(safe-area-inset-bottom))' } }} />
         <HeaderActionsProvider>
           <AppShell header={{ height: { base: rem(45), md: rem(60) } }} footer={{ height: rem(60) }} padding="0">
             <LayoutHeader pages={pages} tabs={tabs} pathname={pathname} />

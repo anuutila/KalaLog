@@ -17,6 +17,15 @@ const nextConfig = {
   experimental: {
     optimizePackageImports: ['@mantine/core', '@mantine/hooks'],
   },
+  async redirects() {
+    return [
+      {
+        source: '/',
+        destination: '/catches',
+        permanent: true,
+      },
+    ]
+  },
 };
 
 export default withPWA({

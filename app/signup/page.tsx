@@ -89,7 +89,7 @@ export default function Page() {
               <Stack gap="sm">
                 <TextInput
                   size="md"
-                  label="Username"
+                  label="Käyttäjätunnus"
                   name="username"
                   value={formData.username}
                   onChange={handleChange}
@@ -98,7 +98,7 @@ export default function Page() {
                 />
                 <TextInput
                   size="md"
-                  label="First Name"
+                  label="Etunimi"
                   name="firstName"
                   value={formData.firstName}
                   onChange={handleChange}
@@ -107,7 +107,7 @@ export default function Page() {
                 />
                 <TextInput
                   size="md"
-                  label="Last Name"
+                  label="Sukunimi"
                   name="lastName"
                   value={formData.lastName}
                   onChange={handleChange}
@@ -116,7 +116,7 @@ export default function Page() {
                 />
                 <TextInput
                   size="md"
-                  label="Email"
+                  label="Sähköposti"
                   // type="email"
                   name="email"
                   value={formData.email}
@@ -126,7 +126,7 @@ export default function Page() {
                 />
                 <PasswordInput
                   size="md"
-                  label="Password"
+                  label="Salasana"
                   name="password"
                   value={formData.password}
                   onChange={handleChange}

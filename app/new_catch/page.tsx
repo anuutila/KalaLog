@@ -379,7 +379,7 @@ export default function Page() {
                 size='md'
                 checked={useGps && gpsError === null}
                 onChange={handleGpsToggle}
-                label="GPS Koordinaatit"
+                label="GPS-koordinaatit"
                 error={gpsError}
               />
             </Group>

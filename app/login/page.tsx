@@ -66,7 +66,7 @@ export default function Page() {
               <Stack gap={'sm'}>
                 <TextInput
                   size='md'
-                  label="Email or Username"
+                  label="Käyttäjätunnus tai sähköposti"
                   type="text"
                   name="emailOrUsername"
                   value={emailOrUsername}
@@ -75,7 +75,7 @@ export default function Page() {
                 />
                 <PasswordInput
                   size='md'
-                  label="Password"
+                  label="Salasana"
                   name="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}

@@ -3,7 +3,7 @@ import { LocationCellRenderer } from './LocationCellRenderer/LocationCellRendere
 import { lengthFormatter, weightFormatter, upperCaseFormatter, dateFormatter, customComparator } from '@/lib/utils/agGridUtils';
 
 export const getColumnDefs = (): ColDef[] => [
-  { field: 'species', headerName: 'Laji', width: 70, valueFormatter: upperCaseFormatter },
+  { field: 'species', headerName: 'Laji', width: 65, valueFormatter: upperCaseFormatter },
   {
     field: 'length',
     headerName: 'Pituus',

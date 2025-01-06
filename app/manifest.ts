@@ -9,7 +9,7 @@ export default function manifest(): MetadataRoute.Manifest {
     display: "standalone",
     orientation: "portrait",
     scope: "/",
-    start_url: "/",
+    start_url: "/catches",
     icons: [
       {
         src: "/kalalog_icon_round-192.png",

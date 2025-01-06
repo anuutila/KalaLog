@@ -4778,6 +4778,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@mantine/carousel@npm:^7.15.2":
+  version: 7.15.2
+  resolution: "@mantine/carousel@npm:7.15.2"
+  peerDependencies:
+    "@mantine/core": 7.15.2
+    "@mantine/hooks": 7.15.2
+    embla-carousel-react: ">=7.0.0"
+    react: ^18.x || ^19.x
+    react-dom: ^18.x || ^19.x
+  checksum: 10c0/b84d223d1bc0aa097dc9079c86b294228e8a08929226c981a8aaa050027db7794dd22acdff7754d73a74a10f9cf7dd24245b0695e7d1d092c75424fb55fa1cfd
+  languageName: node
+  linkType: hard
+
 "@mantine/core@npm:7.14.3":
   version: 7.14.3
   resolution: "@mantine/core@npm:7.14.3"
@@ -10740,6 +10753,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"embla-carousel-react@npm:^7.1.0":
+  version: 7.1.0
+  resolution: "embla-carousel-react@npm:7.1.0"
+  dependencies:
+    embla-carousel: "npm:7.1.0"
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.1 || ^18.0.0
+  checksum: 10c0/05e33fdb1062fde0164a0685163a5212f8e8f343fbe28e9a8e2348c989d8825d80fdcecfed485c7617d27f8f5d72b393612a3dd13ef9cffc02ef0cf21109ba51
+  languageName: node
+  linkType: hard
+
+"embla-carousel@npm:7.1.0":
+  version: 7.1.0
+  resolution: "embla-carousel@npm:7.1.0"
+  checksum: 10c0/3fcfe5b287c5d09d35dac76b6612567cf6f15abdae0bbf7d10754db9f732dd90cdfdf5bc7405d8fb3f65542bdead09971e93e024a0db9b3f1fcc653a70e733bc
+  languageName: node
+  linkType: hard
+
 "emittery@npm:^0.13.1":
   version: 0.13.1
   resolution: "emittery@npm:0.13.1"
@@ -15066,6 +15097,7 @@ __metadata:
     "@babel/core": "npm:^7.24.7"
     "@eslint/js": "npm:^9.15.0"
     "@ianvs/prettier-plugin-sort-imports": "npm:^4.3.1"
+    "@mantine/carousel": "npm:^7.15.2"
     "@mantine/core": "npm:7.14.3"
     "@mantine/dates": "npm:^7.15.2"
     "@mantine/hooks": "npm:7.14.3"
@@ -15093,6 +15125,7 @@ __metadata:
     babel-loader: "npm:^9.1.3"
     bcryptjs: "npm:^2.4.3"
     dayjs: "npm:^1.11.13"
+    embla-carousel-react: "npm:^7.1.0"
     eslint: "npm:^9.15.0"
     eslint-config-mantine: "npm:^4.0.3"
     eslint-plugin-jsx-a11y: "npm:^6.10.2"

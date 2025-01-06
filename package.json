@@ -21,6 +21,7 @@
     "storybook:build": "storybook build"
   },
   "dependencies": {
+    "@mantine/carousel": "^7.15.2",
     "@mantine/core": "7.14.3",
     "@mantine/dates": "^7.15.2",
     "@mantine/hooks": "7.14.3",
@@ -32,6 +33,7 @@
     "ag-grid-react": "^32.3.3",
     "bcryptjs": "^2.4.3",
     "dayjs": "^1.11.13",
+    "embla-carousel-react": "^7.1.0",
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.11.0",
     "mongoose": "^8.9.2",

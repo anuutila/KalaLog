@@ -5,7 +5,7 @@ import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-quartz.css';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ColDef,
   GridReadyEvent,
@@ -32,18 +32,24 @@ import TableSettingsDrawer from '@/components/catchesPage/TableSettingsDrawer/Ta
 import CatchesOverview from '@/components/catchesPage/CatchesOverview/CatchesOverview';
 import CatchesGrid from '@/components/catchesPage/CatchesGrid/CatchesGrid';
 import { useHeaderActions } from '@/context/HeaderActionsContext';
+import { useGlobalState } from '@/context/GlobalState';
+import CatchDetails from '@/components/catchesPage/CatchDetails/CatchDetails';
+
+const currentYear = new Date().getFullYear();
 
 export default function CatchesPage() {
   const gridRef = useRef<AgGridReact<ICatch>>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const { setActions } = useHeaderActions();
+  const { setActions, setActionsDisabled } = useHeaderActions();
+  const { catches, catchesError, loadingCatches } = useGlobalState();
 
   const [filteredCatches, setFilteredCatches] = useState<ICatch[]>([]);
   const [rowCount, setRowCount] = useState<number>(0);
-  const [selectedYear, setSelectedYear] = useState<string>(new Date().getFullYear().toString());
+  const [selectedYear, setSelectedYear] = useState<string>(currentYear.toString());
   const [opened, { open, close }] = useDisclosure(false);
   const [filtersSliderChecked, setFiltersSliderChecked] = useState(false);
-
+  const [selectedCatch, setSelectedCatch] = useState<ICatch | null>(null);
+  const [catchDetailsOpen, setCatchDetailsOpen] = useState(false);
   const [colDefs, setColDefs] = useState<ColDef<ICatch>[]>(getColumnDefs());
   const [defaultColDef, setDefaultColDef] = useState<ColDef>({
     sortable: true,
@@ -58,6 +64,16 @@ export default function CatchesPage() {
     // Initial call to set the default column visibilities
     applyColumnVisibility();
   }, []);
+
+  useEffect(() => {
+    if (catches.length > 0) {
+      const newYear = catches.some((catchItem) => catchItem.date.startsWith(`${currentYear}`))
+        ? currentYear.toString()
+        : (currentYear - 1).toString();
+
+      setSelectedYear(newYear);
+    }
+  }, [catches]);
 
   useEffect(() => {
     setDefaultColDef((prevColDef) => ({
@@ -76,7 +92,7 @@ export default function CatchesPage() {
   useEffect(() => {
     // Set the header actions for this page
     setActions(
-      <ActionIcon variant='default' onClick={open}><IconAdjustments size={20} /></ActionIcon>
+      <ActionIcon variant='default' onClick={open} disabled={catchDetailsOpen}><IconAdjustments size={20}/></ActionIcon>
     );
 
     // Cleanup when leaving the page
@@ -186,22 +202,27 @@ export default function CatchesPage() {
     applyColumnVisibility();
   }, [visibleColumns]);
 
+  const allColumnLabels = useMemo(() => Object.values(fieldToDisplayLabelMap), [fieldToDisplayLabelMap]);
+
   const handleValueSelect = (val: string) => {
-    if (val === 'Valitse kaikki') {
-      if (visibleColumns.length === colDefs.length) {
-        setVisibleColumns([]);
+    setVisibleColumns((current) => {
+      if (val === 'Valitse kaikki') {
+        // Toggle select all
+        return current.length === colDefs.length ? [] : [...allColumnLabels];
       } else {
-        setVisibleColumns(Object.values(fieldToDisplayLabelMap));
+        // Toggle individual column
+        return current.includes(val)
+          ? current.filter((v) => v !== val)
+          : [...current, val];
       }
-    } else {
-      setVisibleColumns((current) => {
-        if (current.includes(val)) {
-          return current.filter((v) => v !== val);
-        }
-        return [...current, val];
-      });
-    }
+    });
   };
+
+  const onRowClicked = useCallback((event: any) => {
+    setSelectedCatch(event.data); // Capture the row's data
+    setCatchDetailsOpen(true); // Open the catch details overlay
+    setActionsDisabled(true); // Disable the header actions
+  }, []);
 
   const selectAllOption = getSelectAllOption(visibleColumns, colDefs);
   const columnOptions = getColumnOptions(colDefs, visibleColumns, fieldToDisplayLabelMap);
@@ -242,12 +263,23 @@ export default function CatchesPage() {
         />
       </Stack>
 
+      {catchDetailsOpen && selectedCatch && (
+        <CatchDetails
+          selectedCatch={selectedCatch}
+          setCatchDetailsOpen={setCatchDetailsOpen}
+        />
+      )}
+
       <CatchesGrid
         gridRef={gridRef}
         colDefs={colDefs}
         defaultColDef={defaultColDef}
         updateRowCountAndFilteredCatches={updateRowCountAndFilteredCatches}
         onGridReady={onGridReady}
+        catches={catches}
+        catchesError={catchesError}
+        loadingCatches={loadingCatches}
+        onRowClicked={onRowClicked}
       />
 
     </Container>

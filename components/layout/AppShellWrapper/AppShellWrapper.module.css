@@ -1,7 +1,7 @@
 /* Default styles */
 
 .footer {
-  background-color: var(--mantine-color-body) !important;
+  background-color: var(--footer-background-color) !important;
 }
 
 .tabs_group_footer {

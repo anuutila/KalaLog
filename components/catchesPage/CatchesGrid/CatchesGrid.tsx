@@ -1,7 +1,6 @@
 import { AgGridReact } from "ag-grid-react";
 import { ICatch } from "@/lib/types/catch";
 import { useMemo } from "react";
-import { useGlobalState } from "@/context/GlobalState";
 import CustomNoRowsOverlay from "./CustomNoRowsOverlay/CustomNoRowsOverlay";
 import "./CatchesGrid.css";
 
@@ -11,6 +10,10 @@ interface CatchesGridProps {
   defaultColDef: any;
   updateRowCountAndFilteredCatches: () => void;
   onGridReady: (params: any) => void;
+  catches: ICatch[];
+  catchesError: string | null;
+  loadingCatches: boolean;
+  onRowClicked: (event: any) => void;
 }
 
 export default function CatchesGrid({
@@ -19,8 +22,11 @@ export default function CatchesGrid({
   defaultColDef,
   updateRowCountAndFilteredCatches,
   onGridReady,
+  catches,
+  catchesError,
+  loadingCatches,
+  onRowClicked,
 }: CatchesGridProps) {
-  const { catches, catchesError, loadingCatches } = useGlobalState();
 
   const noRowsOverlayComponentParams = useMemo(() => {
     return {
@@ -43,6 +49,7 @@ export default function CatchesGrid({
         noRowsOverlayComponent={CustomNoRowsOverlay}
         noRowsOverlayComponentParams={noRowsOverlayComponentParams}
         loading={loadingCatches}
+        onRowClicked={onRowClicked}
       />
     </div>
   )

@@ -3,9 +3,10 @@ import { useHeaderActions } from "@/context/HeaderActionsContext";
 import { AppShell, Group, Text, Title } from "@mantine/core";
 import CustomTab from "../../CustomTab/CustomTab";
 import classes from "./LayoutHeader.module.css";
+import React from "react";
 
 export default function LayoutHeader({ pages, tabs, pathname }: { pages: Page[]; tabs: Tab[]; pathname: string }) {
-  const { actions } = useHeaderActions();
+  const { actions, actionsDisabled } = useHeaderActions();
 
   return (
     <AppShell.Header withBorder={false} className={classes.header} bg={'var(--header-background-color)'}>
@@ -20,7 +21,12 @@ export default function LayoutHeader({ pages, tabs, pathname }: { pages: Page[];
         </Title>
       </Group>
       <Group hiddenFrom="md" className={classes.page_header_content} w={'100%'} h={'100%'} pl={'var(--mantine-spacing-xs)'} pr={'var(--mantine-spacing-xs)'} grow align='center' c={'white'}>
-        <Group justify="start">{actions}</Group>
+        <Group justify="start">
+          {React.isValidElement(actions) &&
+            React.cloneElement(actions as React.ReactElement<{ disabled?: boolean }>, {
+              disabled: actionsDisabled,
+            })}
+        </Group>
         <Group justify="center">
           <Text inherit fw={600}>
             {pages.find((page) => page.path === pathname)?.label}

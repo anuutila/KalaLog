@@ -5,7 +5,7 @@ import { RefObject } from "react";
 import classes from "./CatchesOverview.module.css";
 
 interface CatchesOverviewProps {
-  selectedYear: string;
+  selectedYear: string | null;
   rowCount: number;
   filteredCatches: ICatch[];
   scrollRef: RefObject<HTMLDivElement>;

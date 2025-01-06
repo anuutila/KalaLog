@@ -19,7 +19,7 @@ const unitsMap: Record<string, string> = {
 const speciesPlaceholders: Record<string, string> = {
   Hauki: '/hauki-1000x1000.png',
   Kuha: '/kuha-1000x1000.png',
-  Ahven: '/ahven-1000x1000.png',
+  Ahven: '/ahven-1000x1000_2.png',
   Lahna: '/lahna-1000x1000.png',
   Särki: '/sarki-1000x1000.png',
   Kiiski: '/kiiski-1000x1000.png',

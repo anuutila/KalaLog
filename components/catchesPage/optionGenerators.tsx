@@ -3,6 +3,8 @@ import { ColDef } from 'ag-grid-community';
 import { Checkbox, CheckIcon, Combobox, Group } from "@mantine/core";
 import { FieldIdentifier } from "./constants";
 
+const currentYear = new Date().getFullYear();
+
 export const getColumnOptions = (colDefs: ColDef<ICatch>[], visibleColumns: string[], displayLabelMap: Record<FieldIdentifier, string>) =>
   colDefs.map((col) => {
     const field: string = col.field ?? '?';
@@ -25,7 +27,7 @@ export const getColumnOptions = (colDefs: ColDef<ICatch>[], visibleColumns: stri
     );
   });
 
-export const getYearOptions = (years: string[], selectedYear: string) =>
+export const getYearOptions = (years: string[], selectedYear: string | null = currentYear.toString()) =>
   years.map((item) => (
     <Combobox.Option value={item} key={item} active={selectedYear === item}>
       <Group gap="sm">

@@ -45,7 +45,7 @@ export default function CatchesPage() {
 
   const [filteredCatches, setFilteredCatches] = useState<ICatch[]>([]);
   const [rowCount, setRowCount] = useState<number>(0);
-  const [selectedYear, setSelectedYear] = useState<string>(currentYear.toString());
+  const [selectedYear, setSelectedYear] = useState<string | null>(null);
   const [opened, { open, close }] = useDisclosure(false);
   const [filtersSliderChecked, setFiltersSliderChecked] = useState(false);
   const [selectedCatch, setSelectedCatch] = useState<ICatch | null>(null);
@@ -63,7 +63,7 @@ export default function CatchesPage() {
     applyYearFilter(selectedYear);
     // Initial call to set the default column visibilities
     applyColumnVisibility();
-  }, []);
+  }, [selectedYear]);
 
   useEffect(() => {
     if (catches.length > 0) {

@@ -14,7 +14,7 @@ interface TableSettingsDrawerProps {
   columnOptions: any;
   selectAllOption: any;
   yearCombobox: any;
-  selectedYear: string;
+  selectedYear: string | null;
   setSelectedYear: (year: string) => void;
   yearOptions: any;
   filtersSliderChecked: boolean;

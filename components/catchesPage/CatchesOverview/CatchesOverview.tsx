@@ -15,7 +15,7 @@ export default function CatchesOverview({ selectedYear, rowCount, filteredCatche
 
   return (
     <Stack c="var(--mantine-color-text)" pb={'md'} pt={'md'} w='100%' gap={0}>
-      <Title c='white' order={2} p={0} pb={'md'} pl={'xs'} pr={'xs'}>{selectedYear}</Title>
+      <Title c='white' order={2} p={0} pb={'md'} pl={'xs'} pr={'xs'}>{selectedYear ?? '\u00A0'}</Title>
       <Box style={{ position: "relative" }}>
         <ScrollArea viewportRef={scrollRef} type="never">
           <Group gap="xs" wrap="nowrap" pl="xs" pr={30}>

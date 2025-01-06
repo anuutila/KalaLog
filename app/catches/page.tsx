@@ -231,7 +231,7 @@ export default function CatchesPage() {
   return (
     <Container p={0}>
 
-      <Stack pb={'md'} pt={'sm'} pl={0} pr={0} gap={'sm'} align='flex-start'>
+      <Stack p={0} gap={'sm'} align='flex-start'>
         <TableSettingsDrawer
           opened={opened}
           close={close}
@@ -249,7 +249,7 @@ export default function CatchesPage() {
           setVisibleColumns={setVisibleColumns}
         />
 
-        <Box pl={'xs'} visibleFrom='md'>
+        <Box pl={'xs'} pt={'sm'} visibleFrom='md'>
           <Button variant="default" onClick={open} radius={'md'} bg="var(--mantine-color-dark-7)" leftSection={<IconAdjustments size={20} />}>
             Taulukon asetukset
           </Button>

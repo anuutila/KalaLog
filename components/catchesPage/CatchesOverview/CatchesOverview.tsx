@@ -14,8 +14,8 @@ interface CatchesOverviewProps {
 export default function CatchesOverview({ selectedYear, rowCount, filteredCatches, scrollRef }: CatchesOverviewProps) {
 
   return (
-    <Stack c="var(--mantine-color-text)" p={0} w='100%' gap={0}>
-      <Title c='white' order={2} p={0} pb={6} pl={'xs'} pr={'xs'}>{selectedYear}</Title>
+    <Stack c="var(--mantine-color-text)" pb={'md'} pt={'md'} w='100%' gap={0}>
+      <Title c='white' order={2} p={0} pb={'md'} pl={'xs'} pr={'xs'}>{selectedYear}</Title>
       <Box style={{ position: "relative" }}>
         <ScrollArea viewportRef={scrollRef} type="never">
           <Group gap="xs" wrap="nowrap" pl="xs" pr={30}>

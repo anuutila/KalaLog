@@ -100,7 +100,7 @@ export default function CatchDetails({
         {/* Title */}
         <Group>
           <Text size="lg" fw={600} mr={'auto'}>
-            Catch Details
+            Saaliin tiedot
           </Text>
 
           {/* Close, Edit, Delete Buttons */}

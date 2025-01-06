@@ -4,13 +4,14 @@ import { showNotification } from '@/lib/notifications/notifications';
 import { ICatch } from '@/lib/types/catch';
 import { JwtUserInfo } from '@/lib/types/jwtUserInfo';
 import { CatchesResponse, ErrorResponse, UserInfoResponse } from '@/lib/types/responses';
-import { sortByDate, sortByTime } from '@/lib/utils/utils';
+import { defaultSort, sortByDate, sortByTime } from '@/lib/utils/utils';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
 interface GlobalState {
   isLoggedIn: boolean;
   jwtUserInfo: JwtUserInfo | null;
   catches: ICatch[];
+  setCatches: React.Dispatch<React.SetStateAction<ICatch[]>>;
   catchesError: string | null;
   loadingCatches: boolean;
   setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
@@ -64,7 +65,7 @@ export const GlobalStateProvider = ({ children }: { children: React.ReactNode })
       const response = await fetch('/api/catches');
       if (response.ok) {
         const catchesResponse: CatchesResponse = await response.json();
-        const sortedCatches = sortByDate(sortByTime(catchesResponse.data)).reverse();
+        const sortedCatches = defaultSort(catchesResponse.data);
         setCatches(sortedCatches);
         setCatchesError(null);
         if (catchesResponse.message.includes('validation')) {
@@ -115,6 +116,7 @@ export const GlobalStateProvider = ({ children }: { children: React.ReactNode })
         isLoggedIn,
         jwtUserInfo,
         catches,
+        setCatches,
         catchesError,
         loadingCatches,
         setIsLoggedIn,

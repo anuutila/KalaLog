@@ -16,6 +16,15 @@ export function sortByTime(catches: ICatch[]): ICatch[] {
   })
 }
 
+/**
+ * Sorts catches by date and time so that the most recent entries are first in the table
+ * @param {ICatch[]} catches - Array of catches to be sorted
+ * @returns {ICatch[]} - Array of catches sorted by date in reverse chronological order
+ */
+export function defaultSort(catches: ICatch[]): ICatch[] {
+  return sortByDate(sortByTime(catches)).reverse()
+}
+
 export function capitalizeFirstLetter(value: string | null | undefined): string | null {
   if (!value || typeof value !== 'string') return null; // Return null for invalid or empty input
   const updated = value.charAt(0).toUpperCase() + value.slice(1);

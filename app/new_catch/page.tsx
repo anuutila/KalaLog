@@ -6,15 +6,13 @@ import { ICatch } from '@/lib/types/catch';
 import { CatchCreaetedResponse, ErrorResponse } from '@/lib/types/responses';
 import { UserRole } from '@/lib/types/user';
 import { CatchUtils } from '@/lib/utils/catchUtils';
-import { Alert, Autocomplete, Box, Button, Checkbox, ComboboxItem, Container, Fieldset, Group, NumberInput, OptionsFilter, rem, Stack, TextInput, Title } from '@mantine/core';
-import { TimeInput } from '@mantine/dates';
-import { useDisclosure } from '@mantine/hooks';
-import { IconCalendar, IconChevronCompactUp, IconChevronUp, IconClock, IconInfoCircle, IconSelector, IconX } from '@tabler/icons-react';
-import { set } from 'mongoose';
+import { defaultSort } from '@/lib/utils/utils';
+import { Alert, Autocomplete, Button, Checkbox, Container, Fieldset, Group, NumberInput, Stack, TextInput, Title } from '@mantine/core';
+import { IconCalendar, IconClock, IconInfoCircle, IconSelector } from '@tabler/icons-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 export default function Page() {
-  const { catches, isLoggedIn, jwtUserInfo } = useGlobalState();
+  const { catches, setCatches, isLoggedIn, jwtUserInfo } = useGlobalState();
 
   const [formData, setFormData] = useState<Omit<ICatch, 'id' | 'createdAt' | 'images'>>({
     species: '',
@@ -176,6 +174,9 @@ export default function Page() {
         const catchCreatedResponse: CatchCreaetedResponse = await response.json();
         console.log(catchCreatedResponse.message, catchCreatedResponse.data);
         showNotification('success', catchCreatedResponse.message, { withTitle: false });
+
+        // Update the catches in global state
+        setCatches((prevCatches) => defaultSort([catchCreatedResponse.data, ...prevCatches]));
 
         // Reset the form
         setFormData({

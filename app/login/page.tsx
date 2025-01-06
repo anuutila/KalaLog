@@ -37,7 +37,7 @@ export default function Page() {
       } else {
         const loginResponse: LoginResponse = await response.json();
         console.log(loginResponse.message);
-        showNotification('success', loginResponse.message, { withTitle: true });
+        showNotification('success', loginResponse.message, { withTitle: false });
 
         // Update global state
         setIsLoggedIn(true);
@@ -81,7 +81,7 @@ export default function Page() {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                 />
-                {error && <p style={{ color: 'red' }}>{error}</p>}
+                {/* {error && <p style={{ color: 'red' }}>{error}</p>} */}
                 <Button type="submit" size='md' mt={'lg'} loading={loading} loaderProps={{ type: 'dots' }}>
                   Kirjaudu
                 </Button>

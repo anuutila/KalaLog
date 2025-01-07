@@ -169,7 +169,7 @@ export default function CatchDetails({
           )}
 
           {/* Catch Details Grid */}
-          <CatchDetailsGrid details={details}/>
+          <CatchDetailsGrid details={details} coordinates={selectedCatch?.location.coordinates ?? null}/>
 
           </Stack>
         </Container>

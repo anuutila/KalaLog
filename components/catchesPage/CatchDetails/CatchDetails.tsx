@@ -127,6 +127,7 @@ export default function CatchDetails({
           zIndex: 100,
           overflowY: 'auto',
         }}
+        className={fullscreenImage ? classes.noScroll : ''}
       >
         <Container p={0}>
           <Stack>

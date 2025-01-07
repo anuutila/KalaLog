@@ -215,7 +215,7 @@ export default function Page() {
   const speciesOptions = ['Ahven', 'Hauki', 'Kuha'];
 
   const lureOptions = useMemo(() => 
-    CatchUtils.getUniqueLures(catches).map((lure) => lure.lure), 
+    CatchUtils.getUniqueLures(catches).map((lure) => lure.lure).filter((lure) => lure !== '?'), 
     [catches]
   );
 
@@ -225,7 +225,7 @@ export default function Page() {
   );
 
   const anglerOptions = useMemo(() =>
-    CatchUtils.getUniqueAnglers(catches).map((angler) => angler.name),
+    CatchUtils.getUniqueAnglers(catches).map((angler) => angler.name).filter((name) => name !== '?'),
     [catches]
   );
 

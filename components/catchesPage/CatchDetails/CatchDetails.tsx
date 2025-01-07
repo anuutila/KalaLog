@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ICatch } from "@/lib/types/catch";
 import { ActionIcon, Box, Container, Group, Stack, Text } from '@mantine/core';
 import { IconPencil, IconTrash, IconX } from '@tabler/icons-react';
@@ -43,6 +43,16 @@ export default function CatchDetails({
     console.log('Edit catch:', selectedCatch);
   };
 
+  useEffect(() => {
+    // Disable header actions when the component mounts
+    setActionsDisabled(true);
+
+    // Re-enable header actions when the component unmounts
+    return () => {
+      setActionsDisabled(false);
+    };
+  }, []);
+
   const openDeleteModal = () => {
     if (selectedCatch) {
       DeleteModal({
@@ -70,7 +80,6 @@ export default function CatchDetails({
         showNotification('success', catchDeletedResponse.message, { withTitle: false });
 
         setCatchDetailsOpen(false);
-        setActionsDisabled(false);
 
         // Update the catches state
         setCatches((prevCatches) => prevCatches.filter((catchItem) => catchItem.id !== catchId));
@@ -137,7 +146,7 @@ export default function CatchDetails({
                   <IconTrash size={20} />
                 </ActionIcon>
                 {/* Close Button */}
-                <ActionIcon size="lg" variant="light" color="gray" onClick={() => { setCatchDetailsOpen(false), setActionsDisabled(false) }}>
+                <ActionIcon size="lg" variant="light" color="gray" onClick={() => { setCatchDetailsOpen(false)}}>
                   <IconX size={20} />
                 </ActionIcon>
               </Group>

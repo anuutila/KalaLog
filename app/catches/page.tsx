@@ -40,7 +40,7 @@ const currentYear = new Date().getFullYear();
 export default function CatchesPage() {
   const gridRef = useRef<AgGridReact<ICatch>>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const { setActions, setActionsDisabled } = useHeaderActions();
+  const { setActions } = useHeaderActions();
   const { catches, catchesError, loadingCatches } = useGlobalState();
 
   const [filteredCatches, setFilteredCatches] = useState<ICatch[]>([]);
@@ -221,7 +221,6 @@ export default function CatchesPage() {
   const onRowClicked = useCallback((event: any) => {
     setSelectedCatch(event.data); // Capture the row's data
     setCatchDetailsOpen(true); // Open the catch details overlay
-    setActionsDisabled(true); // Disable the header actions
   }, []);
 
   const selectAllOption = getSelectAllOption(visibleColumns, colDefs);

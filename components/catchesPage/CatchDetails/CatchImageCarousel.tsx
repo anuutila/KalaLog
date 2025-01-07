@@ -17,9 +17,9 @@ export default function CatchImageCarousel({
   return (
     <Carousel 
       withIndicators={images.length > 1} 
-      withControls={images.length > 1} 
+      withControls={images.length > 1}
       loop={images.length > 1} 
-      classNames={{ viewport: classes.viewport }}
+      classNames={{ viewport: classes.viewport, controls: classes.controls, control: classes.control }}
     >
       {images.map((src, index) => (
         <Carousel.Slide key={index}>

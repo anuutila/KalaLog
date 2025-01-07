@@ -2,11 +2,11 @@ import { TextInput, Button, Group, Text } from '@mantine/core';
 import { modals } from '@mantine/modals';
 import classes from './CatchDetails.module.css';
 
-interface DeleteModalProps {
+interface ConfirmDeleteModalProps {
   onConfirm: () => void;
 }
 
-export default function DeleteModal({ onConfirm }: DeleteModalProps) {
+export default function ConfirmDeleteModal({ onConfirm }: ConfirmDeleteModalProps) {
   let confirmationText = '';
 
   const modalId = modals.open({

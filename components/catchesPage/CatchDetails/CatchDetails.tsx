@@ -11,11 +11,14 @@ import { useLoadingOverlay } from '@/context/LoadingOverlayContext';
 import CatchImageCarousel from './CatchImageCarousel';
 import FullscreenImage from './FullscreenImage';
 import CatchDetailsGrid from './CatchDetailsGrid';
-import DeleteModal from './DeleteModal';
+import CatchEditForm from '../CatchEditForm/CatchEditForm';
+import ConfirmDeleteModal from './ConfirmDeleteModal';
+import ConfirmEditModal from './ConfirmEditModal';
+import CancelEditModal from './CancelEditModal';
 
 interface CatchDetailsProps {
-  selectedCatch: ICatch | null;
-  setCatchDetailsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  selectedCatch: ICatch;
+  setSelectedCatch: React.Dispatch<React.SetStateAction<ICatch | null>>;
 }
 
 const speciesPlaceholders: Record<string, string> = {
@@ -31,12 +34,13 @@ const defaultPlaceholder = '/no-image-placeholder.png';
 
 export default function CatchDetails({
   selectedCatch,
-  setCatchDetailsOpen
+  setSelectedCatch
 }: CatchDetailsProps) {
   const { setCatches, isLoggedIn } = useGlobalState();
   const { setActionsDisabled } = useHeaderActions();
   const { showLoading, hideLoading } = useLoadingOverlay();
   const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
+  const [isInEditView, setIsInEditView] = useState(false);
 
   const handleEdit = () => {
     // Implement edit functionality here
@@ -52,15 +56,29 @@ export default function CatchDetails({
       setActionsDisabled(false);
     };
   }, []);
+  
+  const openConfirmEditModal = () => {
+    ConfirmEditModal({
+      onConfirm: () => {
+        setIsInEditView(true);
+      },
+    });
+  };
 
-  const openDeleteModal = () => {
-    if (selectedCatch) {
-      DeleteModal({
-        onConfirm: () => {
-          handleDeleteCatch(selectedCatch.id);
-        },
-      });
-    }
+  const openCancelEditModal = () => {
+    CancelEditModal({
+      onConfirm: () => {
+        setIsInEditView(false);
+      },
+    });
+  };
+
+  const openConfirmDeleteModal = () => {
+    ConfirmDeleteModal({
+      onConfirm: () => {
+        handleDeleteCatch(selectedCatch.id);
+      },
+    });
   };
 
   const handleDeleteCatch = async (catchId: string | undefined) => {
@@ -69,7 +87,7 @@ export default function CatchDetails({
       const response = await fetch(`/api/catches?id=${catchId}`, {
         method: 'DELETE',
       });
-  
+
       if (!response.ok) {
         const errorResponse: ErrorResponse = await response.json();
         console.error('Error:', errorResponse);
@@ -79,12 +97,13 @@ export default function CatchDetails({
         console.log(catchDeletedResponse.message, catchDeletedResponse.data);
         showNotification('success', catchDeletedResponse.message, { withTitle: false });
 
-        setCatchDetailsOpen(false);
+        // Close the modal
+        setSelectedCatch(null);
 
         // Update the catches state
         setCatches((prevCatches) => prevCatches.filter((catchItem) => catchItem.id !== catchId));
       }
-  
+
     } catch (error) {
       console.error('An unexpected error occurred while deleting catch:', error);
       showNotification('error', 'An unexpected error occurred while deleting the catch. Please try again later.', { withTitle: true });
@@ -93,86 +112,110 @@ export default function CatchDetails({
     }
   };
 
-  const imagesToShow = selectedCatch ? selectedCatch.images && selectedCatch.images.length > 0
+  const imagesToShow = selectedCatch.images && selectedCatch.images.length > 0
     ? selectedCatch.images.map(img => img.url) // Use actual images if available
-    : [speciesPlaceholders[selectedCatch.species] || defaultPlaceholder] : [defaultPlaceholder]; // Use placeholder or fallback
+    : [speciesPlaceholders[selectedCatch.species] || defaultPlaceholder]; // Use placeholder or fallback
 
   // Determine if fullscreen should be available
   const isFallbackImage = imagesToShow.length === 1 && imagesToShow[0] === defaultPlaceholder;
 
-  const details = selectedCatch
-    ? {
-        Laji: selectedCatch.species,
-        Pituus: selectedCatch.length,
-        Paino: selectedCatch.weight,
-        Viehe: selectedCatch.lure,
-        Vesistö: selectedCatch.location.bodyOfWater,
-        Paikka: selectedCatch.location.spot,
-        Päivämäärä: selectedCatch.date,
-        Aika: selectedCatch.time,
-        Kalastaja: selectedCatch.caughtBy.name,
-      }
-    : {};
+  const details = {
+      Laji: selectedCatch.species,
+      Pituus: selectedCatch.length,
+      Paino: selectedCatch.weight,
+      Viehe: selectedCatch.lure,
+      Vesistö: selectedCatch.location.bodyOfWater,
+      Paikka: selectedCatch.location.spot,
+      Päivämäärä: selectedCatch.date,
+      Aika: selectedCatch.time,
+      Kalastaja: selectedCatch.caughtBy.name,
+    };
 
   return (
-      <Box
-        pos={'fixed'}
-        top={'var(--app-shell-header-offset)'}
-        bottom={ { base: 'calc(var(--app-shell-footer-offset) + env(safe-area-inset-bottom))', md: 0 } }
-        left={0}
-        w={'100%'}
-        p={20}
-        style={{
-          backgroundColor: 'var(--mantine-color-body)',
-          zIndex: 100,
-          overflowY: 'auto',
-        }}
-        className={fullscreenImage ? classes.noScroll : ''}
-      >
-        <Container p={0}>
-          <Stack>
-            {/* Header */}
-            <Group>
-              <Text size="lg" fw={600} mr={'auto'}>
-                Saaliin tiedot
-              </Text>
-              {/* Close, Edit, Delete Buttons */}
-              <Group gap="xs" align='center'>
-                {/* Edit Button */}
-                <ActionIcon size="lg" variant="light" color="blue" disabled onClick={() => console.log('Edit', selectedCatch)}>
+    <Box
+      pos={'fixed'}
+      top={'var(--app-shell-header-offset)'}
+      bottom={{ base: 'calc(var(--app-shell-footer-offset) + env(safe-area-inset-bottom))', md: 0 }}
+      left={0}
+      w={'100%'}
+      p={20}
+      style={{
+        backgroundColor: 'var(--mantine-color-body)',
+        zIndex: 100,
+        overflowY: 'auto',
+      }}
+      className={fullscreenImage ? classes.noScroll : ''}
+    >
+      <Container p={0}>
+        <Stack>
+          {/* Header */}
+          <Group>
+            <Text size="lg" fw={600} mr={'auto'}>
+              {isInEditView ? 'Muokkaa saalista' : 'Saaliin tiedot'}
+            </Text>
+
+            {/* Close, Edit, Delete Buttons */}
+            <Group gap="xs" align='center'>
+              {/* Edit Button */}
+              {!isInEditView && (
+                <ActionIcon
+                  size="lg"
+                  variant="light"
+                  color="blue"
+                  onClick={openConfirmEditModal}
+                  disabled={!isLoggedIn}
+                >
                   <IconPencil size={20} />
                 </ActionIcon>
-                {/* Delete Button */}
-                <ActionIcon size="lg" variant="light" color="red" disabled={!isLoggedIn} onClick={() => openDeleteModal()}>
+              )}
+              {/* Delete Button */}
+              {!isInEditView && (
+                <ActionIcon size="lg" variant="light" color="red" disabled={!isLoggedIn} onClick={() => openConfirmDeleteModal()}>
                   <IconTrash size={20} />
                 </ActionIcon>
-                {/* Close Button */}
-                <ActionIcon size="lg" variant="light" color="gray" onClick={() => { setCatchDetailsOpen(false)}}>
-                  <IconX size={20} />
-                </ActionIcon>
-              </Group>
+              )}
+              {/* Close Button */}
+              <ActionIcon size="lg" variant="light" color="gray" onClick={ isInEditView ? () => openCancelEditModal() : () => { setSelectedCatch(null) }}>
+                <IconX size={20} />
+              </ActionIcon>
             </Group>
+          </Group>
 
-            {/* Image Carousel */}
-            <CatchImageCarousel
-            images={imagesToShow}
-            isFallbackImage={isFallbackImage}
-            onFullscreen={(src) => setFullscreenImage(src)}
-          />
+          {/* Content */}
+          {!isInEditView ? (
+            <>
+              {/* Image Carousel */}
+              <CatchImageCarousel
+                images={imagesToShow}
+                isFallbackImage={isFallbackImage}
+                onFullscreen={(src) => setFullscreenImage(src)}
+              />
 
-          {/* Fullscreen Image */}
-          {fullscreenImage && (
-            <FullscreenImage
-              src={fullscreenImage}
-              onClose={() => setFullscreenImage(null)}
+              {/* Fullscreen Image */}
+              {fullscreenImage && (
+                <FullscreenImage
+                  src={fullscreenImage}
+                  onClose={() => setFullscreenImage(null)}
+                />
+              )}
+
+              {/* Catch Details Grid */}
+              <CatchDetailsGrid
+                details={details}
+                coordinates={selectedCatch.location.coordinates}
+              />
+            </>
+          ) : (
+            <CatchEditForm
+              catchData={selectedCatch}
+              setIsInEditView={setIsInEditView}
+              setSelectedCatch={setSelectedCatch}
+              openCancelEditModal={openCancelEditModal}
             />
           )}
 
-          {/* Catch Details Grid */}
-          <CatchDetailsGrid details={details} coordinates={selectedCatch?.location.coordinates ?? null}/>
-
-          </Stack>
-        </Container>
-      </Box>
+        </Stack>
+      </Container>
+    </Box>
   );
 };

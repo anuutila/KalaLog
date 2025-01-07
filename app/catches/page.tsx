@@ -219,9 +219,14 @@ export default function CatchesPage() {
   };
 
   const onRowClicked = useCallback((event: any) => {
-    setSelectedCatch(event.data); // Capture the row's data
-    setCatchDetailsOpen(true); // Open the catch details overlay
+    if (event?.data) {
+      setSelectedCatch(event.data);
+    }
   }, []);
+
+  useEffect(() => {
+    setCatchDetailsOpen(!!selectedCatch); // Automatically open or close based on selectedCatch
+  }, [selectedCatch]);
 
   const selectAllOption = getSelectAllOption(visibleColumns, colDefs);
   const columnOptions = getColumnOptions(colDefs, visibleColumns, fieldToDisplayLabelMap);
@@ -265,7 +270,7 @@ export default function CatchesPage() {
       {catchDetailsOpen && selectedCatch && (
         <CatchDetails
           selectedCatch={selectedCatch}
-          setCatchDetailsOpen={setCatchDetailsOpen}
+          setSelectedCatch={setSelectedCatch}
         />
       )}
 

@@ -4,7 +4,7 @@ import Catch from '@/lib/mongo/models/catch';
 import { ICatch, ICatchSchema } from '@/lib/types/catch';
 import { authorize } from '@/lib/middleware/authorize';
 import { UserRole } from '@/lib/types/user';
-import { AuthorizationResponse, CatchCreaetedResponse, CatchDeletedResponse, CatchesResponse, ErrorResponse } from '@/lib/types/responses';
+import { AuthorizationResponse, CatchCreaetedResponse, CatchDeletedResponse, CatchesResponse, CatchUpdatedResponse, ErrorResponse } from '@/lib/types/responses';
 import { handleError } from '@/lib/utils/handleError';
 import { CustomError } from '@/lib/utils/customError';
 
@@ -146,8 +146,68 @@ export async function DELETE(req: NextRequest): Promise<NextResponse<CatchDelete
       createdBy: deletedCatch.createdBy?.toString(),
     });
 
-    return NextResponse.json<CatchDeletedResponse>({ message: 'Catch entry deleted successfully', data: parsedDeletedCatch }, { status: 200 });
+    return NextResponse.json<CatchDeletedResponse>({ message: 'Catch deleted successfully', data: parsedDeletedCatch }, { status: 200 });
   } catch (error: unknown) {
-    return handleError(error, 'Unable to delete catch entry. Please try again later.');
+    return handleError(error, 'Unable to delete catch. Please try again later.');
+  }
+}
+
+export async function PUT(req: NextRequest): Promise<NextResponse<CatchUpdatedResponse | ErrorResponse>> {
+  try {
+    // Check if the user is authorized
+    const response = await authorize(req, [UserRole.ADMIN, UserRole.EDITOR]);
+    if (!response.ok) {
+      const errorResponse: ErrorResponse = await response.json();
+      throw new CustomError(errorResponse.message, response.status);
+    } else {
+      const authResponse: AuthorizationResponse = await response.json();
+      console.log(authResponse.message);
+    }
+
+    await dbConnect();
+
+    // Get the catch ID from the query string
+    const { searchParams } = new URL(req.url);
+    const catchId = searchParams.get('id');
+
+    if (!catchId) {
+      throw new Error('Catch ID missing');
+    }
+
+    // Parse the body and validate with Zod
+    const body: ICatch = await req.json();
+
+    const ICatchUpdateSchema = ICatchSchema.omit({ createdAt: true }).partial(); // CretedAt is not updatable
+    const validatedData = ICatchUpdateSchema.parse(body);
+
+    console.log(`Updating catch with ID: ${catchId}`, validatedData);
+
+    // Update the catch in the database
+    const updatedCatch = await Catch.findByIdAndUpdate(
+      catchId,
+      { $set: validatedData },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedCatch) {
+      throw new Error(`No catch found with ID: ${catchId}`);
+    }
+
+    // Transform the MongoDB document to match ICatch
+    const parsedUpdatedCatch: ICatch = ICatchSchema.parse({
+      ...updatedCatch.toObject(), // Ensure Mongoose document is converted to plain JS object
+      id: updatedCatch._id?.toString(), // Convert MongoDB ObjectId to string
+      caughtBy: {
+        name: updatedCatch.caughtBy.name,
+        userId: updatedCatch.caughtBy.userId?.toString() || null, // Convert ObjectId or handle nulls
+      },
+      createdBy: updatedCatch.createdBy?.toString(),
+    });
+
+    console.log('Updated catch:', parsedUpdatedCatch);
+
+    return NextResponse.json<CatchUpdatedResponse>({ message: 'Catch updated successfully', data: parsedUpdatedCatch }, { status: 200 });
+  } catch (error: unknown) {
+    return handleError(error, 'Unable to update catch. Please try again later.');
   }
 }

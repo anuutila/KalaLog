@@ -16,6 +16,8 @@ export type CatchesResponse = Required<BaseResponse<ICatch[]>>;
 
 export type CatchCreaetedResponse = Required<BaseResponse<ICatch>>;
 
+export type CatchDeletedResponse = Required<BaseResponse<ICatch>>;
+
 export type SignUpResponse = BaseResponse;
 
 export type LoginResponse = Required<BaseResponse<JwtUserInfo>>;

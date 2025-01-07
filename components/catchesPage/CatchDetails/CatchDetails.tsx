@@ -1,20 +1,22 @@
 import React, { useState } from 'react';
 import { ICatch } from "@/lib/types/catch";
-import { ActionIcon, Box, Center, Grid, Group, Image, Overlay, Stack, Text } from '@mantine/core';
-import { IconMaximize, IconPencil, IconTrash, IconX } from '@tabler/icons-react';
-import { Carousel } from '@mantine/carousel';
+import { ActionIcon, Box, Container, Group, Stack, Text } from '@mantine/core';
+import { IconPencil, IconTrash, IconX } from '@tabler/icons-react';
 import classes from './CatchDetails.module.css';
 import { useHeaderActions } from '@/context/HeaderActionsContext';
+import { CatchDeletedResponse, ErrorResponse } from '@/lib/types/responses';
+import { showNotification } from '@/lib/notifications/notifications';
+import { useGlobalState } from '@/context/GlobalState';
+import { useLoadingOverlay } from '@/context/LoadingOverlayContext';
+import CatchImageCarousel from './CatchImageCarousel';
+import FullscreenImage from './FullscreenImage';
+import CatchDetailsGrid from './CatchDetailsGrid';
+import DeleteModal from './DeleteModal';
 
 interface CatchDetailsProps {
   selectedCatch: ICatch | null;
   setCatchDetailsOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
-
-const unitsMap: Record<string, string> = {
-  Paino: ' kg',
-  Pituus: ' cm',
-};
 
 const speciesPlaceholders: Record<string, string> = {
   Hauki: '/hauki-1000x1000.png',
@@ -31,7 +33,9 @@ export default function CatchDetails({
   selectedCatch,
   setCatchDetailsOpen
 }: CatchDetailsProps) {
+  const { setCatches, isLoggedIn } = useGlobalState();
   const { setActionsDisabled } = useHeaderActions();
+  const { showLoading, hideLoading } = useLoadingOverlay();
   const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
 
   const handleEdit = () => {
@@ -39,40 +43,45 @@ export default function CatchDetails({
     console.log('Edit catch:', selectedCatch);
   };
 
-  const handleDelete = () => {
-    // Implement delete functionality here
-    console.log('Delete catch:', selectedCatch);
-  };
-
-  const formatDate = (date: string): string => {
-    const dateParts = date.split('-');
-    if (dateParts.length === 3) {
-      // remove leading zeros
-      dateParts[2] = dateParts[2].replace(/^0+/, '');
-      dateParts[1] = dateParts[1].replace(/^0+/, '');
-      return `${dateParts[2]}.${dateParts[1]}.${dateParts[0]}`; // Rearrange to "dd.mm.yyyy"
+  const openDeleteModal = () => {
+    if (selectedCatch) {
+      DeleteModal({
+        onConfirm: () => {
+          handleDeleteCatch(selectedCatch.id);
+        },
+      });
     }
-    return date;
   };
 
-  const renderField = (label: string, value?: string | number | null) => {
-    const formattedValue =
-      label === 'Päivämäärä' && typeof value === 'string' ? formatDate(value) : value;
+  const handleDeleteCatch = async (catchId: string | undefined) => {
+    showLoading();
+    try {
+      const response = await fetch(`/api/catches?id=${catchId}`, {
+        method: 'DELETE',
+      });
+  
+      if (!response.ok) {
+        const errorResponse: ErrorResponse = await response.json();
+        console.error('Error:', errorResponse);
+        showNotification('error', errorResponse.message, { withTitle: true });
+      } else {
+        const catchDeletedResponse: CatchDeletedResponse = await response.json();
+        console.log(catchDeletedResponse.message, catchDeletedResponse.data);
+        showNotification('success', catchDeletedResponse.message, { withTitle: false });
 
-    const unit = unitsMap[label] || '';
+        setCatchDetailsOpen(false);
+        setActionsDisabled(false);
 
-    return (
-      <Grid.Col span={6}>
-        <Text size="md" fw={500}>
-          {label}
-        </Text>
-        <Text size="md">
-          {formattedValue !== null && formattedValue !== undefined && formattedValue !== ''
-            ? `${formattedValue}${unit}`
-            : '-'}
-        </Text>
-      </Grid.Col>
-    );
+        // Update the catches state
+        setCatches((prevCatches) => prevCatches.filter((catchItem) => catchItem.id !== catchId));
+      }
+  
+    } catch (error) {
+      console.error('An unexpected error occurred while deleting catch:', error);
+      showNotification('error', 'An unexpected error occurred while deleting the catch. Please try again later.', { withTitle: true });
+    } finally {
+      hideLoading();
+    }
   };
 
   const imagesToShow = selectedCatch ? selectedCatch.images && selectedCatch.images.length > 0
@@ -82,138 +91,78 @@ export default function CatchDetails({
   // Determine if fullscreen should be available
   const isFallbackImage = imagesToShow.length === 1 && imagesToShow[0] === defaultPlaceholder;
 
+  const details = selectedCatch
+    ? {
+        Laji: selectedCatch.species,
+        Pituus: selectedCatch.length,
+        Paino: selectedCatch.weight,
+        Viehe: selectedCatch.lure,
+        Vesistö: selectedCatch.location.bodyOfWater,
+        Paikka: selectedCatch.location.spot,
+        Päivämäärä: selectedCatch.date,
+        Aika: selectedCatch.time,
+        Kalastaja: selectedCatch.caughtBy.name,
+      }
+    : {};
+
   return (
-    <Box
-      style={{
-        position: 'fixed',
-        top: 'var(--app-shell-header-offset)', // Leaves space for the header
-        bottom: 'calc(var(--app-shell-footer-offset) + env(safe-area-inset-bottom))', // Leaves space for the footer
-        left: 0,
-        width: '100%',
-        backgroundColor: 'var(--mantine-color-body)',
-        zIndex: 1000,
-        padding: '20px',
-        overflowY: 'auto',
-      }}
-    >
-      <Stack>
-        {/* Title */}
-        <Group>
-          <Text size="lg" fw={600} mr={'auto'}>
-            Saaliin tiedot
-          </Text>
+      <Box
+        pos={'fixed'}
+        top={'var(--app-shell-header-offset)'}
+        bottom={ { base: 'calc(var(--app-shell-footer-offset) + env(safe-area-inset-bottom))', md: 0 } }
+        left={0}
+        w={'100%'}
+        p={20}
+        style={{
+          backgroundColor: 'var(--mantine-color-body)',
+          zIndex: 100,
+          overflowY: 'auto',
+        }}
+      >
+        <Container p={0}>
+          <Stack>
+            {/* Header */}
+            <Group>
+              <Text size="lg" fw={600} mr={'auto'}>
+                Saaliin tiedot
+              </Text>
+              {/* Close, Edit, Delete Buttons */}
+              <Group gap="xs" align='center'>
+                {/* Edit Button */}
+                <ActionIcon size="lg" variant="light" color="blue" disabled onClick={() => console.log('Edit', selectedCatch)}>
+                  <IconPencil size={20} />
+                </ActionIcon>
+                {/* Delete Button */}
+                <ActionIcon size="lg" variant="light" color="red" disabled={!isLoggedIn} onClick={() => openDeleteModal()}>
+                  <IconTrash size={20} />
+                </ActionIcon>
+                {/* Close Button */}
+                <ActionIcon size="lg" variant="light" color="gray" onClick={() => { setCatchDetailsOpen(false), setActionsDisabled(false) }}>
+                  <IconX size={20} />
+                </ActionIcon>
+              </Group>
+            </Group>
 
-          {/* Close, Edit, Delete Buttons */}
-          <Group gap="xs" align='center'>
-            {/* Edit Button */}
-            <ActionIcon size="lg" variant="light" color="blue" onClick={() => console.log('Edit', selectedCatch)}>
-              <IconPencil size={20} />
-            </ActionIcon>
+            {/* Image Carousel */}
+            <CatchImageCarousel
+            images={imagesToShow}
+            isFallbackImage={isFallbackImage}
+            onFullscreen={(src) => setFullscreenImage(src)}
+          />
 
-            {/* Delete Button */}
-            <ActionIcon size="lg" variant="light" color="red" onClick={() => console.log('Delete', selectedCatch)}>
-              <IconTrash size={20} />
-            </ActionIcon>
+          {/* Fullscreen Image */}
+          {fullscreenImage && (
+            <FullscreenImage
+              src={fullscreenImage}
+              onClose={() => setFullscreenImage(null)}
+            />
+          )}
 
-            {/* Close Button */}
-            <ActionIcon size="lg" variant="light" color="gray" onClick={() => { setCatchDetailsOpen(false), setActionsDisabled(false) }}>
-              <IconX size={20} />
-            </ActionIcon>
-          </Group>
-        </Group>
+          {/* Catch Details Grid */}
+          <CatchDetailsGrid details={details}/>
 
-        {/* Image Carousel */}
-        <Carousel
-          withIndicators={imagesToShow.length > 1}
-          withControls={imagesToShow.length > 1}
-          loop={imagesToShow.length > 1}
-          classNames={{ viewport: classes.viewport }}
-        >
-          {imagesToShow.map((src, index) => (
-            <Carousel.Slide key={index}>
-              <Box pos="relative" w="100%" h="300px" bg="#f4f4f4">
-                <Image
-                  src={src}
-                  fit="cover"
-                  height={300}
-                  alt={`Catch image ${index + 1}`}
-                  fallbackSrc='/no-image-placeholder.png'
-                  style={{
-                    backgroundColor: 'var(--mantine-color-dark-7)',
-                  }}
-
-                />
-                {!isFallbackImage && (
-                  <ActionIcon
-                    size="lg"
-                    variant="light"
-                    style={{
-                      position: 'absolute',
-                      bottom: 10,
-                      right: 10,
-                      background: 'rgba(0, 0, 0, 0.5)',
-                    }}
-                    onClick={() => setFullscreenImage(src)}
-                  >
-                    <IconMaximize size={20} color="white" />
-                  </ActionIcon>
-                )}
-              </Box>
-            </Carousel.Slide>
-          ))}
-        </Carousel>
-
-        {/* Fullscreen Overlay */}
-        {fullscreenImage && (
-          <Overlay
-            backgroundOpacity={0.9}
-            blur={15}
-            color="black"
-            fixed
-          //onClick={() => setFullscreenImage(null)} // Close on clicking the overlay
-          >
-            <Center
-              h={'100%'}
-              w={'100%'}
-            >
-              <Image
-                src={fullscreenImage}
-                fit="contain"
-                style={{ borderRadius: '10px' }}
-                alt="Fullscreen Catch Image"
-              />
-            </Center>
-            <ActionIcon
-              size="lg"
-              variant="light"
-              pos={'absolute'}
-              top={20}
-              right={20}
-              bg={'rgba(0, 0, 0, 0.7)'}
-              onClick={(e) => {
-                e.stopPropagation(); // Prevent closing the overlay
-                setFullscreenImage(null); // Close fullscreen
-              }}
-            >
-              <IconX size={24} color="white" />
-            </ActionIcon>
-          </Overlay>
-        )}
-
-        {/* Catch Details */}
-        <Grid gutter="sm">
-          {renderField('Laji', selectedCatch?.species)}
-          {renderField('Pituus', selectedCatch?.length)}
-          {renderField('Paino', selectedCatch?.weight)}
-          {renderField('Viehe', selectedCatch?.lure)}
-          {renderField('Vesistö', selectedCatch?.location.bodyOfWater)}
-          {renderField('Paikka', selectedCatch?.location.spot)}
-          {renderField('Päivämäärä', selectedCatch?.date)}
-          {renderField('Aika', selectedCatch?.time)}
-          {renderField('Kalastaja', selectedCatch?.caughtBy.name)}
-        </Grid>
-
-      </Stack>
-    </Box>
+          </Stack>
+        </Container>
+      </Box>
   );
 };

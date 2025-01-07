@@ -24,37 +24,10 @@ export const ICatchSchema = z.object({
       })
     )
     .optional(),
-  createdBy: z.string().optional().nullable(),
+  createdBy: z.string().regex(/^[a-f\d]{24}$/i, "Invalid user ID").nullable().optional(),
   createdAt: z.date().optional().nullable(),
   id: z.string().optional(),
 });
 
 // Infer the TypeScript type from the Zod schema
 export type ICatch = z.infer<typeof ICatchSchema>;
-
-
-
-// export interface ICatch {
-//   species: string; // Fish species
-//   length?: number; // Length of the fish
-//   weight?: number; // Weight of the fish
-//   lure?: string; // Lure used
-//   date: string; // Date of the catch
-//   time: string; // Time of the catch
-//   location: {
-//     bodyOfWater: string; // Lake, sea, or river name
-//     spot?: string; // Specific spot on the body of water
-//     coordinates?: string; // GPS coordinates
-//   };
-//   caughtBy: {
-//     name: string; // First name of the person who caught the fish
-//     userId?: string | null; // Links to a registered user if available
-//   };
-//   images?: {
-//     url: string;
-//     description?: string;
-//   }[]; // Array for images
-//   createdBy?: string; // ID of the user who created the entry
-//   createdAt?: string; // Timestamp of entry creation
-//   id?: string; // ID of the catch
-// }

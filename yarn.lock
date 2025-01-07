@@ -4833,6 +4833,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@mantine/modals@npm:^7.15.2":
+  version: 7.15.2
+  resolution: "@mantine/modals@npm:7.15.2"
+  peerDependencies:
+    "@mantine/core": 7.15.2
+    "@mantine/hooks": 7.15.2
+    react: ^18.x || ^19.x
+    react-dom: ^18.x || ^19.x
+  checksum: 10c0/dfb26e73460d8a6675816a37df41b31d5cc278863fb12ca4a52cb03a59f732b2792ee77fff13230d710789e427dbcfa32dd8f4d1bd9424cfe0122323515e329e
+  languageName: node
+  linkType: hard
+
 "@mantine/notifications@npm:^7.15.2":
   version: 7.15.2
   resolution: "@mantine/notifications@npm:7.15.2"
@@ -15101,6 +15113,7 @@ __metadata:
     "@mantine/core": "npm:7.14.3"
     "@mantine/dates": "npm:^7.15.2"
     "@mantine/hooks": "npm:7.14.3"
+    "@mantine/modals": "npm:^7.15.2"
     "@mantine/notifications": "npm:^7.15.2"
     "@next/bundle-analyzer": "npm:^14.2.4"
     "@storybook/nextjs": "npm:^8.1.10"

@@ -1,6 +1,7 @@
 'use client';
 
 import { useGlobalState } from "@/context/GlobalState";
+import { useLoadingOverlay } from "@/context/LoadingOverlayContext";
 import { showNotification } from "@/lib/notifications/notifications";
 import { ErrorResponse, LogoutResponse } from "@/lib/types/responses";
 import { LoadingOverlay } from "@mantine/core";
@@ -9,6 +10,7 @@ import { useEffect } from "react";
 
 export default function Page() {
   const { isLoggedIn, jwtUserInfo, setIsLoggedIn, setJwtUserInfo } = useGlobalState();
+  const { showLoading, hideLoading } = useLoadingOverlay();
   const router = useRouter();
 
   useEffect(() => {
@@ -19,7 +21,7 @@ export default function Page() {
 
   if (!isLoggedIn) {
     // Optionally show a loading state while redirecting
-    return <LoadingOverlay visible />;
+    return <LoadingOverlay visible={true} overlayProps={{ blur: 2, zIndex: 2000, bg: 'rgba(0,0,0,0.5'}}/>;
   }
 
   const handleLogout = async () => {

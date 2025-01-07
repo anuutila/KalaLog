@@ -1,3 +1,8 @@
 .viewport {
   border-radius: var(--mantine-radius-md);
 }
+
+.modalTitle {
+  font-size: var(--mantine-font-size-lg);
+  font-weight: var(--mantine-heading-font-weight);
+}

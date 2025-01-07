@@ -28,6 +28,5 @@ export function defaultSort(catches: ICatch[]): ICatch[] {
 export function capitalizeFirstLetter(value: string | null | undefined): string | null {
   if (!value || typeof value !== 'string') return null; // Return null for invalid or empty input
   const updated = value.charAt(0).toUpperCase() + value.slice(1);
-  console.log('Updated value:', updated);
   return updated;
 }

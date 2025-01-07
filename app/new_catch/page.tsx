@@ -27,6 +27,7 @@ export default function Page() {
     date: new Date().toISOString().split('T')[0],
     time: new Date(new Date().getTime() + 120 * 60000).toISOString().split('T')[1].slice(0, 5),
     caughtBy: { name: '', userId: null },
+    createdBy: null,
   });
 
   const [speciesValue, setSpeciesValue] = useState<string>('');
@@ -142,7 +143,7 @@ export default function Page() {
 
     setIsLoading(true);
     try {
-      const parsedFormData = {
+      const parsedFormData: Omit<ICatch, 'id' | 'createdAt' | 'images'> = {
         ...formData,
         species: speciesValue,
         length: typeof lengthValue === 'string' ? null : lengthValue,
@@ -154,8 +155,9 @@ export default function Page() {
         },
         caughtBy: {
           name: anglerName,
-          userId: jwtUserInfo?.userId ?? null,
+          userId: null,
         },
+        createdBy: jwtUserInfo?.userId ?? null,
       };
 
       console.log('Submitting form data:', parsedFormData);
@@ -293,7 +295,7 @@ export default function Page() {
         {jwtUserInfo?.role === UserRole.VIEWER ? 'Sinulla ei ole uuden saaliin lisäämiseen tarvittavia oikeuksia.' : 'Kirjaudu sisään lisätäksesi uuden saaliin.'}
       </Alert> }
       <form onSubmit={handleSubmit}>
-        <Fieldset disabled={!isLoggedIn || jwtUserInfo?.role === UserRole.VIEWER} variant='unstyled'>
+        <Fieldset disabled={!isLoggedIn || jwtUserInfo?.role === UserRole.VIEWER || isLoading} variant='unstyled'>
           <Stack gap={8}>
             <Title order={3}>Saaliin tiedot</Title>
             <Autocomplete

@@ -4,7 +4,7 @@ import Catch from '@/lib/mongo/models/catch';
 import { ICatch, ICatchSchema } from '@/lib/types/catch';
 import { authorize } from '@/lib/middleware/authorize';
 import { UserRole } from '@/lib/types/user';
-import { AuthorizationResponse, CatchCreaetedResponse, CatchesResponse, ErrorResponse } from '@/lib/types/responses';
+import { AuthorizationResponse, CatchCreaetedResponse, CatchDeletedResponse, CatchesResponse, ErrorResponse } from '@/lib/types/responses';
 import { handleError } from '@/lib/utils/handleError';
 import { CustomError } from '@/lib/utils/customError';
 
@@ -23,13 +23,14 @@ export async function GET(): Promise<NextResponse<CatchesResponse | ErrorRespons
     // Validate and transform the data using Zod
     for (const catchItem of catches) {
       try {
-        const parsed = ICatchSchema.parse({
+        const parsed: ICatch = ICatchSchema.parse({
           ...catchItem,
           id: catchItem._id?.toString(), // Convert MongoDB ObjectId to string
           caughtBy: {
             name: catchItem.caughtBy.name,
             userId: catchItem.caughtBy.userId?.toString(),
           },
+          createdBy: catchItem.createdBy?.toString(),
         });
         validatedCatches.push(parsed);
       } catch (error) {
@@ -78,21 +79,41 @@ export async function POST(req: NextRequest): Promise<NextResponse<CatchCreaeted
     const validatedData = ICatchSchema.parse(data);
 
     // Save to MongoDB
-    const newCatch: ICatch = await Catch.create(validatedData);
+    const newCatch = await Catch.create(validatedData);
 
-    return NextResponse.json<CatchCreaetedResponse>({ message: 'New catch entry created successfully 🎣', data: newCatch }, { status: 201 });
+    if (!newCatch) {
+      throw new Error('Failed to create new catch entry');
+    }
+
+    console.log('New catch created:', newCatch.toObject());
+
+    // Transform the MongoDB document to match ICatch
+    const parsedNewCatch: ICatch = ICatchSchema.parse({
+      ...newCatch.toObject(), // Ensure Mongoose document is converted to plain JS object
+      id: newCatch._id?.toString(), // Convert MongoDB ObjectId to string
+      caughtBy: {
+        name: newCatch.caughtBy.name,
+        userId: newCatch.caughtBy.userId?.toString() || null, // Convert ObjectId or handle nulls
+      },
+      createdBy: newCatch.createdBy?.toString(),
+    });
+
+    return NextResponse.json<CatchCreaetedResponse>({ message: 'New catch entry created successfully 🎣', data: parsedNewCatch }, { status: 201 });
   } catch (error: unknown) {
     return handleError(error, 'Unable to create catch entry. Please try again later.');
   }
 }
 
-export async function DELETE(req: NextRequest): Promise<NextResponse<{ message: string } | ErrorResponse>> {
+export async function DELETE(req: NextRequest): Promise<NextResponse<CatchDeletedResponse | ErrorResponse>> {
   try {
     // Check if the user is authorized
     const response = await authorize(req, [UserRole.ADMIN, UserRole.EDITOR]);
     if (!response.ok) {
-      const errorResponse = await response.json();
-      throw new Error(errorResponse.message || 'Unauthorized');
+      const errorResponse: ErrorResponse = await response.json();
+      throw new CustomError(errorResponse.message, response.status);
+    } else {
+      const authResponse: AuthorizationResponse = await response.json();
+      console.log(authResponse.message);
     }
 
     await dbConnect();
@@ -102,7 +123,7 @@ export async function DELETE(req: NextRequest): Promise<NextResponse<{ message: 
     const catchId = searchParams.get('id');
 
     if (!catchId) {
-      throw new Error('Catch ID is required');
+      throw new Error('Catch ID missing');
     }
 
     console.log(`Deleting catch with ID: ${catchId}`);
@@ -114,7 +135,18 @@ export async function DELETE(req: NextRequest): Promise<NextResponse<{ message: 
       throw new Error(`No catch found with ID: ${catchId}`);
     }
 
-    return NextResponse.json({ message: 'Catch entry deleted successfully 🎣' }, { status: 200 });
+    // Transform the MongoDB document to match ICatch
+    const parsedDeletedCatch: ICatch = ICatchSchema.parse({
+      ...deletedCatch.toObject(), // Ensure Mongoose document is converted to plain JS object
+      id: deletedCatch._id?.toString(), // Convert MongoDB ObjectId to string
+      caughtBy: {
+        name: deletedCatch.caughtBy.name,
+        userId: deletedCatch.caughtBy.userId?.toString() || null, // Convert ObjectId or handle nulls
+      },
+      createdBy: deletedCatch.createdBy?.toString(),
+    });
+
+    return NextResponse.json<CatchDeletedResponse>({ message: 'Catch entry deleted successfully', data: parsedDeletedCatch }, { status: 200 });
   } catch (error: unknown) {
     return handleError(error, 'Unable to delete catch entry. Please try again later.');
   }

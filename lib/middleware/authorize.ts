@@ -19,7 +19,7 @@ export const authorize = async (req: NextRequest, authorizedRoles: string[]): Pr
     const decoded = jwt.verify(token, JWT_SECRET) as JwtPayload & { role: string };
 
     if (!decoded.role || !authorizedRoles.includes(decoded.role)) {
-      throw new CustomError('Uthorization failed. Insufficient permissions', 403);
+      throw new CustomError('Authorization failed. Insufficient permissions', 403);
     }
 
     // req.user = decoded;

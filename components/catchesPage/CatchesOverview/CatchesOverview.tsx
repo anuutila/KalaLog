@@ -14,11 +14,11 @@ interface CatchesOverviewProps {
 export default function CatchesOverview({ selectedYear, rowCount, filteredCatches, scrollRef }: CatchesOverviewProps) {
 
   return (
-    <Stack c="var(--mantine-color-text)" pb={'md'} pt={'md'} w='100%' gap={0}>
-      <Title c='white' order={2} p={0} pb={'md'} pl={'xs'} pr={'xs'}>{selectedYear ?? '\u00A0'}</Title>
+    <Stack c="var(--mantine-color-text)" pb={'md'} w='100%' gap={0}>
+      <Title c='white' order={2} p={0} mb={'md'} ml={'md'}>{selectedYear ?? '\u00A0'}</Title>
       <Box style={{ position: "relative" }}>
         <ScrollArea viewportRef={scrollRef} type="never">
-          <Group gap="xs" wrap="nowrap" pl="xs" pr={30}>
+          <Group gap="xs" wrap="nowrap" pl="md" pr={30}>
             <Badge
               size="md"
               classNames={{ root: classes.badge }}
@@ -33,13 +33,13 @@ export default function CatchesOverview({ selectedYear, rowCount, filteredCatche
 
         {/* Dynamic Left Gradient */}
         <Box
-          w="var(--mantine-spacing-sm)"
+          w={20}
           style={{
             position: "absolute",
             top: 0,
             left: 0,
             height: "100%",
-            background: "linear-gradient(to right, var(--mantine-color-body), transparent)",
+            background: "linear-gradient(to right, var(--mantine-color-body) 50%, transparent)",
             pointerEvents: "none",
           }}
         />
@@ -52,7 +52,7 @@ export default function CatchesOverview({ selectedYear, rowCount, filteredCatche
             right: 0,
             height: "100%",
             width: "40px",
-            background: "linear-gradient(to left, var(--mantine-color-body), transparent)",
+            background: "linear-gradient(to left, var(--mantine-color-body) 50%, transparent)",
             pointerEvents: "none",
           }}
         />

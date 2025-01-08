@@ -233,7 +233,7 @@ export default function CatchesPage() {
   const yearOptions = getYearOptions(years, selectedYear);
 
   return (
-    <Container p={0}>
+    <Container p={0} pt={'md'} pb={'md'}>
 
       <Stack p={0} gap={'sm'} align='flex-start'>
         <TableSettingsDrawer
@@ -274,17 +274,19 @@ export default function CatchesPage() {
         />
       )}
 
-      <CatchesGrid
-        gridRef={gridRef}
-        colDefs={colDefs}
-        defaultColDef={defaultColDef}
-        updateRowCountAndFilteredCatches={updateRowCountAndFilteredCatches}
-        onGridReady={onGridReady}
-        catches={catches}
-        catchesError={catchesError}
-        loadingCatches={loadingCatches}
-        onRowClicked={onRowClicked}
-      />
+      <Box pl={'md'} pr={'md'}>
+        <CatchesGrid
+          gridRef={gridRef}
+          colDefs={colDefs}
+          defaultColDef={defaultColDef}
+          updateRowCountAndFilteredCatches={updateRowCountAndFilteredCatches}
+          onGridReady={onGridReady}
+          catches={catches}
+          catchesError={catchesError}
+          loadingCatches={loadingCatches}
+          onRowClicked={onRowClicked}
+        />
+      </Box>
 
     </Container>
   );

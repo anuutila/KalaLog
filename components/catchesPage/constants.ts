@@ -23,7 +23,6 @@ export const fieldToDisplayLabelMap: Record<FieldIdentifier, string> = {
 export const defaultVisibleColumns = [
   fieldToDisplayLabelMap[FieldIdentifier.Species],
   fieldToDisplayLabelMap[FieldIdentifier.Length],
-  fieldToDisplayLabelMap[FieldIdentifier.Weight],
   fieldToDisplayLabelMap[FieldIdentifier.Date],
   fieldToDisplayLabelMap[FieldIdentifier.CaughtBy]
 ];

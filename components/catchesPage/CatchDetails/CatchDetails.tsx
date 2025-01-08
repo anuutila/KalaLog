@@ -141,7 +141,7 @@ export default function CatchDetails({
       bottom={{ base: 'calc(var(--app-shell-footer-offset) + env(safe-area-inset-bottom))', md: 0 }}
       left={0}
       w={'100%'}
-      p={20}
+      p={'md'}
       style={{
         backgroundColor: 'var(--mantine-color-body)',
         zIndex: 100,
@@ -203,10 +203,12 @@ export default function CatchDetails({
               )}
 
               {/* Catch Details Grid */}
-              <CatchDetailsGrid
-                details={details}
-                coordinates={selectedCatch.location.coordinates}
-              />
+              <Box pl={'sm'} pr={'sm'}>
+                <CatchDetailsGrid
+                  details={details}
+                  coordinates={selectedCatch.location.coordinates}
+                />
+              </Box>
             </>
           ) : (
             <CatchEditForm

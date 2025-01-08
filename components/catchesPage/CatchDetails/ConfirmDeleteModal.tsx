@@ -15,7 +15,7 @@ export default function ConfirmDeleteModal({ onConfirm }: ConfirmDeleteModalProp
     withCloseButton: true,
     children: (
       <>
-        <Text size="md" mb="md" mt="md">
+        <Text size="md" mb="md">
           Haluatko varmasti poistaa tämän saaliin? Kirjoita 'POISTA' vahvistaaksesi.
         </Text>
         <TextInput

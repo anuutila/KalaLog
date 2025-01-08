@@ -1,4 +1,4 @@
-import React, { use, useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Autocomplete, Button, Container, Fieldset, Group, NumberInput, Stack, TextInput } from '@mantine/core';
 import { ICatch } from '@/lib/types/catch';
 import { useGlobalState } from '@/context/GlobalState';
@@ -6,22 +6,25 @@ import { CatchUpdatedResponse, ErrorResponse } from '@/lib/types/responses';
 import { showNotification } from '@/lib/notifications/notifications';
 import { CatchUtils } from '@/lib/utils/catchUtils';
 import { IconSelector } from '@tabler/icons-react';
-import { LoadingOverlayProvider, useLoadingOverlay } from '@/context/LoadingOverlayContext';
+import { useLoadingOverlay } from '@/context/LoadingOverlayContext';
+import FullscreenImage from '../CatchDetails/FullscreenImage';
+import ImageUploadForm from '@/components/ImageUploadForm/ImageUploadForm';
 
 interface CatchEditFormProps {
   catchData: ICatch;
   setIsInEditView: React.Dispatch<React.SetStateAction<boolean>>;
   setSelectedCatch: React.Dispatch<React.SetStateAction<ICatch | null>>;
   openCancelEditModal: () => void;
+  setDisableScroll: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const speciesOptions = ['Ahven', 'Hauki', 'Kuha'];
 
-export default function CatchEditForm({ catchData, setIsInEditView, setSelectedCatch, openCancelEditModal }: CatchEditFormProps) {
+export default function CatchEditForm({ catchData, setIsInEditView, setSelectedCatch, openCancelEditModal, setDisableScroll }: CatchEditFormProps) {
   const { catches, setCatches } = useGlobalState();
   const { showLoading, hideLoading } = useLoadingOverlay();
 
-  const [formData, setFormData] = useState<Omit<ICatch, 'id' | 'createdAt' | 'images'>>(catchData);
+  const [formData, setFormData] = useState<Omit<ICatch, 'id' | 'createdAt'>>(catchData);
   const [isLoading, setIsLoading] = useState(false);
 
   const [speciesValue, setSpeciesValue] = useState<string>(catchData.species || '');
@@ -42,8 +45,19 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
   const [anglerName, setAnglerName] = useState<string>(catchData.caughtBy.name || '');
   const [filteredAnglerOptions, setFilteredAnglerOptions] = useState<string[]>([]);
   const [anglersDropdownOpened, setAnglersDropdownOpened] = useState<boolean>(false);
-  
 
+  const [files, setFiles] = useState<File[]>([]);
+  const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
+
+  useEffect(() => {
+    setDisableScroll(fullscreenImage !== null);
+    return () => {
+      setDisableScroll(false);
+    };
+  } , [fullscreenImage]);
+
+  
+  
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
 
@@ -69,7 +83,31 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
     e.preventDefault();
     showLoading();
     setIsLoading(true);
+
     try {
+      // Upload images to Cloudinary
+      const uploadedImageUrls: string[] = [];
+      for (const file of files) {
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const uploadResponse = await fetch('/api/imageUpload', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (uploadResponse.ok) {
+          console.log('Image uploaded successfully');
+          const data = await uploadResponse.json();
+          uploadedImageUrls.push(data.url);
+        } else {
+          console.error('Failed to upload image:', await uploadResponse.text());
+          showNotification('error', 'Failed to upload one or more images.', { withTitle: true });
+          return; // Exit if any upload fails
+        }
+      }
+
+      // Prepare updated catch data
       const updatedCatch: ICatch = {
         ...formData,
         species: speciesValue,
@@ -84,8 +122,13 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
           name: anglerName,
           userId: formData.caughtBy.userId || null,
         },
+        images: [
+          ...(formData.images || []), // Keep existing images
+          ...uploadedImageUrls.map((url) => ({ url })), // Add new images
+        ],
       };
 
+      // Send updated catch data to the server
       const response = await fetch(`/api/catches?id=${updatedCatch.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -196,7 +239,22 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
       <form onSubmit={handleSubmit}>
         <Fieldset disabled={isLoading} variant="unstyled">
           <Stack gap={8}>
-          <Autocomplete
+            
+            <ImageUploadForm
+              catchData={catchData}
+              setFullscreenImage={setFullscreenImage}
+              setFiles={setFiles}
+            />
+
+            {/* Fullscreen Image */}
+            {fullscreenImage && (
+              <FullscreenImage
+                src={fullscreenImage}
+                onClose={() => setFullscreenImage(null)}
+              />
+            )}
+
+            <Autocomplete
               size='md'
               type='text'
               name='species'

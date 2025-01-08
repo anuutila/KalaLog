@@ -21,7 +21,7 @@ export default function Page() {
 
   if (!isLoggedIn) {
     // Optionally show a loading state while redirecting
-    return <LoadingOverlay visible={true} overlayProps={{ blur: 2, zIndex: 2000, bg: 'rgba(0,0,0,0.5'}}/>;
+    return <LoadingOverlay visible={true} overlayProps={{ blur: 2, zIndex: 2000, bg: 'rgba(0,0,0,0.5', fixed: true}}/>;
   }
 
   const handleLogout = async () => {

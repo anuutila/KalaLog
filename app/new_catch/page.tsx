@@ -1,6 +1,10 @@
 'use client';
 
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import FullscreenImage from '@/components/catchesPage/CatchDetails/FullscreenImage';
+import ImageUploadForm, { ImageUploadFormRef } from '@/components/ImageUploadForm/ImageUploadForm';
 import { useGlobalState } from '@/context/GlobalState';
+import { useLoadingOverlay } from '@/context/LoadingOverlayContext';
 import { showNotification } from '@/lib/notifications/notifications';
 import { ICatch } from '@/lib/types/catch';
 import { CatchCreaetedResponse, ErrorResponse } from '@/lib/types/responses';
@@ -9,12 +13,12 @@ import { CatchUtils } from '@/lib/utils/catchUtils';
 import { defaultSort } from '@/lib/utils/utils';
 import { Alert, Autocomplete, Button, Checkbox, Container, Fieldset, Group, NumberInput, Stack, TextInput, Title } from '@mantine/core';
 import { IconCalendar, IconClock, IconInfoCircle, IconSelector } from '@tabler/icons-react';
-import { useCallback, useEffect, useMemo, useState } from 'react';
 
 export default function Page() {
   const { catches, setCatches, isLoggedIn, jwtUserInfo } = useGlobalState();
+  const { showLoading, hideLoading } = useLoadingOverlay();
 
-  const [formData, setFormData] = useState<Omit<ICatch, 'id' | 'createdAt' | 'images'>>({
+  const [formData, setFormData] = useState<Omit<ICatch, 'id' | 'createdAt'>>({
     species: '',
     length: undefined,
     weight: undefined,
@@ -49,11 +53,53 @@ export default function Page() {
   const [filteredAnglerOptions, setFilteredAnglerOptions] = useState<string[]>([]);
   const [anglersDropdownOpened, setAnglersDropdownOpened] = useState<boolean>(false);
 
-
   const [isLoading, setIsLoading] = useState(false);
   const [useGps, setUseGps] = useState(false); // State for GPS checkbox
   const [gpsError, setGpsError] = useState<string | null>(null); // State for GPS error message
   const [watchId, setWatchId] = useState<number | null>(null);
+
+  const [files, setFiles] = useState<File[]>([]);
+  const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
+  const [disableScroll, setDisableScroll] = useState(false);
+
+  const imageUploadFormRef = useRef<ImageUploadFormRef>(null);
+
+  useEffect(() => {
+    setDisableScroll(fullscreenImage !== null);
+    return () => {
+      setDisableScroll(false);
+    };
+  } , [fullscreenImage]);
+
+  // Disable scrolling when the fullscreen image is open
+  useEffect(() => {
+    if (disableScroll) {
+      document.documentElement.style.overflow = 'hidden'; // Prevent scrolling on <html>
+      document.body.style.overflow = 'hidden'; // Prevent scrolling on <body>
+      document.body.style.position = 'fixed'; // Prevent content shift on mobile
+      document.body.style.top = `-${window.scrollY}px`; // Keep scroll position
+    } else {
+      const scrollY = document.body.style.top;
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.documentElement.style.overflow = ''; // Restore scrolling on <html>
+      document.body.style.overflow = ''; // Restore scrolling on <body>
+      window.scrollTo(0, parseInt(scrollY || '0') * -1); // Restore scroll position
+    }
+  
+    return () => {
+      document.documentElement.style.overflow = ''; // Restore scrolling on <html>
+      document.body.style.overflow = ''; // Restore scrolling on <body>
+      document.body.style.position = ''; // Clean up on unmount
+      document.body.style.top = ''; // Reset top style
+    }
+  }, [disableScroll]);
+
+  const handleClearImages = () => {
+    if (imageUploadFormRef.current) {
+      imageUploadFormRef.current.clearImages();
+    }
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -141,9 +187,33 @@ export default function Page() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    showLoading();
     setIsLoading(true);
     try {
-      const parsedFormData: Omit<ICatch, 'id' | 'createdAt' | 'images'> = {
+      // Upload images to Cloudinary
+      const uploadedImageUrls: string[] = [];
+      for (const file of files) {
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const uploadResponse = await fetch('/api/imageUpload', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (uploadResponse.ok) {
+          console.log('Image uploaded successfully');
+          const data = await uploadResponse.json();
+          uploadedImageUrls.push(data.url);
+        } else {
+          console.error('Failed to upload image:', await uploadResponse.text());
+          showNotification('error', 'Failed to upload one or more images.', { withTitle: true });
+          return; // Exit if any upload fails
+        }
+      }
+
+      // Prepare form data for submission
+      const parsedFormData: Omit<ICatch, 'id' | 'createdAt'> = {
         ...formData,
         species: speciesValue,
         length: typeof lengthValue === 'string' ? null : lengthValue,
@@ -158,10 +228,15 @@ export default function Page() {
           userId: null,
         },
         createdBy: jwtUserInfo?.userId ?? null,
+        images: [
+          ...(formData.images || []), // Keep existing images
+          ...uploadedImageUrls.map((url) => ({ url })), // Add new images
+        ],
       };
 
       console.log('Submitting form data:', parsedFormData);
 
+      // Send the form data to the API
       const response = await fetch('/api/catches', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -199,6 +274,7 @@ export default function Page() {
         setUseGps(false);
         setGpsError(null);
         setAnglerName('');
+        handleClearImages();
         if (watchId !== null) {
           navigator.geolocation.clearWatch(watchId);
           setWatchId(null);
@@ -209,6 +285,7 @@ export default function Page() {
       showNotification('error', 'An unexpected error occurred while creating a new catch. Please try again.', { withTitle: true });
     } finally {
       setIsLoading(false);
+      hideLoading();
     }
   };
 
@@ -297,7 +374,21 @@ export default function Page() {
       <form onSubmit={handleSubmit}>
         <Fieldset disabled={!isLoggedIn || jwtUserInfo?.role === UserRole.VIEWER || isLoading} variant='unstyled'>
           <Stack gap={8}>
-            <Title order={3}>Saaliin tiedot</Title>
+            <Title c='white' order={2} pb={'md'}>Saaliin tiedot</Title>
+            
+            <ImageUploadForm
+              ref={imageUploadFormRef}
+              setFullscreenImage={setFullscreenImage}
+              setFiles={setFiles}
+            />
+
+            {fullscreenImage && (
+              <FullscreenImage
+                src={fullscreenImage}
+                onClose={() => setFullscreenImage(null)}
+              />
+            )}
+
             <Autocomplete
               size='md'
               type='text'

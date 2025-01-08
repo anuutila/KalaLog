@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { use, useEffect, useState } from 'react';
 import { ICatch } from "@/lib/types/catch";
-import { ActionIcon, Box, Container, Group, Stack, Text } from '@mantine/core';
+import { ActionIcon, Box, Container, Group, Stack, Text, Title } from '@mantine/core';
 import { IconPencil, IconTrash, IconX } from '@tabler/icons-react';
 import classes from './CatchDetails.module.css';
 import { useHeaderActions } from '@/context/HeaderActionsContext';
@@ -40,12 +40,15 @@ export default function CatchDetails({
   const { setActionsDisabled } = useHeaderActions();
   const { showLoading, hideLoading } = useLoadingOverlay();
   const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
+  const [disableScroll, setDisableScroll] = useState(false);
   const [isInEditView, setIsInEditView] = useState(false);
 
-  const handleEdit = () => {
-    // Implement edit functionality here
-    console.log('Edit catch:', selectedCatch);
-  };
+  useEffect(() => {
+    setDisableScroll(fullscreenImage !== null);
+    return () => {
+      setDisableScroll(false);
+    };
+  } , [fullscreenImage]);
 
   useEffect(() => {
     // Disable header actions when the component mounts
@@ -144,15 +147,15 @@ export default function CatchDetails({
         zIndex: 100,
         overflowY: 'auto',
       }}
-      className={fullscreenImage ? classes.noScroll : ''}
+      className={disableScroll ? classes.noScroll : ''}
     >
       <Container p={0}>
-        <Stack>
+        <Stack gap={'lg'}>
           {/* Header */}
           <Group>
-            <Text size="lg" fw={600} mr={'auto'}>
+            <Title c='white' order={2} p={0} mr={'auto'}>
               {isInEditView ? 'Muokkaa saalista' : 'Saaliin tiedot'}
-            </Text>
+            </Title>
 
             {/* Close, Edit, Delete Buttons */}
             <Group gap="xs" align='center'>
@@ -211,6 +214,7 @@ export default function CatchDetails({
               setIsInEditView={setIsInEditView}
               setSelectedCatch={setSelectedCatch}
               openCancelEditModal={openCancelEditModal}
+              setDisableScroll={setDisableScroll}
             />
           )}
 

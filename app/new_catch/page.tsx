@@ -18,7 +18,7 @@ export default function Page() {
   const { catches, setCatches, isLoggedIn, jwtUserInfo } = useGlobalState();
   const { showLoading, hideLoading } = useLoadingOverlay();
 
-  const [formData, setFormData] = useState<Omit<ICatch, 'id' | 'createdAt'>>({
+  const [formData, setFormData] = useState<Omit<ICatch, 'id' | 'createdAt' | 'catchNumber'>>({
     species: '',
     length: undefined,
     weight: undefined,
@@ -213,7 +213,7 @@ export default function Page() {
       }
 
       // Prepare form data for submission
-      const parsedFormData: Omit<ICatch, 'id' | 'createdAt'> = {
+      const parsedFormData: Omit<ICatch, 'id' | 'createdAt' | 'catchNumber'> = {
         ...formData,
         species: speciesValue,
         length: typeof lengthValue === 'string' ? null : lengthValue,

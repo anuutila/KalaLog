@@ -27,6 +27,7 @@ export const ICatchSchema = z.object({
   createdBy: z.string().regex(/^[a-f\d]{24}$/i, "Invalid user ID").nullable().optional(),
   createdAt: z.date().optional().nullable(),
   id: z.string().optional(),
+  catchNumber: z.number().positive()
 });
 
 // Infer the TypeScript type from the Zod schema

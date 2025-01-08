@@ -2,9 +2,9 @@ import mongoose, { Schema, Document } from 'mongoose';
 import { ICatch } from '@lib/types/catch';
 import { capitalizeFirstLetter } from '@/lib/utils/utils';
 
-interface ICatchModel extends Document, Omit<ICatch, 'id'> {}
+export interface ICatchModel extends Document, Omit<ICatch, 'id'> {}
 
-const CatchSchema: Schema<ICatchModel> = new Schema({
+export const CatchSchema: Schema<ICatchModel> = new Schema({
   species: { type: String, required: true, set: (value: string) => capitalizeFirstLetter(value) },
   date: { type: String, required: true },
   length: { type: Number, required: false, default: null },
@@ -28,6 +28,7 @@ const CatchSchema: Schema<ICatchModel> = new Schema({
   ],
   createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: false, default: null },
   createdAt: { type: Date, default: Date.now },
+  catchNumber: { type: Number, required: true, unique: true },
 });
 
 const Catch = mongoose.models.Catch || mongoose.model<ICatchModel>('Catch', CatchSchema);

@@ -71,12 +71,17 @@ export async function POST(req: NextRequest): Promise<NextResponse<CatchCreaeted
     }
 
     await dbConnect();
-    const data: ICatch = await req.json();
 
-    console.log('Creating new catch from data:', data);
+    const lastCatch = await Catch.findOne({}).sort({ catchNumber: -1 }); // Find the catch with the highest catchNumber
+    const nextNumber = lastCatch ? lastCatch.toObject().catchNumber + 1 : 1;
+
+    const data: ICatch = await req.json();
+    const dataWithNumber: ICatch = { ...data, catchNumber: nextNumber };
+
+    console.log('Creating new catch from data:', dataWithNumber);
 
     // Validate with Zod
-    const validatedData = ICatchSchema.parse(data);
+    const validatedData = ICatchSchema.parse(dataWithNumber);
 
     // Save to MongoDB
     const newCatch = await Catch.create(validatedData);
@@ -85,7 +90,7 @@ export async function POST(req: NextRequest): Promise<NextResponse<CatchCreaeted
       throw new Error('Failed to create new catch entry');
     }
 
-    console.log('New catch created:', newCatch.toObject());
+    console.log('New catch created:', newCatch);
 
     // Transform the MongoDB document to match ICatch
     const parsedNewCatch: ICatch = ICatchSchema.parse({

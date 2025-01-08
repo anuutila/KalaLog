@@ -23,6 +23,6 @@
     },
     "plugins": [{ "name": "next" }]
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "lib/mongo/index.ts", "scripts/migrateEntries.js"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "lib/mongo/index.ts", "scripts/migrateEntries.js", "scripts/updateCatchData.js"],
   "exclude": ["node_modules"]
 }

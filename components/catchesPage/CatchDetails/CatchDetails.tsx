@@ -125,8 +125,8 @@ export default function CatchDetails({
   const details = {
       Laji: selectedCatch.species,
       Pituus: selectedCatch.length,
-      Paino: selectedCatch.weight,
       Viehe: selectedCatch.lure,
+      Paino: selectedCatch.weight,
       Vesistö: selectedCatch.location.bodyOfWater,
       Paikka: selectedCatch.location.spot,
       Päivämäärä: selectedCatch.date,
@@ -154,7 +154,7 @@ export default function CatchDetails({
           {/* Header */}
           <Group>
             <Title c='white' order={2} p={0} mr={'auto'}>
-              {isInEditView ? 'Muokkaa saalista' : 'Saaliin tiedot'}
+              {isInEditView ? 'Muokkaa saalista' : `Saalis #${selectedCatch.catchNumber}`}
             </Title>
 
             {/* Close, Edit, Delete Buttons */}

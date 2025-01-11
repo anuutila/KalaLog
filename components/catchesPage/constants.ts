@@ -1,5 +1,6 @@
 export enum FieldIdentifier {
   Species = 'species',
+  Image = 'image',
   Length = 'length',
   Weight = 'weight',
   Lure = 'lure',
@@ -11,6 +12,7 @@ export enum FieldIdentifier {
 
 export const fieldToDisplayLabelMap: Record<FieldIdentifier, string> = {
   [FieldIdentifier.Species]: '🐟 Laji',
+  [FieldIdentifier.Image]: '📷 Kuva',
   [FieldIdentifier.Length]: '📏 Pituus',
   [FieldIdentifier.Weight]: '⚖️ Paino',
   [FieldIdentifier.Lure]: '🎣 Viehe',

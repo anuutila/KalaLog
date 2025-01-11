@@ -1,4 +1,5 @@
 import { ValueFormatterParams } from 'ag-grid-community';
+import { ICatch } from '../types/catch';
 
 export function lengthFormatter(params: ValueFormatterParams) {
   return isNaN(params.value) || params.value === null ? '-' : `${params.value} cm`;
@@ -26,7 +27,7 @@ export function dateFormatter(params: ValueFormatterParams) {
   return `${dateParts[2]}.${dateParts[1]}.${dateParts[0]}`;
 }
 
-export function customComparator(valueA: number | null | undefined, valueB: number | null | undefined): number {
+export function customUnitComparator(valueA: number | null | undefined, valueB: number | null | undefined): number {
   // Check if valueA or valueB is NaN
   const isValueANaN = Number.isNaN(valueA);
   const isValueBNaN = Number.isNaN(valueB);

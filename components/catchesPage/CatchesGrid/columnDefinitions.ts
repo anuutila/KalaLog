@@ -1,14 +1,28 @@
 import { ColDef } from 'ag-grid-community';
 import { LocationCellRenderer } from './LocationCellRenderer/LocationCellRenderer';
-import { lengthFormatter, weightFormatter, upperCaseFormatter, dateFormatter, customComparator } from '@/lib/utils/agGridUtils';
+import { lengthFormatter, weightFormatter, upperCaseFormatter, dateFormatter, customUnitComparator, locationComparator } from '@/lib/utils/agGridUtils';
+import { ICatch } from '@/lib/types/catch';
+import { speciesCellRenderer } from './SpeciesCellRenderer/SpeciesCellRenderer';
 
 export const getColumnDefs = (): ColDef[] => [
-  { field: 'species', headerName: 'Laji', width: 65, valueFormatter: upperCaseFormatter },
+  { field: 'species', 
+    headerName: 'Laji', 
+    width: 95, 
+    cellRenderer: speciesCellRenderer,
+  },
+  {
+    headerName: 'Kuva',
+    field: 'image',
+    valueGetter: (params) => params.data.images?.length > 0,
+    cellRenderer: 'agCheckboxCellRenderer',
+    filter: false,
+    width: 60,
+  },
   {
     field: 'length',
     headerName: 'Pituus',
     sortingOrder: ['desc', 'asc', null],
-    comparator: customComparator,
+    comparator: customUnitComparator,
     width: 88,
     valueFormatter: lengthFormatter,
   },
@@ -16,7 +30,7 @@ export const getColumnDefs = (): ColDef[] => [
     field: 'weight',
     headerName: 'Paino',
     sortingOrder: ['desc', 'asc', null],
-    comparator: customComparator,
+    comparator: customUnitComparator,
     width: 83,
     valueFormatter: weightFormatter,
   },
@@ -35,9 +49,14 @@ export const getColumnDefs = (): ColDef[] => [
     autoHeight: true,
     width: 150,
     cellRenderer: LocationCellRenderer,
-    cellClass: ['location-cell-custom-class'],
+    valueGetter: (params) => params.data.location?.spot || '-',
+    filter: 'agTextColumnFilter',
+    filterParams: {
+      textFormatter: (value: ICatch['location']['spot'] | null) =>
+        value?.toLowerCase() || '',
+    },
   },
   { field: 'time', headerName: 'Aika', width: 75 },
   { field: 'date', headerName: 'Pvm.', width: 90, valueFormatter: dateFormatter, filter: true },
-  { field: 'caughtBy.name', headerName: 'Kalastaja', width: 82, valueFormatter: upperCaseFormatter },
+  { field: 'caughtBy.name', headerName: 'Kalastaja', width: 85, valueFormatter: upperCaseFormatter },
 ];

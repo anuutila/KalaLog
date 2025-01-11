@@ -24,6 +24,6 @@
     },
     "plugins": [{ "name": "next" }]
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "lib/mongo/index.ts", "scripts/migrateEntries.js", "scripts/updateCatchData.js"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "lib/mongo/index.ts", "scripts/migrateEntries.js", "scripts/updateCatchData.js", "components/catchesPage/CatchesGrid/SpeciesCellRenderer"],
   "exclude": ["node_modules"]
 }

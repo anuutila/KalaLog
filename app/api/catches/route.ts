@@ -7,10 +7,11 @@ import { UserRole } from '@/lib/types/user';
 import { AuthorizationResponse, CatchCreaetedResponse, CatchDeletedResponse, CatchEditedResponse, CatchesResponse, ErrorResponse, ImageUploadResponse } from '@/lib/types/responses';
 import { handleError } from '@/lib/utils/handleError';
 import { CustomError } from '@/lib/utils/customError';
-import { uploadImage } from '@/services/api/imageService';
-import { generateFolderName, generatePublicId } from '@/lib/utils/utils';
+import { deleteImages, uploadImage } from '@/services/api/imageService';
+import { extractFolderName, extractPublicId, generateFolderName, generatePublicId } from '@/lib/utils/utils';
 import { ApiEndpoints } from '@/lib/constants/constants';
 import { cookies } from 'next/headers';
+import cloudinary from '@/lib/cloudinary/cloudinary';
 
 export async function GET(): Promise<NextResponse<CatchesResponse | ErrorResponse>> {
   await dbConnect();
@@ -62,6 +63,8 @@ export async function GET(): Promise<NextResponse<CatchesResponse | ErrorRespons
 }
 
 export async function POST(req: NextRequest): Promise<NextResponse<CatchCreaetedResponse | ErrorResponse>> {
+  const uploadedImages = [];
+
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get('token')?.value;
@@ -117,7 +120,6 @@ export async function POST(req: NextRequest): Promise<NextResponse<CatchCreaeted
     };
 
     // Handle image uploads
-    const uploadedImages = [];
     const failedImageUploads = [];
     for (const [index, image] of imageFiles.entries()) {
       try {
@@ -148,6 +150,7 @@ export async function POST(req: NextRequest): Promise<NextResponse<CatchCreaeted
         } else {
           throw new Error();
         }
+        
       } catch (error) {
         console.error(`Failed to upload image: ${generatePublicId(nextCatchNumber, index)}`, error);
         failedImageUploads.push(image);
@@ -197,6 +200,12 @@ export async function POST(req: NextRequest): Promise<NextResponse<CatchCreaeted
 
     return NextResponse.json<CatchCreaetedResponse>({ message: 'New catch entry created successfully 🎣', data: { catch: parsedNewCatch, failedImageUploads: false } }, { status: 201 });
   } catch (error: unknown) {
+    console.error('Error during catch creation:', error);
+
+    // Rollback image uploads
+    const imageURLs = uploadedImages.map((img) => img.url);
+    await deleteImages(imageURLs);
+
     return handleError(error, 'Unable to create catch entry. Please try again later.');
   }
 }
@@ -243,6 +252,15 @@ export async function DELETE(req: NextRequest): Promise<NextResponse<CatchDelete
       createdBy: deletedCatch.createdBy?.toString(),
     });
 
+    // Delete all images from Cloudinary
+    for (const img of deletedCatch.images) {
+      try {
+        await cloudinary.uploader.destroy(img.url);
+      } catch (error) {
+        console.error(`Failed to delete image ${img.url}:`, error);
+      }
+    }
+
     return NextResponse.json<CatchDeletedResponse>({ message: 'Catch deleted successfully', data: parsedDeletedCatch }, { status: 200 });
   } catch (error: unknown) {
     return handleError(error, 'An unexpected error occurred while deleting the catch. Please try again later.');
@@ -250,6 +268,8 @@ export async function DELETE(req: NextRequest): Promise<NextResponse<CatchDelete
 }
 
 export async function PUT(req: NextRequest): Promise<NextResponse<CatchEditedResponse | ErrorResponse>> {
+  const uploadedImages = [];
+
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get('token')?.value;
@@ -314,7 +334,6 @@ export async function PUT(req: NextRequest): Promise<NextResponse<CatchEditedRes
     };
 
     // Handle image uploads
-    const uploadedImages = [];
     const failedImageUploads = [];
     for (const [index, image] of imageFiles.entries()) {
       try {
@@ -397,6 +416,12 @@ export async function PUT(req: NextRequest): Promise<NextResponse<CatchEditedRes
 
     return NextResponse.json<CatchEditedResponse>({ message: 'Catch updated successfully', data: { catch: parsedUpdatedCatch, failedImageUploads: false }}, { status: 200 });
   } catch (error: unknown) {
+    console.error('Error during catch editing:', error);
+
+    // Rollback image uploads
+    const imageURLs = uploadedImages.map((img) => img.url);
+    await deleteImages(imageURLs);
+
     return handleError(error, 'Unable to update catch. Please try again later.');
   }
 }

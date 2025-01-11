@@ -52,6 +52,7 @@ export const GlobalStateProvider = ({ children }: { children: React.ReactNode })
 
   // Fetch all catches from the API
   const fetchCatches = async () => {
+    setLoadingCatches(true);
     try {
       const catchesRespose: CatchesResponse = await getCatches();
       setCatches(catchesRespose.data);

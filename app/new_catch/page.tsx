@@ -10,7 +10,7 @@ import { ICatch } from '@/lib/types/catch';
 import { CatchCreaetedResponse, ErrorResponse, ImageUploadResponse } from '@/lib/types/responses';
 import { UserRole } from '@/lib/types/user';
 import { CatchUtils } from '@/lib/utils/catchUtils';
-import { defaultSort } from '@/lib/utils/utils';
+import { defaultSort, optimizeImage } from '@/lib/utils/utils';
 import { Alert, Autocomplete, Button, Checkbox, Container, Fieldset, Group, NumberInput, Stack, TextInput, Title } from '@mantine/core';
 import { IconCalendar, IconClock, IconInfoCircle, IconSelector } from '@tabler/icons-react';
 import { createCatch } from '@/services/api/catchService';
@@ -218,8 +218,17 @@ export default function Page() {
       console.log('Submitting form data:', parsedFormData);
       console.log(`With ${files.length} images`);
 
+      // Optimize images before uploading
+      console.log('Optimizing images...');
+      const optimizedFiles = await Promise.all(
+        files.map(async (file) => {
+          const optimizedFile = await optimizeImage(file);
+          return optimizedFile;
+        })
+      );
+
       // Send the catch details and image(s) to the API
-      const catchCreatedResponse: CatchCreaetedResponse = await createCatch(parsedFormData, files);
+      const catchCreatedResponse: CatchCreaetedResponse = await createCatch(parsedFormData, optimizedFiles);
       console.log(catchCreatedResponse.message, catchCreatedResponse.data);
       if (catchCreatedResponse.data.failedImageUploads) {
         showNotification('warning', catchCreatedResponse.message, { withTitle: true });

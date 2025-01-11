@@ -30,3 +30,11 @@ export function capitalizeFirstLetter(value: string | null | undefined): string 
   const updated = value.charAt(0).toUpperCase() + value.slice(1);
   return updated;
 }
+
+export function generateFolderName(catchNumber: number): string {
+  return `${process.env.COUDINARY_ROOT_FOLDER}/catches/catch_${String(catchNumber).padStart(5, '0')}`;
+}
+
+export function generatePublicId(catchNumber: number, imageIndex: number): string {
+  return `catch_${String(catchNumber).padStart(5, '0')}_img_${String(imageIndex).padStart(2, '0')}`;
+}

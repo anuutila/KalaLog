@@ -2,13 +2,15 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Autocomplete, Button, Container, Fieldset, Group, NumberInput, Stack, TextInput } from '@mantine/core';
 import { ICatch } from '@/lib/types/catch';
 import { useGlobalState } from '@/context/GlobalState';
-import { CatchUpdatedResponse, ErrorResponse } from '@/lib/types/responses';
+import { CatchEditedResponse } from '@/lib/types/responses';
 import { showNotification } from '@/lib/notifications/notifications';
 import { CatchUtils } from '@/lib/utils/catchUtils';
 import { IconSelector } from '@tabler/icons-react';
 import { useLoadingOverlay } from '@/context/LoadingOverlayContext';
 import FullscreenImage from '../CatchDetails/FullscreenImage';
 import ImageUploadForm from '@/components/ImageUploadForm/ImageUploadForm';
+import { editCatch } from '@/services/api/catchService';
+import { handleApiError } from '@/lib/utils/handleApiError';
 
 interface CatchEditFormProps {
   catchData: ICatch;
@@ -85,28 +87,6 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
     setIsLoading(true);
 
     try {
-      // Upload images to Cloudinary
-      const uploadedImageUrls: string[] = [];
-      for (const file of files) {
-        const formData = new FormData();
-        formData.append('file', file);
-
-        const uploadResponse = await fetch('/api/imageUpload', {
-          method: 'POST',
-          body: formData,
-        });
-
-        if (uploadResponse.ok) {
-          console.log('Image uploaded successfully');
-          const data = await uploadResponse.json();
-          uploadedImageUrls.push(data.url);
-        } else {
-          console.error('Failed to upload image:', await uploadResponse.text());
-          showNotification('error', 'Failed to upload one or more images.', { withTitle: true });
-          return; // Exit if any upload fails
-        }
-      }
-
       // Prepare updated catch data
       const updatedCatch: ICatch = {
         ...formData,
@@ -121,38 +101,28 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
         caughtBy: {
           name: anglerName,
           userId: formData.caughtBy.userId || null,
-        },
-        images: [
-          ...(formData.images || []), // Keep existing images
-          ...uploadedImageUrls.map((url) => ({ url })), // Add new images
-        ],
+        }
       };
 
-      // Send updated catch data to the server
-      const response = await fetch(`/api/catches?id=${updatedCatch.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updatedCatch),
-      });
-  
-      if (response.ok) {
-        const catchUpdateResponse: CatchUpdatedResponse = await response.json();
-        setCatches((prev) =>
-          prev.map((catchItem) =>
-            catchItem.id === catchUpdateResponse.data.id ? catchUpdateResponse.data : catchItem
-          )
-        );
-        showNotification('success', catchUpdateResponse.message, { withTitle: false });
-        setIsInEditView(false);
-        setSelectedCatch(catchUpdateResponse.data);
+      // Send updated catch data to the API
+      const catchUpdateResponse: CatchEditedResponse = await editCatch(updatedCatch, catchData.id, files);
+      console.log(catchUpdateResponse.message, catchUpdateResponse.data);
+      if (catchUpdateResponse.data.failedImageUploads) {
+        showNotification('warning', catchUpdateResponse.message, { withTitle: true });
       } else {
-        const errorResponse: ErrorResponse = await response.json();
-        console.error('Error:', errorResponse);
-        showNotification('error', errorResponse.message, { withTitle: true });
+        showNotification('success', catchUpdateResponse.message, { withTitle: false });
       }
+
+      // Update the catches state
+      setCatches((prev) =>
+        prev.map((catchItem) =>
+          catchItem.id === catchUpdateResponse.data.catch.id ? catchUpdateResponse.data.catch : catchItem
+        )
+      );
+      setIsInEditView(false);
+      setSelectedCatch(catchUpdateResponse.data.catch);
     } catch (error) {
-      console.error('An unexpected error occurred while updating the catch:', error);
-      showNotification('error', 'An unexpected error occurred while updating the catch. Please try again later.', { withTitle: true });
+      handleApiError(error, 'catch editing');
     } finally {
       hideLoading();
       setIsLoading(false);

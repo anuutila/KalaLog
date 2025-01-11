@@ -1,14 +1,32 @@
 import { NextRequest, NextResponse } from 'next/server';
 import cloudinary from '@/lib/cloudinary/cloudinary';
 import { Writable } from 'stream';
+import { AuthorizationResponse, ErrorResponse, ImageUploadResponse } from '@/lib/types/responses';
+import { authorize } from '@/lib/middleware/authorize';
+import { UserRole } from '@/lib/types/user';
+import { CustomError } from '@/lib/utils/customError';
+import { handleError } from '@/lib/utils/handleError';
 
-export const POST = async (req: NextRequest) => {
+export async function POST(req: NextRequest): Promise<NextResponse<ImageUploadResponse | ErrorResponse>> {
   try {
+    // Check if the user is authorized
+    const response = await authorize(req, [UserRole.ADMIN, UserRole.EDITOR]);
+    if (!response.ok) {
+      const errorResponse: ErrorResponse = await response.json();
+      throw new CustomError(errorResponse.message, response.status);
+    } else {
+      const authResponse: AuthorizationResponse = await response.json();
+      console.log(authResponse.message);
+    }
+
     const formData = await req.formData();
     const file = formData.get('file') as Blob | null;
+    const folder = formData.get('folder') as string | null;
+    const publicId = formData.get('publicId') as string | null;
+    const metadata = JSON.parse(formData.get('metadata') as string);
 
-    if (!file) {
-      return NextResponse.json({ error: 'No file provided' }, { status: 400 });
+    if (!file || !folder || !publicId) {
+      throw new CustomError('Missing file, folder, or publicId in the request', 400);
     }
 
     // Convert the Blob to a Buffer
@@ -18,11 +36,17 @@ export const POST = async (req: NextRequest) => {
     // Upload the Buffer to Cloudinary using a stream
     const streamPromise = () =>
       new Promise((resolve, reject) => {
-        const publicIdtest = `catch_${Date.now()}`;
         const uploadStream = cloudinary.uploader.upload_stream(
           {
-            folder: 'KalaLog/catches',
-            public_id: publicIdtest,
+            folder,
+            public_id: publicId,
+            context: {
+              Species: metadata.species, 
+              BodyOfWater: metadata.bodyOfWater, 
+              Coordinates: metadata.coordinates || '', 
+              Date: metadata.date, 
+              Time: metadata.time
+            },
             transformation: [
               { quality: 'auto' },
               { fetch_format: 'auto' },
@@ -52,10 +76,13 @@ export const POST = async (req: NextRequest) => {
 
     const result = await streamPromise();
 
+    const imageUrl: string = (result as any).secure_url;
+    console.log('Image uploaded successfully:', imageUrl);
+
     // Return the secure URL to the client
-    return NextResponse.json({ url: (result as any).secure_url });
+    return NextResponse.json<ImageUploadResponse>({ message: 'Image uploaded succesfully', data: imageUrl }, {status: 201});
   } catch (error: any) {
-    console.error('API error:', error);
-    return NextResponse.json({ error: error.message || 'Internal Server Error' }, { status: 500 });
+    return handleError(error, 'An unexpected error occurred while uploading the image. Please try again later.');
+    // return handleError(new CustomError('An unexpected error occurred while uploading the image. Please try again later.', 500, 'ImageUploadError'));
   }
 };

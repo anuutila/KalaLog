@@ -61,7 +61,7 @@ export default function TableSettingsDrawer({
         </Drawer.Header>
         <Drawer.Body>
           <Stack gap="var(--mantine-spacing-lg)">
-            <Combobox store={columnsCombobox} onOptionSubmit={handleValueSelect} withinPortal={false}>
+            <Combobox store={columnsCombobox} onOptionSubmit={handleValueSelect} withinPortal={false} size="md">
               <Combobox.DropdownTarget>
                 <PillsInput
                   classNames={{ label: classes.input_label }}
@@ -71,6 +71,7 @@ export default function TableSettingsDrawer({
                   fz={'var(--mantine-font-size-md)'}
                   rightSection={<Combobox.Chevron />}
                   rightSectionPointerEvents="none"
+                  size="md"
                 >
                   <Pill.Group>
                     {visibleColumns.length > 0 ? (
@@ -109,6 +110,7 @@ export default function TableSettingsDrawer({
                 setSelectedYear(val);
                 yearCombobox.closeDropdown();
               }}
+              size="md"
             >
               <Combobox.Target>
                 <InputBase
@@ -120,6 +122,7 @@ export default function TableSettingsDrawer({
                   rightSection={<Combobox.Chevron />}
                   rightSectionPointerEvents="none"
                   onClick={() => yearCombobox.toggleDropdown()}
+                  size="md"
                 >
                   {selectedYear || <Input.Placeholder>Valitse vuosi</Input.Placeholder>}
                 </InputBase>
@@ -136,6 +139,7 @@ export default function TableSettingsDrawer({
               label="Näytä suodattimet"
               labelPosition='left'
               onChange={(event) => setFiltersSliderChecked(event.currentTarget.checked)}
+              size="md"
             />
           </Stack>
         </Drawer.Body>

@@ -14,15 +14,27 @@ export type UserInfoResponse = Required<BaseResponse<{
 
 export type CatchesResponse = Required<BaseResponse<ICatch[]>>;
 
-export type CatchCreaetedResponse = Required<BaseResponse<ICatch>>;
+export interface CatchCreatedResponseData {
+  catch: ICatch;
+  failedImageUploads: boolean;
+}
+
+export type CatchCreaetedResponse = Required<BaseResponse<CatchCreatedResponseData>>;
 
 export type CatchDeletedResponse = Required<BaseResponse<ICatch>>;
 
-export type CatchUpdatedResponse = Required<BaseResponse<ICatch>>;
+export interface CatchEditedResponseData {
+  catch: ICatch;
+  failedImageUploads: boolean;
+}
+
+export type CatchEditedResponse = Required<BaseResponse<CatchEditedResponseData>>;
 
 export type SignUpResponse = BaseResponse;
 
 export type LoginResponse = Required<BaseResponse<JwtUserInfo>>;
+
+export type ImageUploadResponse = Required<BaseResponse<string>>;
 
 export type AuthorizationResponse = BaseResponse;
 
@@ -30,8 +42,7 @@ export type LogoutResponse = BaseResponse;
 
 // Common error response type
 export interface ErrorResponse {
-  error: string;
+  errorCode: string;
   message: string;
   details?: any[];
-  statusCode?: number;
 }

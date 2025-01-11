@@ -3,6 +3,8 @@
 import { useGlobalState } from '@/context/GlobalState';
 import { showNotification } from '@/lib/notifications/notifications';
 import { ErrorResponse, LoginResponse } from '@/lib/types/responses';
+import { handleApiError } from '@/lib/utils/handleApiError';
+import { login } from '@/services/api/authservice';
 import { Button, Center, Container, Fieldset, PasswordInput, Stack, Text, TextInput, Title } from '@mantine/core';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -23,32 +25,18 @@ export default function Page() {
     setError(null);
 
     try {
-      const response = await fetch('/api/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ emailOrUsername, password }),
-      });
+      const loginResponse: LoginResponse = await login(emailOrUsername, password);
+      console.log(loginResponse.message);
+      showNotification('success', loginResponse.message, { withTitle: false });
 
-      if (!response.ok) {
-        const errorResponse: ErrorResponse = await response.json();
-        console.error('Error:', errorResponse.message, errorResponse.details);
-        setError(errorResponse.message);
-        showNotification('error', errorResponse.message, { withTitle: true });
-      } else {
-        const loginResponse: LoginResponse = await response.json();
-        console.log(loginResponse.message);
-        showNotification('success', loginResponse.message, { withTitle: false });
+      // Update global state
+      setIsLoggedIn(true);
+      setJwtUserInfo(loginResponse.data);
 
-        // Update global state
-        setIsLoggedIn(true);
-        setJwtUserInfo(loginResponse.data);
-
-        // Redirect to user page
-        router.push('/user');
-      }
+      // Redirect to user page
+      router.push('/user');
     } catch (error) {
-      console.error('Unexpected error logging in:', error);
-      showNotification('error', 'An unexpected error occurred while logging in. Please try again later.', { withTitle: true });
+      handleApiError(error, 'login');
     } finally {
       setLoading(false);
     }

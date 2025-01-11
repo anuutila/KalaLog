@@ -15,6 +15,8 @@ import CatchEditForm from '../CatchEditForm/CatchEditForm';
 import ConfirmDeleteModal from './ConfirmDeleteModal';
 import ConfirmEditModal from './ConfirmEditModal';
 import CancelEditModal from './CancelEditModal';
+import { deleteCatch } from '@/services/api/catchService';
+import { handleApiError } from '@/lib/utils/handleApiError';
 
 interface CatchDetailsProps {
   selectedCatch: ICatch;
@@ -87,29 +89,17 @@ export default function CatchDetails({
   const handleDeleteCatch = async (catchId: string | undefined) => {
     showLoading();
     try {
-      const response = await fetch(`/api/catches?id=${catchId}`, {
-        method: 'DELETE',
-      });
+      const catchDeletedResponse: CatchDeletedResponse = await deleteCatch(catchId);
+      console.log(catchDeletedResponse.message, catchDeletedResponse.data);
+      showNotification('success', catchDeletedResponse.message, { withTitle: false });
 
-      if (!response.ok) {
-        const errorResponse: ErrorResponse = await response.json();
-        console.error('Error:', errorResponse);
-        showNotification('error', errorResponse.message, { withTitle: true });
-      } else {
-        const catchDeletedResponse: CatchDeletedResponse = await response.json();
-        console.log(catchDeletedResponse.message, catchDeletedResponse.data);
-        showNotification('success', catchDeletedResponse.message, { withTitle: false });
+      // Close the modal
+      setSelectedCatch(null);
 
-        // Close the modal
-        setSelectedCatch(null);
-
-        // Update the catches state
-        setCatches((prevCatches) => prevCatches.filter((catchItem) => catchItem.id !== catchId));
-      }
-
+      // Update the catches state
+      setCatches((prevCatches) => prevCatches.filter((catchItem) => catchItem.id !== catchId));
     } catch (error) {
-      console.error('An unexpected error occurred while deleting catch:', error);
-      showNotification('error', 'An unexpected error occurred while deleting the catch. Please try again later.', { withTitle: true });
+      handleApiError(error, 'catch deletion');
     } finally {
       hideLoading();
     }

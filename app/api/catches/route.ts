@@ -4,16 +4,20 @@ import Catch from '@/lib/mongo/models/catch';
 import { ICatch, ICatchSchema } from '@/lib/types/catch';
 import { authorize } from '@/lib/middleware/authorize';
 import { UserRole } from '@/lib/types/user';
-import { AuthorizationResponse, CatchCreaetedResponse, CatchDeletedResponse, CatchesResponse, CatchUpdatedResponse, ErrorResponse } from '@/lib/types/responses';
+import { AuthorizationResponse, CatchCreaetedResponse, CatchDeletedResponse, CatchEditedResponse, CatchesResponse, ErrorResponse, ImageUploadResponse } from '@/lib/types/responses';
 import { handleError } from '@/lib/utils/handleError';
 import { CustomError } from '@/lib/utils/customError';
+import { uploadImage } from '@/services/api/imageService';
+import { generateFolderName, generatePublicId } from '@/lib/utils/utils';
+import { ApiEndpoints } from '@/lib/constants/constants';
+import { cookies } from 'next/headers';
 
 export async function GET(): Promise<NextResponse<CatchesResponse | ErrorResponse>> {
   await dbConnect();
 
   try {
     console.log('Fetching all catches');
-    const catches = await Catch.find({}).lean();
+    const catches = await Catch.find({}).sort({ date: -1, time: -1 }).lean(); // Sort by date and time in descending order
 
     console.log(`Found ${catches.length} catches`);
 
@@ -57,9 +61,11 @@ export async function GET(): Promise<NextResponse<CatchesResponse | ErrorRespons
   }
 }
 
-
 export async function POST(req: NextRequest): Promise<NextResponse<CatchCreaetedResponse | ErrorResponse>> {
   try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get('token')?.value;
+
     // Check if the user is authorized
     const response = await authorize(req, [UserRole.ADMIN, UserRole.EDITOR]);
     if (!response.ok) {
@@ -72,20 +78,93 @@ export async function POST(req: NextRequest): Promise<NextResponse<CatchCreaeted
 
     await dbConnect();
 
+    // Fetch the last catch entry to determine the next catch number
     const lastCatch = await Catch.findOne({}).sort({ catchNumber: -1 }); // Find the catch with the highest catchNumber
-    const nextNumber = lastCatch ? lastCatch.toObject().catchNumber + 1 : 1;
+    const nextCatchNumber = lastCatch ? lastCatch.toObject().catchNumber + 1 : 1;
 
-    const data: ICatch = await req.json();
-    const dataWithNumber: ICatch = { ...data, catchNumber: nextNumber };
+    const catchAndImageData = await req.formData();
 
-    console.log('Creating new catch from data:', dataWithNumber);
+    const imageFiles: File[] = [];
+    const catchData: Record<string, any> = {};
 
-    // Validate with Zod
-    const validatedData = ICatchSchema.parse(dataWithNumber);
+    for (const [key, value] of catchAndImageData.entries()) {
+      if (key === 'imageFiles' && value instanceof File) {
+        // Collect image files
+        imageFiles.push(value);
+      } else if (key === 'location' && typeof value === 'string') {
+        catchData.location = JSON.parse(value);
+      } else if (key === 'caughtBy' && typeof value === 'string') {
+        catchData.caughtBy = JSON.parse(value);
+      } else {
+        catchData[key] = value;
+      }
+    }
+
+    // Validate using Zod schema
+    const validatedFormData: ICatch = ICatchSchema.parse({
+      ...catchData,
+      length: catchData.length ? parseFloat(catchData.length) : null,
+      weight: catchData.weight ? parseFloat(catchData.weight) : null,
+      catchNumber: nextCatchNumber,
+    });
+
+    const catchMetadata = {
+      species: validatedFormData.species,
+      bodyOfWater: validatedFormData.location.bodyOfWater,
+      coordinates: validatedFormData.location.coordinates || null,
+      date: validatedFormData.date,
+      time: validatedFormData.time,
+    };
+
+    // Handle image uploads
+    const uploadedImages = [];
+    const failedImageUploads = [];
+    for (const [index, image] of imageFiles.entries()) {
+      try {
+        // Generate folder and public_id based on catchNumber and index
+        const folderName = generateFolderName(nextCatchNumber);
+        const publicId = generatePublicId(nextCatchNumber, index + 1);
+
+        const formData = new FormData();
+        formData.append('file', image);
+        formData.append('folder', folderName);
+        formData.append('publicId', publicId);
+        formData.append('metadata', JSON.stringify(catchMetadata));
+
+        const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000';
+        const response = await fetch(`${apiBase}${ApiEndpoints.UploadImage}`, {
+          method: 'POST',
+          headers: {
+            'Cookie': `token=${token}`, // Include the JWT token
+          },
+          body: formData,
+        });
+
+        if (response.ok) {
+          const uploadResponse: ImageUploadResponse = await response.json();
+          uploadedImages.push({
+            url: uploadResponse.data
+          });
+        } else {
+          throw new Error();
+        }
+      } catch (error) {
+        console.error(`Failed to upload image: ${generatePublicId(nextCatchNumber, index)}`, error);
+        failedImageUploads.push(image);
+      }
+    }
+
+    const CatchDataWithImageUrls: ICatch = { ...validatedFormData, images: uploadedImages };
+    console.log('Creating new catch from data:', CatchDataWithImageUrls);
+
+    // Validate again with Zod
+    const validatedCatchData = ICatchSchema.parse(CatchDataWithImageUrls);
+
+    console.log('Validated Data:', validatedCatchData);
+    console.log('Image Files:', imageFiles);
 
     // Save to MongoDB
-    const newCatch = await Catch.create(validatedData);
-
+    const newCatch = await Catch.create(validatedCatchData);
     if (!newCatch) {
       throw new Error('Failed to create new catch entry');
     }
@@ -103,7 +182,20 @@ export async function POST(req: NextRequest): Promise<NextResponse<CatchCreaeted
       createdBy: newCatch.createdBy?.toString(),
     });
 
-    return NextResponse.json<CatchCreaetedResponse>({ message: 'New catch entry created successfully 🎣', data: parsedNewCatch }, { status: 201 });
+    if (failedImageUploads.length > 0) {
+      return NextResponse.json<CatchCreaetedResponse>(
+        {
+          message: `Catch created successfully, but ${failedImageUploads.length} image(s) failed to upload.`,
+          data: {
+            catch: parsedNewCatch,
+            failedImageUploads: true,
+          }
+        },
+        { status: 207 }
+      );
+    }
+
+    return NextResponse.json<CatchCreaetedResponse>({ message: 'New catch entry created successfully 🎣', data: { catch: parsedNewCatch, failedImageUploads: false } }, { status: 201 });
   } catch (error: unknown) {
     return handleError(error, 'Unable to create catch entry. Please try again later.');
   }
@@ -153,12 +245,15 @@ export async function DELETE(req: NextRequest): Promise<NextResponse<CatchDelete
 
     return NextResponse.json<CatchDeletedResponse>({ message: 'Catch deleted successfully', data: parsedDeletedCatch }, { status: 200 });
   } catch (error: unknown) {
-    return handleError(error, 'Unable to delete catch. Please try again later.');
+    return handleError(error, 'An unexpected error occurred while deleting the catch. Please try again later.');
   }
 }
 
-export async function PUT(req: NextRequest): Promise<NextResponse<CatchUpdatedResponse | ErrorResponse>> {
+export async function PUT(req: NextRequest): Promise<NextResponse<CatchEditedResponse | ErrorResponse>> {
   try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get('token')?.value;
+
     // Check if the user is authorized
     const response = await authorize(req, [UserRole.ADMIN, UserRole.EDITOR]);
     if (!response.ok) {
@@ -179,11 +274,87 @@ export async function PUT(req: NextRequest): Promise<NextResponse<CatchUpdatedRe
       throw new Error('Catch ID missing');
     }
 
-    // Parse the body and validate with Zod
-    const body: ICatch = await req.json();
+    const catchAndImageData = await req.formData();
+
+    const imageFiles: File[] = [];
+    const catchData: Record<string, any> = {};
+
+    for (const [key, value] of catchAndImageData.entries()) {
+      if (key === 'imageFiles' && value instanceof File) {
+        // Collect image files
+        imageFiles.push(value);
+      } else if (key === 'location' && typeof value === 'string') {
+        catchData.location = JSON.parse(value);
+      } else if (key === 'caughtBy' && typeof value === 'string') {
+        catchData.caughtBy = JSON.parse(value);
+      } else if (key === 'images' && typeof value === 'string') {
+        catchData.images = JSON.parse(value);
+      } else if (key === 'createdAt' && typeof value === 'string') {
+        catchData.createdAt = new Date(value);
+      } else if (key === 'catchNumber' && typeof value === 'string') {
+        catchData.catchNumber = parseInt(value);
+      } else {
+        catchData[key] = value;
+      }
+    }
+
+    // Validate using Zod schema
+    const validatedFormData: ICatch = ICatchSchema.parse({
+      ...catchData,
+      length: catchData.length ? parseFloat(catchData.length) : null,
+      weight: catchData.weight ? parseFloat(catchData.weight) : null,
+    });
+
+    const catchMetadata = {
+      species: validatedFormData.species,
+      bodyOfWater: validatedFormData.location.bodyOfWater,
+      coordinates: validatedFormData.location.coordinates || null,
+      date: validatedFormData.date,
+      time: validatedFormData.time,
+    };
+
+    // Handle image uploads
+    const uploadedImages = [];
+    const failedImageUploads = [];
+    for (const [index, image] of imageFiles.entries()) {
+      try {
+        // Generate folder and public_id based on catchNumber and index
+        const folderName = generateFolderName(catchData.catchNumber);
+        const publicId = generatePublicId(catchData.catchNumber, index + 1 + (validatedFormData.images?.length || 0));
+
+        const formData = new FormData();
+        formData.append('file', image);
+        formData.append('folder', folderName);
+        formData.append('publicId', publicId);
+        formData.append('metadata', JSON.stringify(catchMetadata));
+
+        const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000';
+        const response = await fetch(`${apiBase}${ApiEndpoints.UploadImage}`, {
+          method: 'POST',
+          headers: {
+            'Cookie': `token=${token}`, // Include the JWT token
+          },
+          body: formData,
+        });
+
+        if (response.ok) {
+          const uploadResponse: ImageUploadResponse = await response.json();
+          uploadedImages.push({
+            url: uploadResponse.data
+          });
+        } else {
+          throw new Error();
+        }
+      } catch (error) {
+        console.error(`Failed to upload image: ${generatePublicId(catchData.catchNumber, index)}`, error);
+        failedImageUploads.push(image);
+      }
+    }
+
+    const CatchDataWithImageUrls: ICatch = { ...validatedFormData, images: [...validatedFormData.images ?? [], ...uploadedImages] };
 
     const ICatchUpdateSchema = ICatchSchema.omit({ createdAt: true }).partial(); // CretedAt is not updatable
-    const validatedData = ICatchUpdateSchema.parse(body);
+    const validatedData = ICatchUpdateSchema.parse(CatchDataWithImageUrls);
 
     console.log(`Updating catch with ID: ${catchId}`, validatedData);
 
@@ -211,7 +382,20 @@ export async function PUT(req: NextRequest): Promise<NextResponse<CatchUpdatedRe
 
     console.log('Updated catch:', parsedUpdatedCatch);
 
-    return NextResponse.json<CatchUpdatedResponse>({ message: 'Catch updated successfully', data: parsedUpdatedCatch }, { status: 200 });
+    if (failedImageUploads.length > 0) {
+      return NextResponse.json<CatchCreaetedResponse>(
+        {
+          message: `Catch updated successfully, but ${failedImageUploads.length} image(s) failed to upload.`,
+          data: {
+            catch: parsedUpdatedCatch,
+            failedImageUploads: true,
+          }
+        },
+        { status: 207 }
+      );
+    }
+
+    return NextResponse.json<CatchEditedResponse>({ message: 'Catch updated successfully', data: { catch: parsedUpdatedCatch, failedImageUploads: false }}, { status: 200 });
   } catch (error: unknown) {
     return handleError(error, 'Unable to update catch. Please try again later.');
   }

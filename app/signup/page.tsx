@@ -6,6 +6,9 @@ import { ErrorResponse, SignUpResponse } from '@/lib/types/responses';
 import { showNotification } from '@/lib/notifications/notifications';
 import { Button, Center, Container, Fieldset, PasswordInput, Stack, Text, TextInput, Title } from '@mantine/core';
 import Link from 'next/link';
+import { signup } from '@/services/api/authservice';
+import { HttpClientError } from '@/services/httpClient';
+import { handleApiError } from '@/lib/utils/handleApiError';
 
 export default function Page() {
   const [formData, setFormData] = useState({
@@ -38,40 +41,24 @@ export default function Page() {
     setError(null);
 
     try {
-      const response = await fetch('/api/signup', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
+      const signupResponse: SignUpResponse = await signup(formData);
+      console.log(signupResponse.message);
+      showNotification('success', signupResponse.message, { withTitle: false });
 
-      if (!response.ok) {
-        const errorResponse: ErrorResponse = await response.json();
-        console.error('Error:', errorResponse);
-
-        if (errorResponse.error === 'ValidationError' && errorResponse.details) {
-          // Map validation errors to field errors
-          const newFieldErrors: { [key: string]: string } = {};
-          errorResponse.details.forEach((detail) => {
-            const fieldName = detail.path[0] as string;
-            newFieldErrors[fieldName] = detail.message;
-          });
-          setFieldErrors(newFieldErrors);
-        } else {
-          setError(errorResponse.message);
-        }
-
-        showNotification('error', errorResponse.message, { withTitle: true });
+      // Redirect to login page after successful registration
+      router.push('/login');
+    } catch (error) {
+      if (error instanceof HttpClientError && error.errorCode === 'ValidationError' && error.details) {
+        // Map validation errors to field errors
+        const newFieldErrors: { [key: string]: string } = {};
+        error.details.forEach((detail) => {
+          const fieldName = detail.path[0] as string;
+          newFieldErrors[fieldName] = detail.message;
+        });
+        setFieldErrors(newFieldErrors); // Update form field errors
       } else {
-        const signupResponse: SignUpResponse = await response.json();
-        console.log(signupResponse.message);
-        showNotification('success', signupResponse.message, { withTitle: false });
-  
-        // Redirect to login page after successful registration
-        router.push('/login');
+        handleApiError(error); // Centralized handling for other errors
       }
-    } catch (err) {
-      console.error('An unexpected error occurred while signing up:', err);
-      showNotification('error', 'An unexpected error occurred while signing up. Please try again later.', { withTitle: true });
     } finally {
       setLoading(false);
     }

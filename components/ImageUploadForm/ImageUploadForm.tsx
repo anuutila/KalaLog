@@ -12,7 +12,7 @@ export interface ImageUploadFormRef {
 interface ImageUploadFormProps {
   catchData?: ICatch | null;
   setFullscreenImage: (src: string) => void;
-  setFiles: (files: File[]) => void;
+  setFiles: React.Dispatch<React.SetStateAction<File[]>>;
   ref?: ForwardedRef<ImageUploadFormRef>;
 }
 
@@ -27,7 +27,7 @@ export default function ImageUploadForm({ catchData, setFullscreenImage, setFile
   }, [catchData]);
 
   const handleDrop = (acceptedFiles: File[]) => {
-    setFiles(acceptedFiles);
+    setFiles((prev) => [...prev, ...acceptedFiles]);
     const newPreviews = acceptedFiles.map((file) => URL.createObjectURL(file));
     setPreviews((prev) => [...prev, ...newPreviews]);
   };

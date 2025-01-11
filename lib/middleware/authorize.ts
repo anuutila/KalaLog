@@ -22,7 +22,6 @@ export const authorize = async (req: NextRequest, authorizedRoles: string[]): Pr
       throw new CustomError('Authorization failed. Insufficient permissions', 403);
     }
 
-    // req.user = decoded;
     return NextResponse.json<AuthorizationResponse>({ message: 'User succesfully authorized' }, { status: 200 });
   } catch (error) {
     return handleError(error, 'Failed to authorize');

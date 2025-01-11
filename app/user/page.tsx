@@ -4,6 +4,8 @@ import { useGlobalState } from "@/context/GlobalState";
 import { useLoadingOverlay } from "@/context/LoadingOverlayContext";
 import { showNotification } from "@/lib/notifications/notifications";
 import { ErrorResponse, LogoutResponse } from "@/lib/types/responses";
+import { handleApiError } from "@/lib/utils/handleApiError";
+import { logout } from "@/services/api/authservice";
 import { LoadingOverlay } from "@mantine/core";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
@@ -26,27 +28,18 @@ export default function Page() {
 
   const handleLogout = async () => {
     try {
-      const response = await fetch('/api/logout', { method: 'POST' });
+      const logoutResponse: LogoutResponse = await logout();
+      console.log(logoutResponse.message);
+      showNotification('success', `${logoutResponse.message} See you later ${jwtUserInfo?.firstname}! 👋`, { withTitle: false })
+      
+      // Update global state
+      setIsLoggedIn(false);
+      setJwtUserInfo(null);
 
-      if (response.ok) {
-        const logoutResponse: LogoutResponse = await response.json();
-        console.log(logoutResponse.message);
-        showNotification('success', `${logoutResponse.message} See you later ${jwtUserInfo?.firstname}! 👋`, { withTitle: false });
-
-        // Update global state
-        setIsLoggedIn(false);
-        setJwtUserInfo(null);
-
-        // Redirect to the login page
-        router.push('/login');
-      } else {
-        const errorResponse: ErrorResponse = await response.json();
-        console.error('Failed to log out:', errorResponse.message, errorResponse.details);
-        showNotification('error', 'An unexpected error occurred while logging out. Please try again.', { withTitle: true });
-      }
+      // Redirect to the login page
+      router.push('/login');
     } catch (error) {
-      console.error('Unexpected error logging out:', error);
-      showNotification('error', 'An unexpected error occurred while logging out. Please try again.', { withTitle: true });
+      handleApiError(error, 'logout');
     }
   };
 

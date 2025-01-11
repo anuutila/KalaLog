@@ -7,12 +7,19 @@ import { useGlobalState } from '@/context/GlobalState';
 import { useLoadingOverlay } from '@/context/LoadingOverlayContext';
 import { showNotification } from '@/lib/notifications/notifications';
 import { ICatch } from '@/lib/types/catch';
-import { CatchCreaetedResponse, ErrorResponse } from '@/lib/types/responses';
+import { CatchCreaetedResponse, ErrorResponse, ImageUploadResponse } from '@/lib/types/responses';
 import { UserRole } from '@/lib/types/user';
 import { CatchUtils } from '@/lib/utils/catchUtils';
 import { defaultSort } from '@/lib/utils/utils';
 import { Alert, Autocomplete, Button, Checkbox, Container, Fieldset, Group, NumberInput, Stack, TextInput, Title } from '@mantine/core';
 import { IconCalendar, IconClock, IconInfoCircle, IconSelector } from '@tabler/icons-react';
+import { createCatch } from '@/services/api/catchService';
+import { handleApiError } from '@/lib/utils/handleApiError';
+import { uploadImage } from '@/services/api/imageService';
+
+interface CatchAndImagesData extends Omit<ICatch, 'id' | 'createdAt' | 'catchNumber'> {
+  imagesData: File[];
+}
 
 export default function Page() {
   const { catches, setCatches, isLoggedIn, jwtUserInfo } = useGlobalState();
@@ -190,28 +197,6 @@ export default function Page() {
     showLoading();
     setIsLoading(true);
     try {
-      // Upload images to Cloudinary
-      const uploadedImageUrls: string[] = [];
-      for (const file of files) {
-        const formData = new FormData();
-        formData.append('file', file);
-
-        const uploadResponse = await fetch('/api/imageUpload', {
-          method: 'POST',
-          body: formData,
-        });
-
-        if (uploadResponse.ok) {
-          console.log('Image uploaded successfully');
-          const data = await uploadResponse.json();
-          uploadedImageUrls.push(data.url);
-        } else {
-          console.error('Failed to upload image:', await uploadResponse.text());
-          showNotification('error', 'Failed to upload one or more images.', { withTitle: true });
-          return; // Exit if any upload fails
-        }
-      }
-
       // Prepare form data for submission
       const parsedFormData: Omit<ICatch, 'id' | 'createdAt' | 'catchNumber'> = {
         ...formData,
@@ -227,62 +212,51 @@ export default function Page() {
           name: anglerName,
           userId: null,
         },
-        createdBy: jwtUserInfo?.userId ?? null,
-        images: [
-          ...(formData.images || []), // Keep existing images
-          ...uploadedImageUrls.map((url) => ({ url })), // Add new images
-        ],
+        createdBy: jwtUserInfo?.userId ?? null
       };
 
       console.log('Submitting form data:', parsedFormData);
+      console.log(`With ${files.length} images`);
 
-      // Send the form data to the API
-      const response = await fetch('/api/catches', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(parsedFormData),
-      });
-
-      if (!response.ok) {
-        const errorResponse: ErrorResponse = await response.json();
-        console.error('Error:', errorResponse.message, errorResponse.details);
-        showNotification('error', errorResponse.message, { withTitle: true });
+      // Send the catch details and image(s) to the API
+      const catchCreatedResponse: CatchCreaetedResponse = await createCatch(parsedFormData, files);
+      console.log(catchCreatedResponse.message, catchCreatedResponse.data);
+      if (catchCreatedResponse.data.failedImageUploads) {
+        showNotification('warning', catchCreatedResponse.message, { withTitle: true });
       } else {
-        const catchCreatedResponse: CatchCreaetedResponse = await response.json();
-        console.log(catchCreatedResponse.message, catchCreatedResponse.data);
         showNotification('success', catchCreatedResponse.message, { withTitle: false });
-
-        // Update the catches in global state
-        setCatches((prevCatches) => defaultSort([catchCreatedResponse.data, ...prevCatches]));
-
-        // Reset the form
-        setFormData({
-          species: '',
-          length: undefined,
-          weight: undefined,
-          lure: null,
-          location: { bodyOfWater: 'Nerkoonjärvi', spot: null, coordinates: null },
-          date: new Date().toISOString().split('T')[0],
-          time: new Date(new Date().getTime() + 120 * 60000).toISOString().split('T')[1].slice(0, 5),
-          caughtBy: { name: '', userId: null },
-        });
-        setSpeciesValue('');
-        setLengthValue('');
-        setWeightValue('');
-        setLureValue('');
-        setSpotValue('');
-        setUseGps(false);
-        setGpsError(null);
-        setAnglerName('');
-        handleClearImages();
-        if (watchId !== null) {
-          navigator.geolocation.clearWatch(watchId);
-          setWatchId(null);
-        }
       }
+
+      // Update the catches in global state
+      setCatches((prevCatches) => defaultSort([catchCreatedResponse.data.catch, ...prevCatches]));
+
+      // Reset the form
+      setFormData({
+        species: '',
+        length: undefined,
+        weight: undefined,
+        lure: null,
+        location: { bodyOfWater: 'Nerkoonjärvi', spot: null, coordinates: null },
+        date: new Date().toISOString().split('T')[0],
+        time: new Date(new Date().getTime() + 120 * 60000).toISOString().split('T')[1].slice(0, 5),
+        caughtBy: { name: '', userId: null },
+      });
+      setSpeciesValue('');
+      setLengthValue('');
+      setWeightValue('');
+      setLureValue('');
+      setSpotValue('');
+      setUseGps(false);
+      setGpsError(null);
+      setAnglerName('');
+      handleClearImages();
+      if (watchId !== null) {
+        navigator.geolocation.clearWatch(watchId);
+        setWatchId(null);
+      }
+
     } catch (error) {
-      console.error('Unexpected error occured while creating new catch:', error);
-      showNotification('error', 'An unexpected error occurred while creating a new catch. Please try again.', { withTitle: true });
+      handleApiError(error, 'catch creation');
     } finally {
       setIsLoading(false);
       hideLoading();

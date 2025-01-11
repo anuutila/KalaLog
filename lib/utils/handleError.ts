@@ -37,7 +37,7 @@ export const handleError = (
     details = [error.message];
   }
   const response: ErrorResponse = {
-    error: errorCode,
+    errorCode: errorCode,
     message,
     details,
   };

@@ -148,3 +148,29 @@ export const CatchUtils = {
       .sort((a, b) => b.catchCount - a.catchCount);
   }
 };
+
+export function createCatchAndImagesFormData(catchData: Omit<ICatch, 'id' | 'createdAt' | 'catchNumber'>, imageFiles: File[]): FormData {
+  const catchAndImageData = new FormData();
+
+  // Append form data (parsedFormData fields)
+  Object.entries(catchData).forEach(([key, value]) => {
+    if (value !== null && value !== undefined) {
+      if (key === 'location') {
+        catchAndImageData.append(key, JSON.stringify(value));
+      } else if (key === 'caughtBy') {
+        catchAndImageData.append(key, JSON.stringify(value));
+      } else if (key === 'images') {
+        catchAndImageData.append(key, JSON.stringify(value));
+      } else {
+      catchAndImageData.append(key, value as string);
+      }
+    }
+  });
+
+  // Append files (imagesData)
+  imageFiles.forEach((file, index) => {
+    catchAndImageData.append(`imageFiles`, file);
+  });
+
+  return catchAndImageData;
+}

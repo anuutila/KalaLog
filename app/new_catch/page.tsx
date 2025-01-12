@@ -7,23 +7,20 @@ import { useGlobalState } from '@/context/GlobalState';
 import { useLoadingOverlay } from '@/context/LoadingOverlayContext';
 import { showNotification } from '@/lib/notifications/notifications';
 import { ICatch } from '@/lib/types/catch';
-import { CatchCreaetedResponse, ErrorResponse, ImageUploadResponse } from '@/lib/types/responses';
+import { CatchCreaetedResponse } from '@/lib/types/responses';
 import { UserRole } from '@/lib/types/user';
 import { CatchUtils } from '@/lib/utils/catchUtils';
 import { defaultSort, optimizeImage } from '@/lib/utils/utils';
 import { Alert, Autocomplete, Button, Checkbox, Container, Fieldset, Group, NumberInput, Stack, TextInput, Title } from '@mantine/core';
-import { IconCalendar, IconClock, IconInfoCircle, IconSelector } from '@tabler/icons-react';
+import { IconCalendar, IconCheck, IconClock, IconFish, IconFishHook, IconInfoCircle, IconMap, IconMapPin, IconSelector, IconUser } from '@tabler/icons-react';
 import { createCatch } from '@/services/api/catchService';
 import { handleApiError } from '@/lib/utils/handleApiError';
-import { uploadImage } from '@/services/api/imageService';
-
-interface CatchAndImagesData extends Omit<ICatch, 'id' | 'createdAt' | 'catchNumber'> {
-  imagesData: File[];
-}
 
 export default function Page() {
   const { catches, setCatches, isLoggedIn, jwtUserInfo } = useGlobalState();
   const { showLoading, hideLoading } = useLoadingOverlay();
+  const [isFormValid, setIsFormValid] = useState(false);
+  const formRef = useRef<HTMLFormElement>(null);
 
   const [formData, setFormData] = useState<Omit<ICatch, 'id' | 'createdAt' | 'catchNumber'>>({
     species: '',
@@ -70,6 +67,7 @@ export default function Page() {
   const [disableScroll, setDisableScroll] = useState(false);
 
   const imageUploadFormRef = useRef<ImageUploadFormRef>(null);
+  const scrollPositionRef = useRef(0);
 
   useEffect(() => {
     setDisableScroll(fullscreenImage !== null);
@@ -81,25 +79,29 @@ export default function Page() {
   // Disable scrolling when the fullscreen image is open
   useEffect(() => {
     if (disableScroll) {
+      // Save the current scroll position
+      scrollPositionRef.current = window.scrollY;
+      // Disable scrolling
       document.documentElement.style.overflow = 'hidden'; // Prevent scrolling on <html>
       document.body.style.overflow = 'hidden'; // Prevent scrolling on <body>
       document.body.style.position = 'fixed'; // Prevent content shift on mobile
-      document.body.style.top = `-${window.scrollY}px`; // Keep scroll position
+      document.body.style.top = `-${scrollPositionRef.current}px`; // Keep scroll position
     } else {
-      const scrollY = document.body.style.top;
+      // Restore scrolling
       document.body.style.position = '';
       document.body.style.top = '';
       document.documentElement.style.overflow = ''; // Restore scrolling on <html>
       document.body.style.overflow = ''; // Restore scrolling on <body>
-      window.scrollTo(0, parseInt(scrollY || '0') * -1); // Restore scroll position
+      // Restore scroll position
+      window.scrollTo(0, scrollPositionRef.current);
     }
-  
     return () => {
+      // Cleanup on unmount
       document.documentElement.style.overflow = ''; // Restore scrolling on <html>
       document.body.style.overflow = ''; // Restore scrolling on <body>
-      document.body.style.position = ''; // Clean up on unmount
-      document.body.style.top = ''; // Reset top style
-    }
+      document.body.style.position = '';
+      document.body.style.top = '';
+    };
   }, [disableScroll]);
 
   const handleClearImages = () => {
@@ -349,34 +351,30 @@ export default function Page() {
       null
   , [anglersDropdownOpened, filteredAnglerOptions.length, anglerName]);
 
+  const handleFormChange = () => {
+    setIsFormValid(formRef.current?.checkValidity() ?? false)
+  };
+
+  useEffect(() => {
+    handleFormChange();
+  }, [speciesValue, anglerName, formData.date, formData.time]);
+
   return (
     <Container size='sm' p={'md'}>
+      <Title c='white' order={2} mb={'md'}>Saaliin tiedot</Title>
       { (!isLoggedIn || jwtUserInfo?.role === UserRole.VIEWER )&& <Alert variant="light" color="red" radius="md" title="Huomio" icon={<IconInfoCircle />} mb={'md'}>
         {jwtUserInfo?.role === UserRole.VIEWER ? 'Sinulla ei ole uuden saaliin lisäämiseen tarvittavia oikeuksia.' : 'Kirjaudu sisään lisätäksesi uuden saaliin.'}
       </Alert> }
-      <form onSubmit={handleSubmit}>
-        <Fieldset disabled={!isLoggedIn || jwtUserInfo?.role === UserRole.VIEWER || isLoading} variant='unstyled'>
-          <Stack gap={8}>
-            <Title c='white' order={2} pb={'md'}>Saaliin tiedot</Title>
+      <form onSubmit={handleSubmit} ref={formRef}>
+        <Fieldset disabled={!isLoggedIn || jwtUserInfo?.role === UserRole.VIEWER || isLoading} variant='default' radius={'md'} pt={'md'}>
+          <Stack gap={'lg'}>
             
-            <ImageUploadForm
-              ref={imageUploadFormRef}
-              setFullscreenImage={setFullscreenImage}
-              setFiles={setFiles}
-            />
-
-            {fullscreenImage && (
-              <FullscreenImage
-                src={fullscreenImage}
-                onClose={() => setFullscreenImage(null)}
-              />
-            )}
-
             <Autocomplete
               size='md'
               type='text'
               name='species'
-              label="Laji"
+              label="Kalalaji"
+              placeholder='Kalalaji'
               value={speciesValue}
               required
               onChange={handleSpeciesChange}
@@ -385,8 +383,10 @@ export default function Page() {
               rightSection={speciesRightSection}
               data={speciesOptions}
               defaultDropdownOpened={false}
+              leftSection={<IconFish />}
+              leftSectionPointerEvents='none'
             />
-            <Group grow>
+            <Group grow gap={'lg'}>
               <NumberInput
                 size='md'
                 name='length'
@@ -418,6 +418,7 @@ export default function Page() {
               size='md'
               type='text'
               label="Viehe"
+              placeholder='Viehen merkki ja malli'
               name='lure'
               value={lureValue}
               onChange={handleLureChange}
@@ -425,42 +426,53 @@ export default function Page() {
               onBlur={() => setLuresDropdownOpened(false)}
               rightSection={lureRightSection}
               data={lureOptions}
+              leftSection={<IconFishHook />}
+              leftSectionPointerEvents='none'
             />
-            <Autocomplete
-              size='md'
-              type='text'
-              name='spot'
-              label="Paikka"
-              placeholder="esim. Ahvenniemi"
-              value={spotValue}
-              onChange={handleSpotChange}
-              onFocus={() => setSpotsDropdownOpened(true)}
-              onBlur={() => setSpotsDropdownOpened(false)}
-              rightSection={spotRightSection}
-              data={spotOptions}
-              defaultDropdownOpened={false}
-            />
-            <Group grow>
-              <TextInput
+
+            <Stack p={0}>
+              <Autocomplete
                 size='md'
                 type='text'
-                name='coordinates'
-                label="Koordinaatit"
-                placeholder=""
-                value={formData.location.coordinates ?? ''}
-                onChange={handleChange}
-                disabled={!useGps || gpsError !== null}
-                pattern='^([-+]?\d{1,3}\.\d{1,12},\s*[-+]?\d{1,3}\.\d{1,12})?$' // GPS coordinates pattern
+                name='spot'
+                label="Paikka"
+                placeholder="Tarkka paikan nimi"
+                value={spotValue}
+                onChange={handleSpotChange}
+                onFocus={() => setSpotsDropdownOpened(true)}
+                onBlur={() => setSpotsDropdownOpened(false)}
+                rightSection={spotRightSection}
+                data={spotOptions}
+                defaultDropdownOpened={false}
+                leftSection={<IconMap />}
+                leftSectionPointerEvents='none'
               />
-              <Checkbox
-                size='md'
-                checked={useGps && gpsError === null}
-                onChange={handleGpsToggle}
-                label="GPS-koordinaatit"
-                error={gpsError}
-              />
-            </Group>
-            <Group grow>
+              <Group grow gap={'lg'}>
+                <TextInput
+                  size='md'
+                  type='text'
+                  name='coordinates'
+                  label="Koordinaatit"
+                  placeholder="N, E"
+                  value={formData.location.coordinates ?? ''}
+                  onChange={handleChange}
+                  disabled={!useGps || gpsError !== null}
+                  pattern='^([-+]?\d{1,3}\.\d{1,12},\s*[-+]?\d{1,3}\.\d{1,12})?$' // GPS coordinates pattern
+                  leftSection={<IconMapPin />}
+                  leftSectionPointerEvents='none'
+                />
+                <Checkbox
+                  pt={29}
+                  size='md'
+                  checked={useGps && gpsError === null}
+                  onChange={handleGpsToggle}
+                  label="GPS-koordinaatit"
+                  error={gpsError}
+                />
+              </Group>
+            </Stack>
+
+            <Group grow gap={'lg'}>
               <TextInput
                 size='md'
                 type='date'
@@ -490,7 +502,7 @@ export default function Page() {
               type='text'
               name='caughtBy'
               label="Kalastajan nimi"
-              placeholder=""
+              placeholder="Kalastajan etunimi"
               value={anglerName}
               required
               onChange={handleAnglerChange}
@@ -499,8 +511,33 @@ export default function Page() {
               rightSection={anglersRightSection}
               data={anglerOptions}
               defaultDropdownOpened={false}
+              leftSection={<IconUser />}
+              leftSectionPointerEvents='none'
             />
-            <Button size='md' type="submit" loading={isLoading} loaderProps={{ type: 'dots' }} mt={'xs'} mb={'md'}>
+
+            <ImageUploadForm
+              ref={imageUploadFormRef}
+              setFullscreenImage={setFullscreenImage}
+              setFiles={setFiles}
+            />
+
+            {fullscreenImage && (
+              <FullscreenImage
+                src={fullscreenImage}
+                onClose={() => setFullscreenImage(null)}
+              />
+            )}
+
+            <Button 
+              size='md' 
+              type="submit" 
+              loading={isLoading} 
+              loaderProps={{ type: 'dots' }} 
+              my={'xs'} 
+              leftSection={<IconCheck />} 
+              radius={'md'}
+              disabled={!isFormValid}
+            >
               Lähetä
             </Button>
           </Stack>

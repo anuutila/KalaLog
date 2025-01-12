@@ -1,10 +1,10 @@
-import React, { use, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ICatch } from "@/lib/types/catch";
-import { ActionIcon, Box, Container, Group, Stack, Text, Title } from '@mantine/core';
+import { ActionIcon, Box, Container, Group, Stack, Title } from '@mantine/core';
 import { IconPencil, IconTrash, IconX } from '@tabler/icons-react';
 import classes from './CatchDetails.module.css';
 import { useHeaderActions } from '@/context/HeaderActionsContext';
-import { CatchDeletedResponse, ErrorResponse } from '@/lib/types/responses';
+import { CatchDeletedResponse } from '@/lib/types/responses';
 import { showNotification } from '@/lib/notifications/notifications';
 import { useGlobalState } from '@/context/GlobalState';
 import { useLoadingOverlay } from '@/context/LoadingOverlayContext';
@@ -139,7 +139,7 @@ export default function CatchDetails({
       }}
       className={disableScroll ? classes.noScroll : ''}
     >
-      <Container p={0}>
+      <Container p={0} size={'sm'} >
         <Stack gap={'lg'}>
           {/* Header */}
           <Group>

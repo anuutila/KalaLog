@@ -1,6 +1,6 @@
 import { ColDef } from 'ag-grid-community';
 import { LocationCellRenderer } from './LocationCellRenderer/LocationCellRenderer';
-import { lengthFormatter, weightFormatter, upperCaseFormatter, dateFormatter, customUnitComparator, locationComparator } from '@/lib/utils/agGridUtils';
+import { lengthFormatter, weightFormatter, upperCaseFormatter, dateFormatter, customUnitComparator } from '@/lib/utils/agGridUtils';
 import { ICatch } from '@/lib/types/catch';
 import { speciesCellRenderer } from './SpeciesCellRenderer/SpeciesCellRenderer';
 

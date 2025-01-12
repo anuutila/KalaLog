@@ -18,15 +18,17 @@ export default function CatchesOverview({ selectedYear, rowCount, filteredCatche
       <Title c='white' order={2} p={0} mb={'md'} ml={'md'}>{selectedYear ?? '\u00A0'}</Title>
       <Box style={{ position: "relative" }}>
         <ScrollArea viewportRef={scrollRef} type="never">
-          <Group gap="xs" wrap="nowrap" pl="md" pr={30}>
+          <Group gap="sm" wrap="nowrap" pl="md" pr={30}>
             <Badge
-              size="md"
+              size="lg"
               classNames={{ root: classes.badge }}
-              variant="outline"
+              variant="light"
               data-content={`Yhteensä: ${rowCount}`}
+              px={12}
+              h={28}
+              pt={1}
             >
-              {rowCount}
-            </Badge>
+          </Badge>
             <StatsBadges filteredCatches={filteredCatches} />
           </Group>
         </ScrollArea>

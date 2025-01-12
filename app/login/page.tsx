@@ -2,10 +2,11 @@
 
 import { useGlobalState } from '@/context/GlobalState';
 import { showNotification } from '@/lib/notifications/notifications';
-import { ErrorResponse, LoginResponse } from '@/lib/types/responses';
+import { LoginResponse } from '@/lib/types/responses';
 import { handleApiError } from '@/lib/utils/handleApiError';
 import { login } from '@/services/api/authservice';
 import { Button, Center, Container, Fieldset, PasswordInput, Stack, Text, TextInput, Title } from '@mantine/core';
+import { IconLock, IconLogin, IconUser } from '@tabler/icons-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -43,34 +44,50 @@ export default function Page() {
   };
 
   return (
-    <Container maw={{ base: '20rem', md: '25rem' }} p={'md'} pt={'xl'}>
+    <Container size={'md'} px={'md'} py={'xl'}>
       <Stack align='stretch'>
         <Center mb={'md'}>
-          <Title order={3}>Kirjaudu sisään</Title>
+          <Title order={2} c={'white'}>Kirjaudu sisään</Title>
         </Center>
         <Stack>
-          <Fieldset variant='unstyled' disabled={isLoggedIn}>
+          <Fieldset variant='default' radius={'md'} pt={'md'} disabled={isLoggedIn}>
             <form onSubmit={handleSubmit}>
-              <Stack gap={'sm'}>
+              <Stack gap={'lg'}>
                 <TextInput
                   size='md'
                   label="Käyttäjätunnus tai sähköposti"
+                  placeholder='Käyttäjätunnus tai sähköposti'
                   type="text"
                   name="emailOrUsername"
                   value={emailOrUsername}
                   onChange={(e) => setEmailOrUsername(e.target.value)}
                   required
+                  leftSection={<IconUser size={20}/>}
+                  leftSectionPointerEvents='none'
                 />
                 <PasswordInput
                   size='md'
                   label="Salasana"
                   name="password"
+                  placeholder='Salasana'
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
+                  leftSection={<IconLock size={20}/>}
+                  leftSectionPointerEvents='none'
                 />
+                
                 {/* {error && <p style={{ color: 'red' }}>{error}</p>} */}
-                <Button type="submit" size='md' mt={'lg'} loading={loading} loaderProps={{ type: 'dots' }}>
+                <Button 
+                  leftSection={<IconLogin />} 
+                  type="submit" 
+                  size='md' 
+                  my={'xs'}
+                  radius={'md'}
+                  loading={loading} 
+                  loaderProps={{ type: 'dots' }}
+                  disabled={!password || !emailOrUsername}
+                >
                   Kirjaudu
                 </Button>
               </Stack>

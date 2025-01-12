@@ -6,7 +6,8 @@ import { showNotification } from "@/lib/notifications/notifications";
 import { ErrorResponse, LogoutResponse } from "@/lib/types/responses";
 import { handleApiError } from "@/lib/utils/handleApiError";
 import { logout } from "@/services/api/authservice";
-import { LoadingOverlay } from "@mantine/core";
+import { Button, Center, Container, Group, LoadingOverlay, Stack, Text, Title } from "@mantine/core";
+import { IconLogout, IconUser } from "@tabler/icons-react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
@@ -44,9 +45,17 @@ export default function Page() {
   };
 
   return (
-    <>
-      User page!
-      { isLoggedIn && <div><button onClick={handleLogout}>Log Out</button></div> }
-    </>
+    <Container size={'sm'} p={'md'} pt={'xl'}>
+      <Center>
+        <Stack align="center" gap={'xl'}>
+          <Title order={3}>Hei, {jwtUserInfo?.firstname}!</Title>
+          <Group mb={'md'}>
+            <IconUser />
+            <Text>Käyttäjäsivut tulossa pian...</Text>
+          </Group>
+          {isLoggedIn && <Button size="md" onClick={handleLogout}  leftSection={<IconLogout />}>Log Out</Button>}
+        </Stack>
+      </Center>
+    </Container>
   );
 }

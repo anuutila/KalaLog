@@ -233,7 +233,7 @@ export default function CatchesPage() {
   const yearOptions = getYearOptions(years, selectedYear);
 
   return (
-    <Container p={0} pt={'md'} pb={'md'}>
+    <Container p={0} pt={'md'} pb={'md'} size={'sm'}>
 
       <Stack p={0} gap={'sm'} align='flex-start'>
         <TableSettingsDrawer

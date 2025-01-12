@@ -1,6 +1,7 @@
 import { TextInput, Button, Group, Text } from '@mantine/core';
 import { modals } from '@mantine/modals';
 import classes from './CatchDetails.module.css';
+import { IconTrash } from '@tabler/icons-react';
 
 interface ConfirmDeleteModalProps {
   onConfirm: () => void;
@@ -41,6 +42,7 @@ export default function ConfirmDeleteModal({ onConfirm }: ConfirmDeleteModalProp
                       <Button
                         color="red"
                         disabled={confirmationText !== 'POISTA'}
+                        leftSection={<IconTrash size={20}/>}
                         onClick={() => {
                           onConfirm();
                           modals.close(modalId);
@@ -59,7 +61,7 @@ export default function ConfirmDeleteModal({ onConfirm }: ConfirmDeleteModalProp
           <Button variant="default" onClick={() => modals.close(modalId)}>
             Peruuta
           </Button>
-          <Button disabled>Poista</Button>
+          <Button disabled leftSection={<IconTrash size={20}/>}>Poista</Button>
         </Group>
       </>
     ),

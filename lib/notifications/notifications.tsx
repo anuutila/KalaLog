@@ -42,6 +42,7 @@ export function showNotification(
     message,
     position: 'bottom-right',
     withBorder: true,
+    radius: 'md',
     autoClose: 5000
   });
 }

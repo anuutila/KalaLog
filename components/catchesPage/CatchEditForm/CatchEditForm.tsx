@@ -5,7 +5,7 @@ import { useGlobalState } from '@/context/GlobalState';
 import { CatchEditedResponse } from '@/lib/types/responses';
 import { showNotification } from '@/lib/notifications/notifications';
 import { CatchUtils } from '@/lib/utils/catchUtils';
-import { IconSelector } from '@tabler/icons-react';
+import { IconEdit, IconEraser, IconFish, IconFishHook, IconMap, IconMapPin, IconSelector, IconUser } from '@tabler/icons-react';
 import { useLoadingOverlay } from '@/context/LoadingOverlayContext';
 import FullscreenImage from '../CatchDetails/FullscreenImage';
 import ImageUploadForm from '@/components/ImageUploadForm/ImageUploadForm';
@@ -205,31 +205,18 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
   , [anglersDropdownOpened, filteredAnglerOptions.length, anglerName]);
 
   return (
-    <Container size="sm" p={0}>
+    <Container size={'sm'} p={'0'} maw={'100%'}>
       <form onSubmit={handleSubmit}>
-        <Fieldset disabled={isLoading} variant="unstyled">
-          <Stack gap={8}>
-            
-            <ImageUploadForm
-              catchData={catchData}
-              setFullscreenImage={setFullscreenImage}
-              setFiles={setFiles}
-            />
-
-            {/* Fullscreen Image */}
-            {fullscreenImage && (
-              <FullscreenImage
-                src={fullscreenImage}
-                onClose={() => setFullscreenImage(null)}
-              />
-            )}
+        <Fieldset disabled={isLoading} variant='default' radius={'md'} pt={'md'}>
+          <Stack gap={'lg'}>
 
             <Autocomplete
               size='md'
               type='text'
               name='species'
-              label="Laji"
+              label="Kalalaji"
               value={speciesValue}
+              placeholder='Kalalaji'
               required
               onChange={handleSpeciesChange}
               onFocus={() => setSpeciesDropdownOpened(true)}
@@ -237,8 +224,10 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
               rightSection={speciesRightSection}
               data={speciesOptions}
               defaultDropdownOpened={false}
+              leftSection={<IconFish />}
+              leftSectionPointerEvents='none'
             />
-            <Group grow>
+            <Group grow gap='lg'>
               <NumberInput
                 size="md"
                 name="length"
@@ -268,6 +257,7 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
               size='md'
               type='text'
               label="Viehe"
+              placeholder='Viehen merkki ja malli'
               name='lure'
               value={lureValue}
               onChange={handleLureChange}
@@ -275,13 +265,15 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
               onBlur={() => setLuresDropdownOpened(false)}
               rightSection={lureRightSection}
               data={lureOptions}
+              leftSection={<IconFishHook />}
+              leftSectionPointerEvents='none'
             />
             <Autocomplete
               size='md'
               type='text'
               name='spot'
               label="Paikka"
-              placeholder="esim. Ahvenniemi"
+              placeholder="Tarkka paikan nimi"
               value={spotValue}
               onChange={handleSpotChange}
               onFocus={() => setSpotsDropdownOpened(true)}
@@ -289,16 +281,20 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
               rightSection={spotRightSection}
               data={spotOptions}
               defaultDropdownOpened={false}
+              leftSection={<IconMap />}
+              leftSectionPointerEvents='none'
             />
             <TextInput
                 size='md'
                 type='text'
                 name='coordinates'
                 label="Koordinaatit"
-                placeholder=""
+                placeholder="N, E"
                 value={formData.location.coordinates ?? ''}
                 onChange={handleChange}
                 pattern='^([-+]?\d{1,3}\.\d{1,12},\s*[-+]?\d{1,3}\.\d{1,12})?$' // GPS coordinates pattern
+                leftSection={<IconMapPin />}
+                leftSectionPointerEvents='none'
             />
             <Group grow>
               <TextInput
@@ -334,12 +330,28 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
               rightSection={anglersRightSection}
               data={anglerOptions}
               defaultDropdownOpened={false}
+              leftSection={<IconUser />}
+              leftSectionPointerEvents='none'
             />
-            <Group mt="md" grow>
-              <Button size='md' variant="default" onClick={() => openCancelEditModal()}>
+
+            <ImageUploadForm
+              catchData={catchData}
+              setFullscreenImage={setFullscreenImage}
+              setFiles={setFiles}
+            />
+
+            {fullscreenImage && (
+              <FullscreenImage
+                src={fullscreenImage}
+                onClose={() => setFullscreenImage(null)}
+              />
+            )}
+
+            <Group mt="xs" mb={'xs'} grow>
+              <Button size='md' variant="default" onClick={() => openCancelEditModal()} leftSection={<IconEraser size={20}/>}>
                 Cancel
               </Button>
-              <Button size='md' type="submit" loading={isLoading} loaderProps={{ type: 'dots' }}>
+              <Button size='md' type="submit" loading={isLoading} loaderProps={{ type: 'dots' }} leftSection={<IconEdit size={20}/>} >
                 Save
               </Button>
             </Group>

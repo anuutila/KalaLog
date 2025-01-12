@@ -1,5 +1,9 @@
 .root {
-  --badge-bd: 1px solid var(--badge-color) !important;
+  /* --badge-border-color: rgba(var(--badge-color), 0.2);
+  --badge-background: rgba(var(--badge-color), 0.1);
+  color: rgb(var(--badge-color)) !important; */
+  /* border: 2px solid var(--badge-color) !important; */
+  /* background-color: var(--badge-background) !important; */
 }
 
 .label {

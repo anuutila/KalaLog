@@ -1,9 +1,14 @@
 import { ForwardedRef, use, useEffect, useImperativeHandle, useState } from "react";
 import { ICatch } from "@/lib/types/catch";
-import { Box, Group, Image, SimpleGrid, Text } from "@mantine/core";
+import { ActionIcon, Box, Group, Image, SimpleGrid, Stack, Text } from "@mantine/core";
 import { Dropzone, IMAGE_MIME_TYPE } from "@mantine/dropzone";
-import { IconPhoto, IconUpload, IconX } from "@tabler/icons-react";
+import { IconMaximize, IconPhoto, IconTrash, IconUpload, IconX } from "@tabler/icons-react";
 import classes from './ImageUploadForm.module.css';
+import './ImageUploadForm.css'
+import { Carousel } from "@mantine/carousel";
+import { useMediaQuery } from "@mantine/hooks";
+import { useGlobalState } from "@/context/GlobalState";
+import { UserRole } from "@/lib/types/user";
 
 export interface ImageUploadFormRef {
   clearImages: () => void;
@@ -17,8 +22,11 @@ interface ImageUploadFormProps {
 }
 
 export default function ImageUploadForm({ catchData, setFullscreenImage, setFiles, ref }: ImageUploadFormProps) {
+  const { isLoggedIn, jwtUserInfo } = useGlobalState();
   const [existingImages, setExistingImages] = useState<string[]>([]); // Existing images from the catch
-  const [previews, setPreviews] = useState<string[]>([]); // Previews for newly uploaded images
+  const [newImages, setNewImages] = useState<string[]>([]); // Previews for newly uploaded images
+
+  const isSmallScreen = useMediaQuery('(max-width: 64em)');
 
   useEffect(() => {
     if (catchData) {
@@ -29,26 +37,38 @@ export default function ImageUploadForm({ catchData, setFullscreenImage, setFile
   const handleDrop = (acceptedFiles: File[]) => {
     setFiles((prev) => [...prev, ...acceptedFiles]);
     const newPreviews = acceptedFiles.map((file) => URL.createObjectURL(file));
-    setPreviews((prev) => [...prev, ...newPreviews]);
+    setNewImages((prev) => [...prev, ...newPreviews]);
+  };
+
+  const handleDeleteNewImage = (index: number) => {
+    setNewImages((prev) => prev.filter((_, i) => i !== index));
   };
 
   useImperativeHandle(ref, () => ({
     clearImages: () => {
-      setPreviews([]);
+      setNewImages([]);
       setFiles([]);
     },
   }));
 
   return (
-    <>
+    <Stack gap={0}>
+      <Text size="md" fw={500} mb={4}>
+        Lisää kuva
+      </Text>
       <Dropzone
         onDrop={handleDrop}
         accept={IMAGE_MIME_TYPE}
         maxSize={10 * 1024 ** 2}
         maxFiles={10}
-        classNames={{ root: classes.dropzone }}
+        classNames={{ 
+          root: !isLoggedIn || jwtUserInfo?.role === UserRole.VIEWER ? classes.dropzoneDisabled : classes.dropzoneActive, 
+          inner: classes.dropzone_inner 
+        }}
+        h={100}
+        disabled={!isLoggedIn || jwtUserInfo?.role === UserRole.VIEWER}
       >
-        <Group justify='center' wrap='nowrap' gap="md" style={{ pointerEvents: 'none' }} p={'md'} >
+        <Group justify='center' align="center" wrap='nowrap' gap="md" style={{ pointerEvents: 'none' }} p={'md'} h={'100%'} >
           <Dropzone.Accept>
             <IconUpload size={50} stroke={1.5} />
           </Dropzone.Accept>
@@ -60,7 +80,7 @@ export default function ImageUploadForm({ catchData, setFullscreenImage, setFile
           </Dropzone.Idle>
           <div>
             <Text size="md" inline>
-              Lisää kuvia
+              Lisää kuvia saaliista
             </Text>
             <Text size="sm" c="var(--mantine-color-dimmed)" inline mt={7}>
               Kuvan maksimikoko 10Mt
@@ -68,44 +88,72 @@ export default function ImageUploadForm({ catchData, setFullscreenImage, setFile
           </div>
         </Group>
       </Dropzone>
-      <Box hidden={previews.length === 0 && existingImages.length === 0}
-        mt={previews.length > 0 || existingImages.length > 0 ? 'xs' : 0}
-        mb={previews.length > 0 || existingImages.length > 0 ? 'md' : 0}
-      >
-        <Text size="md" fw={500} mb={'xs'}>
-          Kuvat
-        </Text>
-        <SimpleGrid cols={{ base: 4 }} title='Images'>
-          {/* Render existing images */}
-          {existingImages.map((url, index) => (
-            <div key={index} style={{ position: 'relative' }}>
-              <Image src={url} alt="Existing image" fit='cover' h={50} radius={'sm'} onClick={() => setFullscreenImage(url)} />
-              {/* <ActionIcon
-                        size="lg"
-                        color="red"
-                        style={{ position: 'absolute', top: 5, right: 5 }}
-                        onClick={() => handleDeleteExistingImage(image.id)}
-                      >
-                        <IconX size={18} />
-                      </ActionIcon> */}
-            </div>
-          ))}
-          {/* Render previews for newly uploaded images */}
-          {previews.map((url, index) => (
-            <div key={index} style={{ position: 'relative' }}>
-              <Image src={url} alt="New image preview" fit='cover' h={50} radius={'sm'} onClick={() => setFullscreenImage(url)} />
-              {/* <ActionIcon
-                        size="lg"
-                        color="red"
-                        style={{ position: 'absolute', top: 5, right: 5 }}
-                        onClick={() => handleDeleteNewImage(index)}
-                      >
-                        <IconX size={18} />
-                      </ActionIcon> */}
-            </div>
-          ))}
-        </SimpleGrid>
-      </Box>
-    </>
+
+      {(newImages.length > 0 || existingImages.length > 0) && (
+        <Box mt={'md'}>
+          <Text fw={500} mb={4}>Kuvat {`(${[...existingImages, ...newImages].length})`}</Text>
+          <Carousel
+            height={110}
+            slideSize={150}
+            slideGap={'xs'}
+            align={'start'}
+            dragFree
+            withControls={!isSmallScreen}
+            containScroll={'trimSnaps'}
+          >
+            {/* Render existing images */}
+            {existingImages.map((url, index) => (
+              <Carousel.Slide key={`existing-${index}`}>
+                <Box pos="relative" w={150} h={110}>
+                  <Image src={url} alt={`Existing Image ${index}`} fit="cover" radius="md" w="100%" h="100%" />
+                  <ActionIcon
+                    size="sm"
+                    variant="light"
+                    pos="absolute"
+                    bottom={5}
+                    right={5}
+                    bg="rgba(0, 0, 0, 0.75)"
+                    onClick={() => setFullscreenImage(url)}
+                  >
+                    <IconMaximize size={16} color="white" />
+                  </ActionIcon>
+                </Box>
+              </Carousel.Slide>
+            ))}
+
+            {/* Render new images */}
+            {newImages.map((url, index) => (
+              <Carousel.Slide key={`new-${index}`}>
+                <Box pos="relative" w={150} h={110}>
+                  <Image src={url} alt={`New Image ${index}`} fit="cover" radius="md" w="100%" h="100%" />
+                  <ActionIcon
+                    size="sm"
+                    variant="light"
+                    pos="absolute"
+                    top={5}
+                    right={5}
+                    bg="rgba(0, 0, 0, 0.75)"
+                    onClick={() => handleDeleteNewImage(index)}
+                  >
+                    <IconTrash size={16} color="white" />
+                  </ActionIcon>
+                  <ActionIcon
+                    size="sm"
+                    variant="light"
+                    pos="absolute"
+                    bottom={5}
+                    right={5}
+                    bg="rgba(0, 0, 0, 0.75)"
+                    onClick={() => setFullscreenImage(url)}
+                  >
+                    <IconMaximize size={16} color="white" />
+                  </ActionIcon>
+                </Box>
+              </Carousel.Slide>
+            ))}
+          </Carousel>
+        </Box>
+      )}
+    </Stack>
   );
 }

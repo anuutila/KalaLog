@@ -1,5 +1,22 @@
-.dropzone {
-  border: 2px dashed var(--mantine-color-dark-4);
+.dropzoneActive {
+  border: 2.5px dashed var(--mantine-color-dark-4);
   border-radius: var(--mantine-radius-md);
-  background-color: var(--mantine-color-dark-7);
+  background-color: var(--mantine-color-dark-6);
+}
+
+.dropzoneDisabled {
+  border: 2.5px dashed var(--mantine-color-dark-4);
+  border-radius: var(--mantine-radius-md);
+  background-color: #2a2a2a;
+}
+
+.dropzone_inner {
+  height: 100%;
+}
+
+.control {
+  &[data-inactive] {
+    opacity: 0;
+    cursor: default;
+  }
 }

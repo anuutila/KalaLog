@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ErrorResponse, SignUpResponse } from '@/lib/types/responses';
 import { showNotification } from '@/lib/notifications/notifications';
@@ -9,6 +9,7 @@ import Link from 'next/link';
 import { signup } from '@/services/api/authservice';
 import { HttpClientError } from '@/services/httpClient';
 import { handleApiError } from '@/lib/utils/handleApiError';
+import { IconAt, IconLock, IconUser } from '@tabler/icons-react';
 
 export default function Page() {
   const [formData, setFormData] = useState({
@@ -17,11 +18,15 @@ export default function Page() {
     lastName: '',
     email: '',
     password: '',
+    confirmPassword: '',
   });
+
+  const [isFormValid, setIsFormValid] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const formRef = useRef<HTMLFormElement>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -64,64 +69,95 @@ export default function Page() {
     }
   };
 
+  const handleFormChange = () => {
+    setIsFormValid(formRef.current?.checkValidity() ?? false)
+  };
+
   return (
-    <Container maw={{ base: '20rem', md: '25rem' }} p="md" pt="xl">
+    <Container size={'sm'} px="md" py="xl">
       <Stack align="stretch">
         <Center mb="md">
-          <Title order={3}>Rekisteröidy</Title>
+          <Title order={2} c={'white'}>Rekisteröidy</Title>
         </Center>
         <Stack>
-          <Fieldset variant="unstyled" disabled={loading}>
-            <form onSubmit={handleSubmit}>
-              <Stack gap="sm">
+          <Fieldset variant="default" radius={'md'} pt={'md'} disabled={loading}>
+            <form onSubmit={handleSubmit} onChange={handleFormChange} ref={formRef}>
+              <Stack gap="md">
                 <TextInput
                   size="md"
                   label="Käyttäjätunnus"
+                  placeholder="Käyttäjätunnus"
                   name="username"
                   value={formData.username}
                   onChange={handleChange}
                   required
                   error={fieldErrors.username} // Display validation error
+                  leftSection={<IconUser size={20}/>}
+                  leftSectionPointerEvents='none'
                 />
                 <TextInput
                   size="md"
                   label="Etunimi"
                   name="firstName"
+                  placeholder='Etunimi'
                   value={formData.firstName}
                   onChange={handleChange}
                   required
                   error={fieldErrors.firstName}
+                  leftSection={<IconUser size={20}/>}
+                  leftSectionPointerEvents='none'
                 />
                 <TextInput
                   size="md"
                   label="Sukunimi"
                   name="lastName"
+                  placeholder='Sukunimi'
                   value={formData.lastName}
                   onChange={handleChange}
                   required
                   error={fieldErrors.lastName}
+                  leftSection={<IconUser size={20}/>}
+                  leftSectionPointerEvents='none'
                 />
                 <TextInput
                   size="md"
                   label="Sähköposti"
                   // type="email"
                   name="email"
+                  placeholder='Sähköposti'
                   value={formData.email}
                   onChange={handleChange}
                   required
                   error={fieldErrors.email}
+                  leftSection={<IconAt size={20}/>}
+                  leftSectionPointerEvents='none'
                 />
                 <PasswordInput
                   size="md"
                   label="Salasana"
                   name="password"
+                  placeholder="Salasana"
                   value={formData.password}
                   onChange={handleChange}
                   required
                   error={fieldErrors.password}
+                  leftSection={<IconLock size={20}/>}
+                  leftSectionPointerEvents='none'
                 />
-                {error && <Text color="red" size="sm">{error}</Text>}
-                <Button type="submit" size="md" mt="lg" loading={loading} loaderProps={{ type: 'dots' }}>
+                <PasswordInput
+                  size="md"
+                  label="Vahvista salasana"
+                  name="confirmPassword"
+                  placeholder="Vahvista salasana"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  required
+                  leftSection={<IconLock size={20}/>}
+                  leftSectionPointerEvents="none"
+                  error={formData.confirmPassword && formData.password !== formData.confirmPassword ? 'Salasanat eivät täsmää' : null}
+                />
+                {/* {error && <Text color="red" size="sm">{error}</Text>} */}
+                <Button my={'xs'} radius={'md'} type="submit" size="md" loading={loading} loaderProps={{ type: 'dots' }} disabled={!isFormValid || formData.password !== formData.confirmPassword}>
                   Rekisteröidy
                 </Button>
               </Stack>

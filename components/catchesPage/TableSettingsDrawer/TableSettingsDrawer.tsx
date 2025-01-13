@@ -150,7 +150,7 @@ export default function TableSettingsDrawer({
                   leftSection={<IconTableColumn size={20}/>}
                   leftSectionPointerEvents='none'
                 >
-                  <Pill.Group>
+                  <Pill.Group style={{ gap: '6px', flexWrap: 'nowrap' }}>
                     {visibleColumns.length > 0 ? (
                       <>
                         {pillValues}

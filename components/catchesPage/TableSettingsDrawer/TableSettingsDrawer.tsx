@@ -59,7 +59,7 @@ export default function TableSettingsDrawer({
 
       return (
       <Pill key={item} withRemoveButton onRemove={() => handleValueRemove(item)} fz={'var(--mantine-font-size-sm)'}>
-        {<Group gap={'xs'} align="center" wrap="nowrap"><Icon size={16} /><Text fz={'sm'}>{item}</Text></Group>}
+        {<Group h={'100%'} gap={'xs'} align="center" wrap="nowrap"><Icon size={16} /><Text fz={'sm'}>{item}</Text></Group>}
       </Pill>
       )
     });

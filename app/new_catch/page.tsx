@@ -464,7 +464,7 @@ export default function Page() {
                 size='md'
                 type='text'
                 name='bodyOfWater'
-                label="Veistö"
+                label="Vesistö"
                 placeholder="Järvi, joki, meri..."
                 value={bodyOfWaterValue}
                 onChange={handleBodyOfWaterChange}

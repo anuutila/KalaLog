@@ -68,10 +68,8 @@
     display: none;
   }
 
-  & .ag-paging-description {
-    & #ag-6-start-page {
-      display: none;
-    }
+  & .ag-paging-description span:nth-of-type(1) {
+    display: none;
   }
 }
 
@@ -93,10 +91,8 @@
       display: unset;
     }
   
-    & .ag-paging-description {
-      & #ag-6-start-page {
-        display: unset;
-      }
+    & .ag-paging-description span:nth-of-type(1) {
+      display: unset;
     }
   }
 

@@ -12,9 +12,10 @@ import { UserRole } from '@/lib/types/user';
 import { CatchUtils } from '@/lib/utils/catchUtils';
 import { defaultSort, optimizeImage } from '@/lib/utils/utils';
 import { Alert, Autocomplete, Button, Checkbox, Container, Fieldset, Group, NumberInput, Stack, TextInput, Title } from '@mantine/core';
-import { IconCalendar, IconCheck, IconClock, IconFish, IconFishHook, IconInfoCircle, IconMap, IconMapPin, IconSelector, IconUser } from '@tabler/icons-react';
+import { IconCalendar, IconCheck, IconClock, IconFish, IconFishHook, IconInfoCircle, IconMap, IconMap2, IconMapPin, IconRipple, IconRuler2, IconRuler3, IconSelector, IconUser, IconWeight } from '@tabler/icons-react';
 import { createCatch } from '@/services/api/catchService';
 import { handleApiError } from '@/lib/utils/handleApiError';
+import { DateTime } from 'luxon';
 
 export default function Page() {
   const { catches, setCatches, isLoggedIn, jwtUserInfo } = useGlobalState();
@@ -32,8 +33,8 @@ export default function Page() {
       spot: null,
       coordinates: null,
     },
-    date: new Date().toISOString().split('T')[0],
-    time: new Date(new Date().getTime() + 120 * 60000).toISOString().split('T')[1].slice(0, 5),
+    date: DateTime.now().toFormat('yyyy-MM-dd'),
+    time: DateTime.now().toFormat('HH:mm'),
     caughtBy: { name: '', userId: null },
     createdBy: null,
   });
@@ -48,6 +49,10 @@ export default function Page() {
   const [lureValue, setLureValue] = useState<string>('');
   const [filteredLureOptions, setFilteredLureOptions] = useState<string[]>([]);
   const [luresDropdownOpened, setLuresDropdownOpened] = useState<boolean>(false);
+
+  const [bodyOfWaterValue, setBodyOfWaterValue] = useState<string>('');
+  const [filteredBodyOfWaterOptions, setFilteredBodyOfWaterOptions] = useState<string[]>([]);
+  const [bodiesOfWaterDropdownOpened, setBodiesOfWaterDropdownOpened] = useState<boolean>(false);
 
   const [spotValue, setSpotValue] = useState<string>('');
   const [filteredSpotOptions, setFilteredSpotOptions] = useState<string[]>([]);
@@ -248,8 +253,8 @@ export default function Page() {
         weight: undefined,
         lure: null,
         location: { bodyOfWater: 'Nerkoonjärvi', spot: null, coordinates: null },
-        date: new Date().toISOString().split('T')[0],
-        time: new Date(new Date().getTime() + 120 * 60000).toISOString().split('T')[1].slice(0, 5),
+        date: DateTime.now().toFormat('yyyy-MM-dd'),
+        time: DateTime.now().toFormat('HH:mm'),
         caughtBy: { name: '', userId: null },
       });
       setSpeciesValue('');
@@ -278,6 +283,11 @@ export default function Page() {
 
   const lureOptions = useMemo(() => 
     CatchUtils.getUniqueLures(catches).map((lure) => lure.lure).filter((lure) => lure !== '?'), 
+    [catches]
+  );
+
+  const bodyOfWaterOptions = useMemo(() =>
+    CatchUtils.getUniqueBodiesOfWater(catches),
     [catches]
   );
 
@@ -321,6 +331,21 @@ export default function Page() {
       null
   , [luresDropdownOpened, filteredLureOptions.length, lureValue]);
 
+  const handleBodyOfWaterChange = useCallback((value: string) => {
+    setBodyOfWaterValue(value);
+    const filtered = bodyOfWaterOptions.filter((option) =>
+      option.toLowerCase().includes(value.toLowerCase().trim())
+    );
+    setFilteredBodyOfWaterOptions(filtered);
+    setBodiesOfWaterDropdownOpened(filtered.length > 0);
+  } , [bodyOfWaterOptions]);
+
+  const bodyOfWaterRightSection = useMemo(() => 
+    bodiesOfWaterDropdownOpened && (filteredBodyOfWaterOptions.length > 0 || spotValue === '') ? 
+      <IconSelector onClick={() => setBodiesOfWaterDropdownOpened(false)}/> : 
+      null
+  , [bodiesOfWaterDropdownOpened, filteredBodyOfWaterOptions.length, bodyOfWaterValue]);
+
   const handleSpotChange = useCallback((value: string) => {
     setSpotValue(value);
     const filtered = spotOptions.filter((option) =>
@@ -357,7 +382,7 @@ export default function Page() {
 
   useEffect(() => {
     handleFormChange();
-  }, [speciesValue, anglerName, formData.date, formData.time]);
+  }, [speciesValue, anglerName, bodyOfWaterValue, formData.date, formData.time]);
 
   return (
     <Container size='sm' p={'md'}>
@@ -383,7 +408,7 @@ export default function Page() {
               rightSection={speciesRightSection}
               data={speciesOptions}
               defaultDropdownOpened={false}
-              leftSection={<IconFish />}
+              leftSection={<IconFish size={20}/>}
               leftSectionPointerEvents='none'
             />
             <Group grow gap={'lg'}>
@@ -399,6 +424,8 @@ export default function Page() {
                 suffix=' cm'
                 onChange={setLengthValue}
                 // pattern="^\d*(\.\d*)?$" // Allow decimals
+                leftSection={<IconRuler2 size={20}/>}
+                leftSectionPointerEvents='none'
               />
               <NumberInput
                 size='md'
@@ -412,13 +439,15 @@ export default function Page() {
                 suffix=' kg'
                 onChange={setWeightValue}
                 // pattern="^\d*(\.\d*)?$" // Allow decimals
+                leftSection={<IconWeight size={20}/>}
+                leftSectionPointerEvents='none'
               />
             </Group>
             <Autocomplete
               size='md'
               type='text'
               label="Viehe"
-              placeholder='Viehen merkki ja malli'
+              placeholder='Vieheen merkki ja malli'
               name='lure'
               value={lureValue}
               onChange={handleLureChange}
@@ -426,11 +455,28 @@ export default function Page() {
               onBlur={() => setLuresDropdownOpened(false)}
               rightSection={lureRightSection}
               data={lureOptions}
-              leftSection={<IconFishHook />}
+              leftSection={<IconFishHook size={20}/>}
               leftSectionPointerEvents='none'
             />
 
             <Stack p={0}>
+              <Autocomplete
+                size='md'
+                type='text'
+                name='bodyOfWater'
+                label="Veistö"
+                placeholder="Järvi, joki, meri..."
+                value={bodyOfWaterValue}
+                onChange={handleBodyOfWaterChange}
+                onFocus={() => setBodiesOfWaterDropdownOpened(true)}
+                onBlur={() => setBodiesOfWaterDropdownOpened(false)}
+                rightSection={spotRightSection}
+                data={bodyOfWaterOptions}
+                defaultDropdownOpened={false}
+                leftSection={<IconRipple size={20}/>}
+                leftSectionPointerEvents='none'
+                required
+              />
               <Autocomplete
                 size='md'
                 type='text'
@@ -444,7 +490,7 @@ export default function Page() {
                 rightSection={spotRightSection}
                 data={spotOptions}
                 defaultDropdownOpened={false}
-                leftSection={<IconMap />}
+                leftSection={<IconMap2 size={20}/>}
                 leftSectionPointerEvents='none'
               />
               <Group grow gap={'lg'}>
@@ -458,7 +504,7 @@ export default function Page() {
                   onChange={handleChange}
                   disabled={!useGps || gpsError !== null}
                   pattern='^([-+]?\d{1,3}\.\d{1,12},\s*[-+]?\d{1,3}\.\d{1,12})?$' // GPS coordinates pattern
-                  leftSection={<IconMapPin />}
+                  leftSection={<IconMapPin size={20}/>}
                   leftSectionPointerEvents='none'
                 />
                 <Checkbox
@@ -478,8 +524,8 @@ export default function Page() {
                 type='date'
                 name="date"
                 label="Päivämäärä"
-                rightSection={<Stack hiddenFrom='md'><IconCalendar /></Stack>}
-                rightSectionPointerEvents='none'
+                leftSection={<IconCalendar size={20}/>}
+                leftSectionPointerEvents='none'
                 value={formData.date}
                 onChange={handleChange}
                 required
@@ -490,8 +536,8 @@ export default function Page() {
                 name="time"
                 label="Aika"
                 placeholder="--.--"
-                rightSection={<Stack hiddenFrom='md'><IconClock /></Stack>}
-                rightSectionPointerEvents='none'
+                leftSection={<IconClock size={20}/>}
+                leftSectionPointerEvents='none'
                 value={formData.time}
                 onChange={handleChange}
                 required
@@ -511,14 +557,14 @@ export default function Page() {
               rightSection={anglersRightSection}
               data={anglerOptions}
               defaultDropdownOpened={false}
-              leftSection={<IconUser />}
+              leftSection={<IconUser size={20}/>}
               leftSectionPointerEvents='none'
             />
 
             <ImageUploadForm
               ref={imageUploadFormRef}
               setFullscreenImage={setFullscreenImage}
-              setFiles={setFiles}
+              setAddedImages={setFiles}
             />
 
             {fullscreenImage && (

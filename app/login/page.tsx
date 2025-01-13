@@ -6,7 +6,7 @@ import { LoginResponse } from '@/lib/types/responses';
 import { handleApiError } from '@/lib/utils/handleApiError';
 import { login } from '@/services/api/authservice';
 import { Button, Center, Container, Fieldset, PasswordInput, Stack, Text, TextInput, Title } from '@mantine/core';
-import { IconLock, IconLogin, IconUser } from '@tabler/icons-react';
+import { IconLock, IconLogin2, IconUser } from '@tabler/icons-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -79,7 +79,7 @@ export default function Page() {
                 
                 {/* {error && <p style={{ color: 'red' }}>{error}</p>} */}
                 <Button 
-                  leftSection={<IconLogin />} 
+                  leftSection={<IconLogin2 />} 
                   type="submit" 
                   size='md' 
                   my={'xs'}

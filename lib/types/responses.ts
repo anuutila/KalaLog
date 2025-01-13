@@ -25,7 +25,7 @@ export type CatchDeletedResponse = Required<BaseResponse<ICatch>>;
 
 export interface CatchEditedResponseData {
   catch: ICatch;
-  failedImageUploads: boolean;
+  failedImageOperations: boolean;
 }
 
 export type CatchEditedResponse = Required<BaseResponse<CatchEditedResponseData>>;

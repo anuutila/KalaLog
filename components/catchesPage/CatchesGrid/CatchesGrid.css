@@ -62,9 +62,16 @@
 
 .ag-paging-panel {
   font-size: 12px;
+  justify-content: space-between;
 
   & .ag-paging-row-summary-panel {
     display: none;
+  }
+
+  & .ag-paging-description {
+    & #ag-6-start-page {
+      display: none;
+    }
   }
 }
 
@@ -76,6 +83,20 @@
     & .ag-root-wrapper {
       border-radius: var(--mantine-spacing-sm);
       border: none;
+    }
+  }
+
+  .ag-paging-panel {
+    justify-content: flex-end; 
+  
+    & .ag-paging-row-summary-panel {
+      display: unset;
+    }
+  
+    & .ag-paging-description {
+      & #ag-6-start-page {
+        display: unset;
+      }
     }
   }
 

@@ -12,13 +12,14 @@ export default function ConfirmEditModal({ onConfirm }: ConfirmEditModalProps) {
   modals.openConfirmModal({
     title: 'Muokkaa saalista',
     centered: true,
+    radius: 'md',
     children: (
       <Text size="md">
         Haluatko muokata saaliin tietoja?
       </Text>
     ),
     labels: { confirm: 'Muokkaa', cancel: 'Peruuta' },
-    confirmProps: { color: 'blue', leftSection: <IconEdit size={20}/> },
+    confirmProps: { color: 'blue', leftSection: <IconEdit size={20}/>, radius: 'md' },
     onConfirm: () => onConfirm(),
     zIndex: 2000,
     classNames: { title: classes.modalTitle }

@@ -1,8 +1,8 @@
-import { ForwardedRef, use, useEffect, useImperativeHandle, useState } from "react";
+import React, { ForwardedRef, useEffect, useImperativeHandle, useState } from "react";
 import { ICatch } from "@/lib/types/catch";
-import { ActionIcon, Box, Group, Image, SimpleGrid, Stack, Text } from "@mantine/core";
+import { ActionIcon, Box, Group, Image, Stack, Text } from "@mantine/core";
 import { Dropzone, IMAGE_MIME_TYPE } from "@mantine/dropzone";
-import { IconMaximize, IconPhoto, IconTrash, IconUpload, IconX } from "@tabler/icons-react";
+import { IconPhoto, IconTrash, IconUpload, IconX } from "@tabler/icons-react";
 import classes from './ImageUploadForm.module.css';
 import './ImageUploadForm.css'
 import { Carousel } from "@mantine/carousel";
@@ -17,11 +17,18 @@ export interface ImageUploadFormRef {
 interface ImageUploadFormProps {
   catchData?: ICatch | null;
   setFullscreenImage: (src: string) => void;
-  setFiles: React.Dispatch<React.SetStateAction<File[]>>;
+  setAddedImages: React.Dispatch<React.SetStateAction<File[]>>;
+  setDeletedImages?: React.Dispatch<React.SetStateAction<string[]>>;
   ref?: ForwardedRef<ImageUploadFormRef>;
 }
 
-export default function ImageUploadForm({ catchData, setFullscreenImage, setFiles, ref }: ImageUploadFormProps) {
+export default function ImageUploadForm({
+  catchData,
+  setFullscreenImage,
+  setAddedImages,
+  setDeletedImages,
+  ref,
+}: ImageUploadFormProps) {
   const { isLoggedIn, jwtUserInfo } = useGlobalState();
   const [existingImages, setExistingImages] = useState<string[]>([]); // Existing images from the catch
   const [newImages, setNewImages] = useState<string[]>([]); // Previews for newly uploaded images
@@ -35,19 +42,26 @@ export default function ImageUploadForm({ catchData, setFullscreenImage, setFile
   }, [catchData]);
 
   const handleDrop = (acceptedFiles: File[]) => {
-    setFiles((prev) => [...prev, ...acceptedFiles]);
+    setAddedImages((prev) => [...prev, ...acceptedFiles]);
     const newPreviews = acceptedFiles.map((file) => URL.createObjectURL(file));
     setNewImages((prev) => [...prev, ...newPreviews]);
   };
 
   const handleDeleteNewImage = (index: number) => {
     setNewImages((prev) => prev.filter((_, i) => i !== index));
+    setAddedImages((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleDeleteExistingImage = (index: number) => {
+    if (!setDeletedImages) return;
+    setDeletedImages((prev) => [...prev, existingImages[index]]);
+    setExistingImages((prev) => prev.filter((_, i) => i !== index));
   };
 
   useImperativeHandle(ref, () => ({
     clearImages: () => {
       setNewImages([]);
-      setFiles([]);
+      setAddedImages([]);
     },
   }));
 
@@ -105,8 +119,29 @@ export default function ImageUploadForm({ catchData, setFullscreenImage, setFile
             {existingImages.map((url, index) => (
               <Carousel.Slide key={`existing-${index}`}>
                 <Box pos="relative" w={150} h={110}>
-                  <Image src={url} alt={`Existing Image ${index}`} fit="cover" radius="md" w="100%" h="100%" />
-                  <ActionIcon
+                  <Image 
+                    src={url} 
+                    fallbackSrc="/no-image-placeholder.png"
+                    alt={`Existing Image ${index}`} 
+                    fit="cover" 
+                    radius="md" 
+                    w="100%" 
+                    h="100%" 
+                    onClick={() => setFullscreenImage(url)}
+                    style={{ cursor: 'pointer' }}
+                  />
+                  {setDeletedImages && <ActionIcon
+                    size="sm"
+                    variant="light"
+                    pos="absolute"
+                    top={5}
+                    right={5}
+                    bg="rgba(0, 0, 0, 0.75)"
+                    onClick={() => handleDeleteExistingImage(index)}
+                  >
+                    <IconTrash size={16} color="white" />
+                  </ActionIcon>}
+                  {/* <ActionIcon
                     size="sm"
                     variant="light"
                     pos="absolute"
@@ -116,7 +151,7 @@ export default function ImageUploadForm({ catchData, setFullscreenImage, setFile
                     onClick={() => setFullscreenImage(url)}
                   >
                     <IconMaximize size={16} color="white" />
-                  </ActionIcon>
+                  </ActionIcon> */}
                 </Box>
               </Carousel.Slide>
             ))}
@@ -125,7 +160,17 @@ export default function ImageUploadForm({ catchData, setFullscreenImage, setFile
             {newImages.map((url, index) => (
               <Carousel.Slide key={`new-${index}`}>
                 <Box pos="relative" w={150} h={110}>
-                  <Image src={url} alt={`New Image ${index}`} fit="cover" radius="md" w="100%" h="100%" />
+                  <Image 
+                    src={url} 
+                    fallbackSrc="/no-image-placeholder.png"
+                    alt={`New Image ${index}`} 
+                    fit="cover" 
+                    radius="md" 
+                    w="100%" 
+                    h="100%" 
+                    onClick={() => setFullscreenImage(url)}
+                    style={{ cursor: 'pointer' }}
+                  />
                   <ActionIcon
                     size="sm"
                     variant="light"
@@ -137,7 +182,7 @@ export default function ImageUploadForm({ catchData, setFullscreenImage, setFile
                   >
                     <IconTrash size={16} color="white" />
                   </ActionIcon>
-                  <ActionIcon
+                  {/* <ActionIcon
                     size="sm"
                     variant="light"
                     pos="absolute"
@@ -147,7 +192,7 @@ export default function ImageUploadForm({ catchData, setFullscreenImage, setFile
                     onClick={() => setFullscreenImage(url)}
                   >
                     <IconMaximize size={16} color="white" />
-                  </ActionIcon>
+                  </ActionIcon> */}
                 </Box>
               </Carousel.Slide>
             ))}

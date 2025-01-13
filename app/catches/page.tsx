@@ -5,7 +5,7 @@ import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-quartz.css';
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { use, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ColDef,
   GridReadyEvent,
@@ -37,6 +37,16 @@ import CatchDetails from '@/components/catchesPage/CatchDetails/CatchDetails';
 
 const currentYear = new Date().getFullYear();
 
+enum SpeciesColWidths {
+  WithIcon = 95,
+  NoIcon = 65,
+}
+
+enum LocationColWidths {
+  WithIcon = 150,
+  NoIcon = 120,
+}
+
 export default function CatchesPage() {
   const gridRef = useRef<AgGridReact<ICatch>>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -47,17 +57,30 @@ export default function CatchesPage() {
   const [rowCount, setRowCount] = useState<number>(0);
   const [selectedYear, setSelectedYear] = useState<string | null>(null);
   const [opened, { open, close }] = useDisclosure(false);
-  const [filtersSliderChecked, setFiltersSliderChecked] = useState(false);
+  const [filtersEnabled, setFiltersEnabled] = useState(false);
+  const [imageIconsEnabled, setImageIconsEnabled] = useState(false);
+  const [locationIconsEnabled, setLocationIconsEnabled] = useState(false);
   const [selectedCatch, setSelectedCatch] = useState<ICatch | null>(null);
   const [catchDetailsOpen, setCatchDetailsOpen] = useState(false);
-  const [colDefs, setColDefs] = useState<ColDef<ICatch>[]>(getColumnDefs());
+  const [colDefs, setColDefs] = useState<ColDef<ICatch>[]>(getColumnDefs(
+    imageIconsEnabled, 
+    SpeciesColWidths.NoIcon, 
+    locationIconsEnabled, 
+    LocationColWidths.NoIcon
+  )); 
   const [defaultColDef, setDefaultColDef] = useState<ColDef>({
     sortable: true,
     filter: false,
     resizable: false,
     suppressHeaderFilterButton: true
   });
-  
+
+  useEffect(() => {
+    const newSpeciesColWidth = imageIconsEnabled ? SpeciesColWidths.WithIcon : SpeciesColWidths.NoIcon;
+    const newLocationColWidth = locationIconsEnabled ? LocationColWidths.WithIcon : LocationColWidths.NoIcon;
+    setColDefs(getColumnDefs(imageIconsEnabled, newSpeciesColWidth, locationIconsEnabled, newLocationColWidth));
+  }, [imageIconsEnabled, locationIconsEnabled]);
+
   const onGridReady = useCallback((params: GridReadyEvent) => {
     // Initial call to set the year filter
     applyYearFilter(selectedYear);
@@ -78,10 +101,10 @@ export default function CatchesPage() {
   useEffect(() => {
     setDefaultColDef((prevColDef) => ({
       ...prevColDef,
-      filter: filtersSliderChecked,
-      floatingFilter: filtersSliderChecked,
+      filter: filtersEnabled,
+      floatingFilter: filtersEnabled,
     }));
-  }, [filtersSliderChecked]);
+  }, [filtersEnabled]);
 
   useEffect(() => {
     if (gridRef.current && gridRef.current.api) {
@@ -248,8 +271,12 @@ export default function CatchesPage() {
           selectedYear={selectedYear}
           setSelectedYear={setSelectedYear}
           yearOptions={yearOptions}
-          filtersSliderChecked={filtersSliderChecked}
-          setFiltersSliderChecked={setFiltersSliderChecked}
+          filtersSliderChecked={filtersEnabled}
+          imageIconsEnabled={imageIconsEnabled}
+          setImageIconsEnabled={setImageIconsEnabled}
+          locationIconsEnabled={locationIconsEnabled}
+          setLocationIconsEnabled={setLocationIconsEnabled}
+          setFiltersSliderChecked={setFiltersEnabled}
           setVisibleColumns={setVisibleColumns}
         />
 

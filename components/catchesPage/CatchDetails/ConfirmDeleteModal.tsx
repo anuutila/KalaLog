@@ -14,6 +14,7 @@ export default function ConfirmDeleteModal({ onConfirm }: ConfirmDeleteModalProp
     title: 'Poista saalis',
     centered: true,
     withCloseButton: true,
+    radius: 'md',
     children: (
       <>
         <Text size="md" mb="md">

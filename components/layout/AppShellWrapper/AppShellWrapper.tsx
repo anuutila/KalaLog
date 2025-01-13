@@ -13,6 +13,7 @@ import { HeaderActionsProvider } from '@/context/HeaderActionsContext';
 import { IconChartBar, IconCirclePlus, IconFish, IconUserCircle, TablerIcon } from '@tabler/icons-react';
 import { ModalsProvider } from '@mantine/modals';
 import { LoadingOverlayProvider } from '@/context/LoadingOverlayContext';
+import { useMediaQuery } from '@mantine/hooks';
 
 export interface Page {
   path: string;
@@ -44,12 +45,13 @@ const tabs: Tab[] = [
 
 export default function AppShellWrapper({ children }: { children: any }) {
   const pathname = usePathname();
+  const isSmallScreen = useMediaQuery('(max-width: 64em)');
 
   return (
     <GlobalStateProvider>
       <MantineProvider theme={theme} defaultColorScheme="dark" forceColorScheme="dark">
         <ModalsProvider>
-          <Notifications styles={{ root: { transform: 'translateY(calc(-65px - env(safe-area-inset-bottom))' } }} />
+          <Notifications styles={{ root: { transform: isSmallScreen ? 'translateY(calc(-65px - env(safe-area-inset-bottom))' : 'none' } }} />
           <LoadingOverlayProvider>
             <HeaderActionsProvider>
               <AppShell header={{ height: { base: rem(45), md: rem(60) } }} footer={{ height: rem(60) }} padding="0">

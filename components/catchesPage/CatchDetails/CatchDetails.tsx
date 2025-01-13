@@ -181,7 +181,7 @@ export default function CatchDetails({
               <CatchImageCarousel
                 images={imagesToShow}
                 isFallbackImage={isFallbackImage}
-                onFullscreen={(src) => setFullscreenImage(src)}
+                setFullscreen={(src) => setFullscreenImage(src)}
               />
 
               {/* Fullscreen Image */}

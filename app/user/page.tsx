@@ -48,12 +48,12 @@ export default function Page() {
     <Container size={'sm'} p={'md'} pt={'xl'}>
       <Center>
         <Stack align="center" gap={'xl'}>
-          <Title order={3}>Hei, {jwtUserInfo?.firstname}!</Title>
+          <Title c={'white'} order={3}>Hei, {jwtUserInfo?.firstname}!</Title>
           <Group mb={'md'}>
             <IconUser />
             <Text>Käyttäjäsivut tulossa pian...</Text>
           </Group>
-          {isLoggedIn && <Button size="md" onClick={handleLogout}  leftSection={<IconLogout />}>Log Out</Button>}
+          {isLoggedIn && <Button size="md" onClick={handleLogout}  leftSection={<IconLogout />}>Kirjaudu ulos</Button>}
         </Stack>
       </Center>
     </Container>

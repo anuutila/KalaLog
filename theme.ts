@@ -1,7 +1,15 @@
 'use client';
 
-import { createTheme } from '@mantine/core';
+import { Checkbox, createTheme } from '@mantine/core';
 
 export const theme = createTheme({
-  /* Put your mantine theme override here */
+  cursorType: 'pointer',
+  defaultRadius: 'md',
+  components: {
+    Checkbox: {
+      defaultProps: {
+        radius: 'sm',
+      },
+    },
+  },
 });

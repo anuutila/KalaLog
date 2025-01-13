@@ -1,0 +1,7 @@
+.loading_overlay_root {
+  position: fixed;
+}
+
+.loading_overlay_loader {
+  transform: translateY(calc(-0.5 * var(--app-shell-footer-offset)));
+}

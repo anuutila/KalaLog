@@ -149,7 +149,7 @@ export const CatchUtils = {
   }
 };
 
-export function createCatchAndImagesFormData(catchData: Omit<ICatch, 'id' | 'createdAt' | 'catchNumber'>, imageFiles: File[]): FormData {
+export function createCatchAndImagesFormData(catchData: Omit<ICatch, 'id' | 'createdAt' | 'catchNumber'>, addedImages: File[], deletedImages: string[] = []): FormData {
   const catchAndImageData = new FormData();
 
   // Append form data (parsedFormData fields)
@@ -167,9 +167,12 @@ export function createCatchAndImagesFormData(catchData: Omit<ICatch, 'id' | 'cre
     }
   });
 
-  // Append files (imagesData)
-  imageFiles.forEach((file, index) => {
-    catchAndImageData.append(`imageFiles`, file);
+  // Append added and deleted images
+  addedImages.forEach((file, index) => {
+    catchAndImageData.append(`addedImages`, file);
+  });
+  deletedImages.forEach((url, index) => {
+    catchAndImageData.append(`deletedImages`, url);
   });
 
   return catchAndImageData;

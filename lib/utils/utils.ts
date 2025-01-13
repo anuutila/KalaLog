@@ -1,5 +1,6 @@
 import imageCompression, { Options } from "browser-image-compression";
 import { ICatch } from "../types/catch"
+import { parse } from "path";
 
 export function sortByDate(catches: ICatch[]): ICatch[] {
   return catches.sort((a, b) => {
@@ -74,4 +75,18 @@ export function extractFolderName(url: string): string {
     throw new Error('Unexpected URL structure');
   }
   return url.substring(startIndex, url.lastIndexOf('/')); // Extract up to the file name
+};
+
+// Extract the publicId from the Cloudinary URL
+export function extractNextImageIndex(urls: string[]): number {
+  const indexes: number[] = [0];
+  urls.forEach((url) => {
+    const startIndex = url.indexOf('img_'); // Find where the image index starts
+    if (startIndex === -1) {
+      throw new Error('Unexpected URL structure');
+    }
+    const index: string = url.substring(startIndex, url.lastIndexOf('.')).split('_')[1];
+    indexes.push(parseInt(index));
+  });
+  return Math.max(...indexes) + 1;
 };

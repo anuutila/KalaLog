@@ -14,7 +14,7 @@
 
   &.active {
     z-index: 1;
-    /* border-bottom: rem(2.5) solid var(--mantine-primary-color-5); Blue bottom border when active */
+    /*border-top: rem(2.5) solid var(--mantine-primary-color-5) !important;  Blue top border when active */
     color: var(--mantine-color-white) !important; /* Text color when active */
 
     .icon {
@@ -41,13 +41,13 @@
     margin-bottom: 0px;
     font-weight: 200;
     stroke-width: 1.5;
-    color: var(--mantine-color-gray-5); /* Default icon color */
+    color: var(--mantine-color-gray-6); /* Default icon color */
   }
 
   .label {
     font-size: rem(10);
     font-weight: 700;
-    color: var(--mantine-color-gray-5); /* Default label color */
+    color: var(--mantine-color-gray-6); /* Default label color */
   }
 }
 

@@ -17,8 +17,8 @@ export async function createCatch(catchData: Omit<ICatch, 'id' | 'createdAt' | '
   });
 }
 
-export async function editCatch(catchData: Omit<ICatch, 'id' | 'createdAt'>, catchId: string | undefined, imageFiles: File[]): Promise<CatchEditedResponse> {
-  const catchAndImagesformData = createCatchAndImagesFormData(catchData, imageFiles);
+export async function editCatch(catchData: Omit<ICatch, 'id' | 'createdAt'>, catchId: string | undefined, addedImages: File[], deletedImages: string[]): Promise<CatchEditedResponse> {
+  const catchAndImagesformData = createCatchAndImagesFormData(catchData, addedImages, deletedImages);
   return httpClient<CatchEditedResponse>(`${ApiEndpoints.Catches}?id=${catchId}`, {
     method: 'PUT',
     body: catchAndImagesformData,
@@ -26,7 +26,7 @@ export async function editCatch(catchData: Omit<ICatch, 'id' | 'createdAt'>, cat
 }
 
 export async function deleteCatch(id: string | undefined): Promise<CatchDeletedResponse> {
-  return httpClient<CatchDeletedResponse>(`${ApiEndpoints.Catches}/${id}`, {
+  return httpClient<CatchDeletedResponse>(`${ApiEndpoints.Catches}?id=${id}`, {
     method: 'DELETE',
   });
 }

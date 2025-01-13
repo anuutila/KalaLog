@@ -5,12 +5,13 @@ import { useGlobalState } from '@/context/GlobalState';
 import { CatchEditedResponse } from '@/lib/types/responses';
 import { showNotification } from '@/lib/notifications/notifications';
 import { CatchUtils } from '@/lib/utils/catchUtils';
-import { IconEdit, IconEraser, IconFish, IconFishHook, IconMap, IconMapPin, IconSelector, IconUser } from '@tabler/icons-react';
+import { IconCalendar, IconClock, IconEdit, IconEraser, IconFish, IconFishHook, IconMap, IconMapPin, IconRipple, IconRuler2, IconSelector, IconUser, IconWeight } from '@tabler/icons-react';
 import { useLoadingOverlay } from '@/context/LoadingOverlayContext';
 import FullscreenImage from '../CatchDetails/FullscreenImage';
 import ImageUploadForm from '@/components/ImageUploadForm/ImageUploadForm';
 import { editCatch } from '@/services/api/catchService';
 import { handleApiError } from '@/lib/utils/handleApiError';
+import { optimizeImage } from '@/lib/utils/utils';
 
 interface CatchEditFormProps {
   catchData: ICatch;
@@ -40,6 +41,10 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
   const [filteredLureOptions, setFilteredLureOptions] = useState<string[]>([]);
   const [luresDropdownOpened, setLuresDropdownOpened] = useState<boolean>(false);
 
+  const [bodyOfWaterValue, setBodyOfWaterValue] = useState<string>(catchData.location.bodyOfWater || '');
+  const [filteredBodyOfWaterOptions, setFilteredBodyOfWaterOptions] = useState<string[]>([]);
+  const [bodiesOfWaterDropdownOpened, setBodiesOfWaterDropdownOpened] = useState<boolean>(false);
+
   const [spotValue, setSpotValue] = useState<string>(catchData.location.spot || '');
   const [filteredSpotOptions, setFilteredSpotOptions] = useState<string[]>([]);
   const [spotsDropdownOpened, setSpotsDropdownOpened] = useState<boolean>(false);
@@ -48,7 +53,8 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
   const [filteredAnglerOptions, setFilteredAnglerOptions] = useState<string[]>([]);
   const [anglersDropdownOpened, setAnglersDropdownOpened] = useState<boolean>(false);
 
-  const [files, setFiles] = useState<File[]>([]);
+  const [addedImages, setAddedImages] = useState<File[]>([]);
+  const [deletedImages, setDeletedImages] = useState<string[]>([]);
   const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
 
   useEffect(() => {
@@ -104,10 +110,19 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
         }
       };
 
+      // Optimize images before uploading
+      console.log('Optimizing images...');
+      const optimizedImages = await Promise.all(
+        addedImages.map(async (file) => {
+          const optimizedFile = await optimizeImage(file);
+          return optimizedFile;
+        })
+      );
+
       // Send updated catch data to the API
-      const catchUpdateResponse: CatchEditedResponse = await editCatch(updatedCatch, catchData.id, files);
+      const catchUpdateResponse: CatchEditedResponse = await editCatch(updatedCatch, catchData.id, optimizedImages, deletedImages);
       console.log(catchUpdateResponse.message, catchUpdateResponse.data);
-      if (catchUpdateResponse.data.failedImageUploads) {
+      if (catchUpdateResponse.data.failedImageOperations) {
         showNotification('warning', catchUpdateResponse.message, { withTitle: true });
       } else {
         showNotification('success', catchUpdateResponse.message, { withTitle: false });
@@ -131,6 +146,11 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
 
   const lureOptions = useMemo(() => 
     CatchUtils.getUniqueLures(catches).map((lure) => lure.lure).filter((lure) => lure !== '?'), 
+    [catches]
+  );
+
+  const bodyOfWaterOptions = useMemo(() =>
+    CatchUtils.getUniqueBodiesOfWater(catches),
     [catches]
   );
 
@@ -173,6 +193,21 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
       <IconSelector onClick={() => setLuresDropdownOpened(false)}/> : 
       null
   , [luresDropdownOpened, filteredLureOptions.length, lureValue]);
+
+  const handleBodyOfWaterChange = useCallback((value: string) => {
+    setBodyOfWaterValue(value);
+    const filtered = bodyOfWaterOptions.filter((option) =>
+      option.toLowerCase().includes(value.toLowerCase().trim())
+    );
+    setFilteredBodyOfWaterOptions(filtered);
+    setBodiesOfWaterDropdownOpened(filtered.length > 0);
+  } , [bodyOfWaterOptions]);
+
+  const bodyOfWaterRightSection = useMemo(() => 
+    bodiesOfWaterDropdownOpened && (filteredBodyOfWaterOptions.length > 0 || spotValue === '') ? 
+      <IconSelector onClick={() => setBodiesOfWaterDropdownOpened(false)}/> : 
+      null
+  , [bodiesOfWaterDropdownOpened, filteredBodyOfWaterOptions.length, bodyOfWaterValue]);
 
   const handleSpotChange = useCallback((value: string) => {
     setSpotValue(value);
@@ -224,7 +259,7 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
               rightSection={speciesRightSection}
               data={speciesOptions}
               defaultDropdownOpened={false}
-              leftSection={<IconFish />}
+              leftSection={<IconFish size={20}/>}
               leftSectionPointerEvents='none'
             />
             <Group grow gap='lg'>
@@ -239,6 +274,8 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
                 suffix=' cm'
                 value={lengthValue}
                 onChange={setLengthValue}
+                leftSection={<IconRuler2 size={20}/>}
+                leftSectionPointerEvents='none'
               />
               <NumberInput
                 size="md"
@@ -251,13 +288,15 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
                 suffix=' kg'
                 value={weightValue}
                 onChange={setWeightValue}
+                leftSection={<IconWeight size={20}/>}
+                leftSectionPointerEvents='none'
               />
             </Group>
             <Autocomplete
               size='md'
               type='text'
               label="Viehe"
-              placeholder='Viehen merkki ja malli'
+              placeholder='Vieheen merkki ja malli'
               name='lure'
               value={lureValue}
               onChange={handleLureChange}
@@ -265,9 +304,26 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
               onBlur={() => setLuresDropdownOpened(false)}
               rightSection={lureRightSection}
               data={lureOptions}
-              leftSection={<IconFishHook />}
+              leftSection={<IconFishHook size={20}/>}
               leftSectionPointerEvents='none'
             />
+            <Autocomplete
+                size='md'
+                type='text'
+                name='bodyOfWater'
+                label="Veistö"
+                placeholder="Järvi, joki, meri..."
+                value={bodyOfWaterValue}
+                onChange={handleBodyOfWaterChange}
+                onFocus={() => setBodiesOfWaterDropdownOpened(true)}
+                onBlur={() => setBodiesOfWaterDropdownOpened(false)}
+                rightSection={spotRightSection}
+                data={bodyOfWaterOptions}
+                defaultDropdownOpened={false}
+                leftSection={<IconRipple size={20}/>}
+                leftSectionPointerEvents='none'
+                required
+              />
             <Autocomplete
               size='md'
               type='text'
@@ -281,7 +337,7 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
               rightSection={spotRightSection}
               data={spotOptions}
               defaultDropdownOpened={false}
-              leftSection={<IconMap />}
+              leftSection={<IconMap size={20}/>}
               leftSectionPointerEvents='none'
             />
             <TextInput
@@ -293,7 +349,7 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
                 value={formData.location.coordinates ?? ''}
                 onChange={handleChange}
                 pattern='^([-+]?\d{1,3}\.\d{1,12},\s*[-+]?\d{1,3}\.\d{1,12})?$' // GPS coordinates pattern
-                leftSection={<IconMapPin />}
+                leftSection={<IconMapPin size={20}/>}
                 leftSectionPointerEvents='none'
             />
             <Group grow>
@@ -305,6 +361,8 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
                 value={formData.date}
                 onChange={handleChange}
                 required
+                leftSection={<IconCalendar size={20}/>}
+                leftSectionPointerEvents='none'
               />
               <TextInput
                 size="md"
@@ -314,6 +372,8 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
                 value={formData.time}
                 onChange={handleChange}
                 required
+                leftSection={<IconClock size={20}/>}
+                leftSectionPointerEvents='none'
               />
             </Group>
             <Autocomplete
@@ -330,14 +390,15 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
               rightSection={anglersRightSection}
               data={anglerOptions}
               defaultDropdownOpened={false}
-              leftSection={<IconUser />}
+              leftSection={<IconUser size={20}/>}
               leftSectionPointerEvents='none'
             />
 
             <ImageUploadForm
               catchData={catchData}
               setFullscreenImage={setFullscreenImage}
-              setFiles={setFiles}
+              setAddedImages={setAddedImages}
+              setDeletedImages={setDeletedImages}
             />
 
             {fullscreenImage && (

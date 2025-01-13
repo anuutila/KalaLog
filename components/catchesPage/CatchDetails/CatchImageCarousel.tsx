@@ -1,54 +1,78 @@
-import { Carousel } from '@mantine/carousel';
+import { Carousel, Embla } from '@mantine/carousel';
 import { Image, Box, ActionIcon } from '@mantine/core';
 import { IconMaximize } from '@tabler/icons-react';
 import classes from './CatchDetails.module.css';
+import { useCallback, useEffect, useState } from 'react';
 
 interface CatchImageCarouselProps {
   images: string[];
   isFallbackImage: boolean;
-  onFullscreen: (src: string) => void;
+  setFullscreen: (src: string) => void;
 }
 
 export default function CatchImageCarousel({
   images,
   isFallbackImage,
-  onFullscreen,
+  setFullscreen,
 }: CatchImageCarouselProps) {
+  const [embla, setEmbla] = useState<Embla | null>(null); // Embla API instance
+  const [activeIndex, setActiveIndex] = useState(0); // Track active image index
+
+  const handleSelect = useCallback(() => {
+    if (!embla) return;
+    setActiveIndex(embla.selectedScrollSnap()); // Get the currently active slide index
+  }, [embla]);
+
+  useEffect(() => {
+    if (embla) {
+      embla.on('select', handleSelect); // Listen for slide change
+      handleSelect(); // Set the initial index
+    }
+  }, [embla, handleSelect]);
+
   return (
-    <Carousel 
-      withIndicators={images.length > 1} 
-      withControls={images.length > 1}
-      loop={images.length > 1} 
-      classNames={{ viewport: classes.viewport, controls: classes.controls, control: classes.control }}
-    >
-      {images.map((src, index) => (
-        <Carousel.Slide key={index}>
-          <Box pos="relative" w="100%" h="300px" bg="#f4f4f4">
-            <Image 
-              src={src} 
-              fit="cover" 
-              height={300} 
-              fallbackSrc='/no-image-placeholder.png'
-              style={{
-                backgroundColor: 'var(--mantine-color-dark-7)',
-              }}
-            />
-            {!isFallbackImage && (
-              <ActionIcon
-                size="lg"
-                variant="light"
-                pos={'absolute'}
-                bottom={10}
-                right={10}
-                bg={'rgba(0, 0, 0, 0.5)'}
-                onClick={() => onFullscreen(src)}
-              >
-                <IconMaximize size={20} color="white" />
-              </ActionIcon>
-            )}
-          </Box>
-        </Carousel.Slide>
-      ))}
-    </Carousel>
+    <Box pos={'relative'}>
+      <Carousel
+        withIndicators={images.length > 1}
+        withControls={images.length > 1}
+        loop={images.length > 1}
+        classNames={{
+          viewport: classes.viewport,
+          controls: classes.controls,
+          control: classes.control,
+        }}
+        getEmblaApi={setEmbla} // Get the Embla API instance
+        pos={'relative'}
+      >
+        {images.map((src, index) => (
+          <Carousel.Slide key={index}>
+            <Box pos="relative" w="100%" h="300px" bg="#f4f4f4">
+              <Image
+                src={src}
+                fit="cover"
+                height={300}
+                fallbackSrc="/no-image-placeholder.png"
+                style={{
+                  backgroundColor: 'var(--mantine-color-dark-7)',
+                }}
+              />
+            </Box>
+          </Carousel.Slide>
+        ))}
+      </Carousel>
+      {!isFallbackImage && (
+        <ActionIcon
+          pos={'absolute'}
+          bottom={10}
+          right={10}
+          size="lg"
+          variant="light"
+          bg="rgba(0, 0, 0, 0.5)"
+          onClick={() => setFullscreen(images[activeIndex])}
+        >
+          <IconMaximize size={20} color="white" />
+        </ActionIcon>
+      )}
+    </Box>
   );
 }

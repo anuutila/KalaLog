@@ -76,7 +76,21 @@ export default function StatsBadges({ filteredCatches }: StatsBadgesProps) {
   const fishBadges = sortedFishEntries.map(([fishKey, { count, displayName }]) => {
     const color = FishColors[fishKey as keyof typeof FishColors] || getRandomColor();
     return (
-      <Badge px={12} pt={1} h={28} style={{ color: `var(--mantine-color-${color}-3)`, background: `var(--mantine-color-${color}-light)`, border: `2px solid rgba(${AllColorsRGB[color]}, 0.15)`}} key={fishKey} color={AllColorsRGB[color]} variant="light" classNames={{ root: classes.root, label: classes.label}}  size="lg">
+      <Badge 
+        px={12} 
+        pt={1} 
+        h={28} 
+        style={{ 
+          color: `var(--mantine-color-${color}-3)`, 
+          background: `var(--mantine-color-${color}-light)` 
+          /* , border: `2px solid rgba(${AllColorsRGB[color]}, 0.15)`*/
+        }} 
+        key={fishKey} 
+        color={AllColorsRGB[color]} 
+        variant="light" 
+        classNames={{ root: classes.root, label: classes.label}} 
+        size="lg"
+      >
         {displayName}: {count}
       </Badge>
     );

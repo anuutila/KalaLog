@@ -1,6 +1,10 @@
 .input_label {
   --input-label-size: var(--mantine-font-size-md);
-  margin-bottom: rem(6);
+  /* margin-bottom: rem(6); */
+}
+
+.switch_body {
+  justify-content: space-between;
 }
 
 .switch_input_label {

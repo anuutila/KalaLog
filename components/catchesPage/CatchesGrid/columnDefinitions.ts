@@ -4,11 +4,19 @@ import { lengthFormatter, weightFormatter, upperCaseFormatter, dateFormatter, cu
 import { ICatch } from '@/lib/types/catch';
 import { speciesCellRenderer } from './SpeciesCellRenderer/SpeciesCellRenderer';
 
-export const getColumnDefs = (): ColDef[] => [
+export const getColumnDefs = (
+  imageIconsEnabled: boolean, 
+  speciesColumnWidth: number, 
+  locationIconsEnabled: boolean, 
+  locationColumnWidth: number
+): ColDef[] => [
   { field: 'species', 
     headerName: 'Laji', 
-    width: 95, 
+    width: speciesColumnWidth, // 65 without and 95 with icon
     cellRenderer: speciesCellRenderer,
+    cellRendererParams: {
+      imageIconsEnabled, // Pass the value to the renderer
+    },
   },
   {
     headerName: 'Kuva',
@@ -16,7 +24,7 @@ export const getColumnDefs = (): ColDef[] => [
     valueGetter: (params) => params.data.images?.length > 0,
     cellRenderer: 'agCheckboxCellRenderer',
     filter: false,
-    width: 60,
+    width: 75,
   },
   {
     field: 'length',
@@ -47,8 +55,12 @@ export const getColumnDefs = (): ColDef[] => [
     headerName: 'Paikka',
     wrapText: true,
     autoHeight: true,
-    width: 150,
+    width: locationColumnWidth, // 120 without and 150 with icon
+    cellClass: 'location-cell-custom-class',
     cellRenderer: LocationCellRenderer,
+    cellRendererParams: {
+      locationIconsEnabled,
+    },
     valueGetter: (params) => params.data.location?.spot || '-',
     filter: 'agTextColumnFilter',
     filterParams: {

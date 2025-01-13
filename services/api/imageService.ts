@@ -3,6 +3,7 @@ import { httpClient } from "../httpClient";
 import { ApiEndpoints } from "@/lib/constants/constants";
 import cloudinary from "@/lib/cloudinary/cloudinary";
 import { extractFolderName, extractPublicId } from "@/lib/utils/utils";
+import { error } from "console";
 
 export async function uploadImage(imageFormData: FormData): Promise<ImageUploadResponse> {
   return httpClient<ImageUploadResponse>(ApiEndpoints.UploadImage, {
@@ -13,20 +14,24 @@ export async function uploadImage(imageFormData: FormData): Promise<ImageUploadR
 
 
 // Delete images from a Cloudinary folder and the folder itself
-export async function deleteImages(imageURLs: string[]): Promise<void> {
-  console.error('Rolling back image uploads:', imageURLs);
-    // Rollback: Delete all uploaded images from Cloudinary
+export async function deleteImages(imageURLs: string[], deleteFolder: boolean): Promise<{ succesfulDeletions: string[], failedDeletions: string[] }> {
+  const succesfulDeletions: string[] = [];
+  const failedDeletions: string[] = [];
+  console.error('Deleting images from Cloudinary:', imageURLs);
+    // Delete images from Cloudinary
     for (const img of imageURLs) {
       const publicId = extractPublicId(img);
       try {
         await cloudinary.uploader.destroy(publicId);
-      } catch (rollbackError) {
-        console.error(`Failed to rollback image ${publicId}:`, rollbackError);
+        succesfulDeletions.push(img);
+      } catch (err) {
+        console.error(`Failed to delete image ${publicId}:`, err);
+        failedDeletions.push(img);
       }
     }
-    // Rollback: Delete the folder if it's empty
-    console.log('Rolling back folder:', imageURLs);
-    if (imageURLs.length > 0) {
+    // Delete the folder from Cloudinary
+    console.log('Deleting folder from Cloudinary:', imageURLs);
+    if (deleteFolder) {
       const folderName = extractFolderName(imageURLs[0]);
       try {
         await cloudinary.api.delete_folder(folderName);
@@ -35,4 +40,6 @@ export async function deleteImages(imageURLs: string[]): Promise<void> {
         console.error(`Failed to delete folder ${folderName}:`, error);
       }
     }
+
+    return { succesfulDeletions, failedDeletions };
 }

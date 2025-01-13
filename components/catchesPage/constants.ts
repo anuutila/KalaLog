@@ -1,3 +1,15 @@
+import {
+  IconFish,
+  IconCamera,
+  IconRuler2,
+  IconWeight,
+  IconFishHook,
+  IconMapPin2,
+  IconClock,
+  IconCalendar,
+  IconUser,
+} from '@tabler/icons-react';
+
 export enum FieldIdentifier {
   Species = 'species',
   Image = 'image',
@@ -11,15 +23,27 @@ export enum FieldIdentifier {
 }
 
 export const fieldToDisplayLabelMap: Record<FieldIdentifier, string> = {
-  [FieldIdentifier.Species]: '🐟 Laji',
-  [FieldIdentifier.Image]: '📷 Kuva',
-  [FieldIdentifier.Length]: '📏 Pituus',
-  [FieldIdentifier.Weight]: '⚖️ Paino',
-  [FieldIdentifier.Lure]: '🎣 Viehe',
-  [FieldIdentifier.Location]: '📍 Paikka',
-  [FieldIdentifier.Time]: '🕑 Aika',
-  [FieldIdentifier.Date]: '📅 Pvm.',
-  [FieldIdentifier.CaughtBy]: '🙋 Kalastaja',
+  [FieldIdentifier.Species]: 'Laji',
+  [FieldIdentifier.Image]: 'Kuva',
+  [FieldIdentifier.Length]: 'Pituus',
+  [FieldIdentifier.Weight]: 'Paino',
+  [FieldIdentifier.Lure]: 'Viehe',
+  [FieldIdentifier.Location]: 'Paikka',
+  [FieldIdentifier.Time]: 'Aika',
+  [FieldIdentifier.Date]: 'Pvm.',
+  [FieldIdentifier.CaughtBy]: 'Kalastaja',
+};
+
+export const fieldToIconMap: Record<FieldIdentifier, React.ElementType> = {
+  [FieldIdentifier.Species]: IconFish,
+  [FieldIdentifier.Image]: IconCamera,
+  [FieldIdentifier.Length]: IconRuler2,
+  [FieldIdentifier.Weight]: IconWeight,
+  [FieldIdentifier.Lure]: IconFishHook,
+  [FieldIdentifier.Location]: IconMapPin2,
+  [FieldIdentifier.Time]: IconClock,
+  [FieldIdentifier.Date]: IconCalendar,
+  [FieldIdentifier.CaughtBy]: IconUser,
 };
 
 export const defaultVisibleColumns = [

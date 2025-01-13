@@ -18,6 +18,19 @@ import CancelEditModal from './CancelEditModal';
 import { deleteCatch } from '@/services/api/catchService';
 import { handleApiError } from '@/lib/utils/handleApiError';
 
+export interface CatchDetails {
+  species: { label: string; data: string };
+  length: { label: string; data: number | null | undefined };
+  weight: { label: string; data: number | null | undefined };
+  lure: { label: string; data: string | null | undefined };
+  bodyOfWater: { label: string; data: string };
+  spot: { label: string; data: string | null | undefined };
+  coordinates: { label: string; data: string | null | undefined };
+  date: { label: string; data: string };
+  time: { label: string; data: string };
+  caughtBy: { label: string; data: string };
+}
+
 interface CatchDetailsProps {
   selectedCatch: ICatch;
   setSelectedCatch: React.Dispatch<React.SetStateAction<ICatch | null>>;
@@ -112,17 +125,18 @@ export default function CatchDetails({
   // Determine if fullscreen should be available
   const isFallbackImage = imagesToShow.length === 1 && imagesToShow[0] === defaultPlaceholder;
 
-  const details = {
-      Laji: selectedCatch.species,
-      Pituus: selectedCatch.length,
-      Viehe: selectedCatch.lure,
-      Paino: selectedCatch.weight,
-      Vesistö: selectedCatch.location.bodyOfWater,
-      Paikka: selectedCatch.location.spot,
-      Päivämäärä: selectedCatch.date,
-      Aika: selectedCatch.time,
-      Kalastaja: selectedCatch.caughtBy.name,
-    };
+  const details: CatchDetails = {
+    species: { label: 'Kalalaji', data: selectedCatch.species },
+    length: { label: 'Pituus', data: selectedCatch.length },
+    weight: { label: 'Paino', data: selectedCatch.weight },
+    lure: { label: 'Viehe', data: selectedCatch.lure },
+    bodyOfWater: { label: 'Vesialue', data: selectedCatch.location.bodyOfWater },
+    spot: { label: 'Paikka', data: selectedCatch.location.spot },
+    coordinates: { label: 'Koordinaatit', data: selectedCatch.location.coordinates },
+    date: { label: 'Päivämäärä', data: selectedCatch.date },
+    time: { label: 'Aika', data: selectedCatch.time },
+    caughtBy: { label: 'Kalastaja', data: selectedCatch.caughtBy.name },
+  };
 
   return (
     <Box
@@ -143,7 +157,7 @@ export default function CatchDetails({
         <Stack gap={'lg'}>
           {/* Header */}
           <Group>
-            <Title c='white' order={2} p={0} mr={'auto'}>
+            <Title c='white' order={2} p={0} mr={'auto'} pl={4}>
               {isInEditView ? 'Muokkaa saalista' : `Saalis #${selectedCatch.catchNumber}`}
             </Title>
 
@@ -193,7 +207,7 @@ export default function CatchDetails({
               )}
 
               {/* Catch Details Grid */}
-              <Box pl={'sm'} pr={'sm'}>
+              <Box p={0} pb={'xl'}>
                 <CatchDetailsGrid
                   details={details}
                   coordinates={selectedCatch.location.coordinates}

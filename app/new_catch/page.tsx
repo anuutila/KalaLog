@@ -386,7 +386,7 @@ export default function Page() {
 
   return (
     <Container size='sm' p={'md'}>
-      <Title c='white' order={2} mb={'md'}>Saaliin tiedot</Title>
+      <Title c='white' order={2} mb={'md'} pl={4}>Saaliin tiedot</Title>
       { (!isLoggedIn || jwtUserInfo?.role === UserRole.VIEWER )&& <Alert variant="light" color="red" radius="md" title="Huomio" icon={<IconInfoCircle />} mb={'md'}>
         {jwtUserInfo?.role === UserRole.VIEWER ? 'Sinulla ei ole uuden saaliin lisäämiseen tarvittavia oikeuksia.' : 'Kirjaudu sisään lisätäksesi uuden saaliin.'}
       </Alert> }
@@ -464,8 +464,8 @@ export default function Page() {
                 size='md'
                 type='text'
                 name='bodyOfWater'
-                label="Vesistö"
-                placeholder="Järvi, joki, meri..."
+                label="Vesialue"
+                placeholder="Järven, joen tai meren nimi"
                 value={bodyOfWaterValue}
                 onChange={handleBodyOfWaterChange}
                 onFocus={() => setBodiesOfWaterDropdownOpened(true)}

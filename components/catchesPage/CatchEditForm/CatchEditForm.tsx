@@ -97,8 +97,8 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
       const updatedCatch: ICatch = {
         ...formData,
         species: speciesValue,
-        length: typeof lengthValue === 'string' ? null : lengthValue,
-        weight: typeof weightValue === 'string' ? null : weightValue,
+        length: (typeof lengthValue === 'string' || lengthValue === 0) ? null : lengthValue,
+        weight: (typeof weightValue === 'string' || weightValue === 0) ? null : weightValue,
         lure: lureValue,
         location: {
           ...formData.location,
@@ -111,13 +111,17 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
       };
 
       // Optimize images before uploading
-      console.log('Optimizing images...');
-      const optimizedImages = await Promise.all(
-        addedImages.map(async (file) => {
-          const optimizedFile = await optimizeImage(file);
-          return optimizedFile;
-        })
-      );
+      const optimizedImages: File[] = [];
+      if (addedImages.length > 0) {
+        console.log('Optimizing images...');
+        const optimized = await Promise.all(
+          addedImages.map(async (file) => {
+            const optimizedFile = await optimizeImage(file);
+            return optimizedFile;
+          })
+        );
+        optimizedImages.push(...optimized);
+      }
 
       // Send updated catch data to the API
       const catchUpdateResponse: CatchEditedResponse = await editCatch(updatedCatch, catchData.id, optimizedImages, deletedImages);
@@ -311,8 +315,8 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
                 size='md'
                 type='text'
                 name='bodyOfWater'
-                label="Vesistö"
-                placeholder="Järvi, joki, meri..."
+                label="Vesialue"
+                placeholder="Järven, joen tai meren nimi"
                 value={bodyOfWaterValue}
                 onChange={handleBodyOfWaterChange}
                 onFocus={() => setBodiesOfWaterDropdownOpened(true)}

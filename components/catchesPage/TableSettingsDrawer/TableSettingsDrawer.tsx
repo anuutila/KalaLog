@@ -3,6 +3,7 @@ import { SetStateAction } from "react";
 import classes from "./TableSettingsDrawer.module.css";
 import "./TableSettingsDrawer.css";
 import { IconCalendar, IconInfoCircle, IconTableColumn } from "@tabler/icons-react";
+import { displayLabelToFieldMap, FieldIdentifier, fieldToIconMap } from "../constants";
 
 const MAX_DISPLAYED_VALUES = 2;
 
@@ -52,11 +53,16 @@ export default function TableSettingsDrawer({
 
   const pillValues = visibleColumns
     .slice(0, MAX_DISPLAYED_VALUES === visibleColumns.length ? MAX_DISPLAYED_VALUES : MAX_DISPLAYED_VALUES - 1)
-    .map((item) => (
+    .map((item) => {
+      const field = displayLabelToFieldMap[item];
+      const Icon = fieldToIconMap[field];
+
+      return (
       <Pill key={item} withRemoveButton onRemove={() => handleValueRemove(item)} fz={'var(--mantine-font-size-sm)'}>
-        {item}
+        {<Group gap={'xs'} align="center" wrap="nowrap"><Icon size={16} /><Text fz={'sm'}>{item}</Text></Group>}
       </Pill>
-    ));
+      )
+    });
 
   const imageIconSwitchLabel = () => {
     return (

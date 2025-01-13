@@ -46,11 +46,11 @@ export default function CatchImageCarousel({
       >
         {images.map((src, index) => (
           <Carousel.Slide key={index}>
-            <Box pos="relative" w="100%" h="300px" bg="#f4f4f4">
+            <Box pos="relative" w="100%" h={{ base: 300, md: 500}} bg="#f4f4f4">
               <Image
                 src={src}
                 fit="cover"
-                height={300}
+                h={{ base: 300, md: 500}}
                 fallbackSrc="/no-image-placeholder.png"
                 style={{
                   backgroundColor: 'var(--mantine-color-dark-7)',

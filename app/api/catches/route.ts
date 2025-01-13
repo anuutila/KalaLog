@@ -474,8 +474,10 @@ export async function PUT(req: NextRequest): Promise<NextResponse<CatchEditedRes
 
     // Rollback image uploads
     const imageURLs = uploadedImages.map((img) => img.url);
-    const deleteFolder = uploadedImages.length === allImages.length; // Delete the folder if all images were newly uploaded
-    await deleteImages(imageURLs, deleteFolder);
+    if (imageURLs.length > 0) {
+      const deleteFolder = uploadedImages.length === allImages.length; // Delete the folder if all images were newly uploaded
+      await deleteImages(imageURLs, deleteFolder);
+    }
 
     return handleError(error, 'Unable to update catch. Please try again later.');
   }

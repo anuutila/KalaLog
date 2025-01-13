@@ -194,6 +194,7 @@ export default function CatchesPage() {
       const visibleFields = visibleColumns
         .map((header) => displayLabelToFieldMap[header])
         .filter(Boolean);
+        
       api.setColumnsVisible(visibleFields, true);
 
       adjustColumnFlex();

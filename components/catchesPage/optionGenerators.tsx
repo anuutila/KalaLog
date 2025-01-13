@@ -1,7 +1,7 @@
 import { ICatch } from "@/lib/types/catch";
 import { ColDef } from 'ag-grid-community';
 import { Checkbox, CheckIcon, Combobox, Group } from "@mantine/core";
-import { FieldIdentifier } from "./constants";
+import { FieldIdentifier, fieldToIconMap } from "./constants";
 
 const currentYear = new Date().getFullYear();
 
@@ -9,6 +9,7 @@ export const getColumnOptions = (colDefs: ColDef<ICatch>[], visibleColumns: stri
   colDefs.map((col) => {
     const field: string = col.field ?? '?';
     const header: string = col.headerName ?? '?';
+    const Icon = fieldToIconMap[field as FieldIdentifier];
     const displayLabel = displayLabelMap[field as FieldIdentifier] ?? header;
 
     return (
@@ -21,6 +22,7 @@ export const getColumnOptions = (colDefs: ColDef<ICatch>[], visibleColumns: stri
             tabIndex={-1}
             style={{ pointerEvents: 'none' }}
           />
+          <Icon size={20} />
           <span>{displayLabel}</span>
         </Group>
       </Combobox.Option>

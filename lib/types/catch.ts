@@ -11,7 +11,7 @@ export const ICatchSchema = z.object({
     spot: z.string().optional().nullable(),
     coordinates: z.string().optional().nullable(),
   }),
-  time: z.string().regex(/^\d{2}:\d{2}$/, "Invalid time format (HH:MM)").optional(),
+  time: z.string().regex(/^\d{2}:\d{2}$/, "Invalid time format (HH:MM)"),
   caughtBy: z.object({
     name: z.string().min(1, "Name is required"),
     userId: z.string().regex(/^[a-f\d]{24}$/i, "Invalid user ID").nullable().optional(),

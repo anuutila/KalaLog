@@ -20,8 +20,8 @@ export const metadata: Metadata = {
     icon: [
       { url: '/kalalog_icon_round-16.ico', sizes: '16x16', type: 'image/x-icon' },
       { url: '/kalalog_icon_round-48.ico', sizes: '48x48', type: 'image/x-icon' },
-      { url: '/kalalog_logo-192.png', sizes: '192x192', type: 'image/png' },
-      { url: '/kalalog_logo-512.png', sizes: '512x512', type: 'image/png' },
+      { url: '/kalalog_icon_gradient-192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/kalalog_icon_gradient-512.png', sizes: '512x512', type: 'image/png' },
     ],
     apple: [
       { url: '/apple-icon.png', sizes: '180x180', type: 'image/png' },

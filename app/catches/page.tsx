@@ -34,6 +34,8 @@ import CatchesGrid from '@/components/catchesPage/CatchesGrid/CatchesGrid';
 import { useHeaderActions } from '@/context/HeaderActionsContext';
 import { useGlobalState } from '@/context/GlobalState';
 import CatchDetails from '@/components/catchesPage/CatchDetails/CatchDetails';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { set } from 'mongoose';
 
 const currentYear = new Date().getFullYear();
 
@@ -47,12 +49,23 @@ enum LocationColWidths {
   NoIcon = 120,
 }
 
+const updateQueryParams = (selectedCatch: ICatch | null, router: ReturnType<typeof useRouter>) => {
+  console.log(selectedCatch);
+  if (selectedCatch) {
+    router.push(`?catchNumber=${selectedCatch.catchNumber}`, { scroll: false });
+  } else {
+    router.push('/', { scroll: false });
+  }
+}
+
 export default function CatchesPage() {
   const gridRef = useRef<AgGridReact<ICatch>>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const { setActions } = useHeaderActions();
   const { catches, catchesError, loadingCatches } = useGlobalState();
-
+  
   const [filteredCatches, setFilteredCatches] = useState<ICatch[]>([]);
   const [rowCount, setRowCount] = useState<number>(0);
   const [selectedYear, setSelectedYear] = useState<string | null>(null);
@@ -74,13 +87,25 @@ export default function CatchesPage() {
     resizable: false,
     suppressHeaderFilterButton: true
   });
+  
+  useEffect(() => {
+    const catchNumber = searchParams.get('catchNumber');
+    if (catchNumber) {
+      console.log(catchNumber);
+  
+      const catchData = catches.find((catchItem) => catchItem.catchNumber.toString() === catchNumber);
+      if (catchData) {
+        setSelectedCatch(catchData); // Update state only once when dependencies change
+      }
+    }
+  }, [searchParams, catches]);
 
   useEffect(() => {
     const newSpeciesColWidth = imageIconsEnabled ? SpeciesColWidths.WithIcon : SpeciesColWidths.NoIcon;
     const newLocationColWidth = locationIconsEnabled ? LocationColWidths.WithIcon : LocationColWidths.NoIcon;
     setColDefs(getColumnDefs(imageIconsEnabled, newSpeciesColWidth, locationIconsEnabled, newLocationColWidth));
   }, [imageIconsEnabled, locationIconsEnabled]);
-
+  
   const onGridReady = useCallback((params: GridReadyEvent) => {
     // Initial call to set the year filter
     applyYearFilter(selectedYear);
@@ -250,6 +275,7 @@ export default function CatchesPage() {
 
   useEffect(() => {
     setCatchDetailsOpen(!!selectedCatch); // Automatically open or close based on selectedCatch
+    updateQueryParams(selectedCatch, router); // Update query params based on selectedCatch
   }, [selectedCatch]);
 
   const selectAllOption = getSelectAllOption(visibleColumns, colDefs);

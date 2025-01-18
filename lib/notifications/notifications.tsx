@@ -43,6 +43,6 @@ export function showNotification(
     position: 'bottom-right',
     withBorder: true,
     radius: 'md',
-    autoClose: 5000
+    autoClose: 4000
   });
 }

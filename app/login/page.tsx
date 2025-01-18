@@ -44,7 +44,7 @@ export default function Page() {
   };
 
   return (
-    <Container size={'md'} px={'md'} py={'xl'}>
+    <Container size={'xs'} px={'md'} py={'xl'}>
       <Stack align='stretch'>
         <Center mb={'md'}>
           <Title order={2} c={'white'}>Kirjaudu sisään</Title>

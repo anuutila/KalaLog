@@ -25,9 +25,9 @@
     display: flex !important;
     height: 100% !important;
     align-items: center !important;
-    position: absolute !important;
+    /* position: absolute !important;
     top: 0 !important;
-    left: 0 !important;
+    left: 0 !important; */
   }
   
   .tabs_group_header {

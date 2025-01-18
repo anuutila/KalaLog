@@ -74,7 +74,7 @@ export default function Page() {
   };
 
   return (
-    <Container size={'sm'} px="md" py="xl">
+    <Container size={'xs'} px="md" py="xl">
       <Stack align="stretch">
         <Center mb="md">
           <Title order={2} c={'white'}>Rekisteröidy</Title>

@@ -77,6 +77,7 @@
 @media (min-width: $mantine-breakpoint-md) {
 
   .grid-wrapper {
+    height: calc(100dvh - 111.094px - var(--app-shell-footer-offset, 0rem) - var(--app-shell-header-offset, 0rem) - var(--mantine-spacing-xl) - env(safe-area-inset-bottom));
   
     & .ag-root-wrapper {
       border-radius: var(--mantine-spacing-sm);

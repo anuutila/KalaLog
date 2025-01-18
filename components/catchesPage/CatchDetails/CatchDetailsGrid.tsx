@@ -1,4 +1,4 @@
-import { ActionIcon, Fieldset, Grid, Group, Stack, Text } from '@mantine/core';
+import { ActionIcon, Box, Fieldset, Grid, Group, Stack, Text } from '@mantine/core';
 import { IconCalendar, IconClock, IconFish, IconFishHook, IconMapPin, IconMapPin2, IconRipple, IconRuler2, IconUser, IconWeight } from '@tabler/icons-react';
 import { CatchDetails } from './CatchDetails';
 
@@ -137,19 +137,22 @@ export default function CatchDetailsGrid({ details, coordinates }: CatchDetailsG
               <Text size='md' fw={500}>{details.spot.label}</Text>
             </Group>
           </Grid.Col>
-          <Grid.Col span={6} py={3}>
-            <Group wrap='nowrap' justify='space-between'>
+          <Grid.Col span={6}>
+            <Group wrap='nowrap' justify='space-between' h={'100%'} align='center' gap={8}>
               <Text>{details.spot.data ?? '-'}</Text>
               {details.coordinates.data && (
-                <a
-                  href={`https://www.google.com/maps?q=${coordinates}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <ActionIcon h={'100%'} variant="light" aria-label="Show on map" color="var(--mantine-color-blue-4)" size={'lg'}>
-                    <IconMapPin style={{ width: '70%', height: '70%' }} stroke={2} />
-                  </ActionIcon>
-                </a>
+                <Box pos={'relative'} h={'100%'} w={35}>
+                  <a
+                    href={`https://www.google.com/maps?q=${coordinates}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ position: 'absolute', top: '50%', transform: 'translateY(-50%)' }}
+                  >
+                    <ActionIcon h={'100%'} variant="light" aria-label="Show on map" color="var(--mantine-color-blue-4)" size={'lg'}>
+                      <IconMapPin style={{ width: '70%', height: '70%' }} stroke={2} />
+                    </ActionIcon>
+                  </a>
+                </Box>
               )}
             </Group>
           </Grid.Col>

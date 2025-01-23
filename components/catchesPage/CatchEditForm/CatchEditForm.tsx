@@ -5,7 +5,7 @@ import { useGlobalState } from '@/context/GlobalState';
 import { CatchEditedResponse } from '@/lib/types/responses';
 import { showNotification } from '@/lib/notifications/notifications';
 import { CatchUtils } from '@/lib/utils/catchUtils';
-import { IconCalendar, IconClock, IconEdit, IconEraser, IconFish, IconFishHook, IconMap, IconMapPin, IconRipple, IconRuler2, IconSelector, IconUser, IconWeight } from '@tabler/icons-react';
+import { IconCalendar, IconClock, IconEdit, IconEraser, IconFish, IconFishHook, IconMap, IconMapPin, IconMessage, IconRipple, IconRuler2, IconSelector, IconUser, IconWeight } from '@tabler/icons-react';
 import { useLoadingOverlay } from '@/context/LoadingOverlayContext';
 import FullscreenImage from '../CatchDetails/FullscreenImage';
 import ImageUploadForm from '@/components/ImageUploadForm/ImageUploadForm';
@@ -396,6 +396,17 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
               defaultDropdownOpened={false}
               leftSection={<IconUser size={20}/>}
               leftSectionPointerEvents='none'
+            />
+            <TextInput
+              size='md'
+              type='text'
+              name="comment"
+              label="Kommentti"
+              placeholder="Vapaamuotoinen kommentti"
+              leftSection={<IconMessage size={20} />}
+              leftSectionPointerEvents='none'
+              value={formData.comment ?? ''}
+              onChange={handleChange}
             />
 
             <ImageUploadForm

@@ -29,6 +29,7 @@ export const CatchSchema: Schema<ICatchModel> = new Schema({
   createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: false, default: null },
   createdAt: { type: Date, default: Date.now },
   catchNumber: { type: Number, required: true, unique: true },
+  comment: { type: String, required: false, default: null, set: (value: string | null) => (value === "" ? null : capitalizeFirstLetter(value)) }
 });
 
 const Catch = mongoose.models.Catch || mongoose.model<ICatchModel>('Catch', CatchSchema);

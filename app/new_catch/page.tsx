@@ -12,7 +12,7 @@ import { UserRole } from '@/lib/types/user';
 import { CatchUtils } from '@/lib/utils/catchUtils';
 import { defaultSort, optimizeImage } from '@/lib/utils/utils';
 import { Alert, Autocomplete, Button, Checkbox, Container, Fieldset, Group, NumberInput, Stack, TextInput, Title } from '@mantine/core';
-import { IconCalendar, IconCheck, IconClock, IconFish, IconFishHook, IconInfoCircle, IconMap, IconMap2, IconMapPin, IconRipple, IconRuler2, IconRuler3, IconSelector, IconUser, IconWeight } from '@tabler/icons-react';
+import { IconCalendar, IconCheck, IconClock, IconFish, IconFishHook, IconInfoCircle, IconMap, IconMap2, IconMapPin, IconMessage, IconRipple, IconRuler2, IconRuler3, IconSelector, IconUser, IconWeight } from '@tabler/icons-react';
 import { createCatch } from '@/services/api/catchService';
 import { handleApiError } from '@/lib/utils/handleApiError';
 import { DateTime } from 'luxon';
@@ -37,6 +37,7 @@ export default function Page() {
     time: DateTime.now().toFormat('HH:mm'),
     caughtBy: { name: '', userId: null },
     createdBy: null,
+    comment: null,
   });
 
   const [speciesValue, setSpeciesValue] = useState<string>('');
@@ -219,7 +220,7 @@ export default function Page() {
           name: anglerName,
           userId: null,
         },
-        createdBy: jwtUserInfo?.userId ?? null
+        createdBy: jwtUserInfo?.userId ?? null,
       };
 
       console.log('Submitting form data:', parsedFormData);
@@ -256,6 +257,7 @@ export default function Page() {
         date: DateTime.now().toFormat('yyyy-MM-dd'),
         time: DateTime.now().toFormat('HH:mm'),
         caughtBy: { name: '', userId: null },
+        comment: null,
       });
       setSpeciesValue('');
       setLengthValue('');
@@ -557,8 +559,19 @@ export default function Page() {
               rightSection={anglersRightSection}
               data={anglerOptions}
               defaultDropdownOpened={false}
-              leftSection={<IconUser size={20}/>}
+              leftSection={<IconUser size={20} />}
               leftSectionPointerEvents='none'
+            />
+            <TextInput
+              size='md'
+              type='text'
+              name="comment"
+              label="Kommentti"
+              placeholder="Vapaamuotoinen kommentti"
+              leftSection={<IconMessage size={20} />}
+              leftSectionPointerEvents='none'
+              value={formData.comment ?? ''}
+              onChange={handleChange}
             />
 
             <ImageUploadForm

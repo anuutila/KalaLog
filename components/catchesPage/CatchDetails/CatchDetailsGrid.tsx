@@ -1,5 +1,5 @@
-import { ActionIcon, Box, Fieldset, Grid, Group, Stack, Text } from '@mantine/core';
-import { IconCalendar, IconClock, IconFish, IconFishHook, IconMapPin, IconMapPin2, IconRipple, IconRuler2, IconUser, IconWeight } from '@tabler/icons-react';
+import { ActionIcon, Blockquote, Box, Fieldset, Grid, Group, Stack, Text } from '@mantine/core';
+import { IconCalendar, IconClock, IconFish, IconFishHook, IconMapPin, IconMapPin2, IconMessage, IconRipple, IconRuler2, IconUser, IconWeight } from '@tabler/icons-react';
 import { CatchDetails } from './CatchDetails';
 
 interface CatchDetailsGridProps {
@@ -24,40 +24,6 @@ const formatDate = (date: string): string => {
 };
 
 export default function CatchDetailsGrid({ details, coordinates }: CatchDetailsGridProps) {
-  const renderField = (label: string, value: string | number | null) => {
-    const formattedValue =
-      label === 'Päivämäärä' && typeof value === 'string' ? formatDate(value) : value;
-
-    const unit = unitsMap[label] || '';
-
-    return (
-      <Grid.Col span={6} key={label}>
-        <Group wrap='nowrap' align='center'>
-          <Stack gap={0}>
-            <Text size="md" fw={500}>
-              {label}
-            </Text>
-            <Text size="md">
-              {formattedValue !== null && formattedValue !== undefined && formattedValue !== ''
-                ? `${formattedValue}${unit}`
-                : '-'}
-            </Text>
-          </Stack>
-          {coordinates && label === 'Paikka' && (
-            <a
-              href={`https://www.google.com/maps?q=${coordinates}`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <ActionIcon variant="light" aria-label="Show on map" color="var(--mantine-color-blue-4)" size={'lg'}>
-                <IconMapPin style={{ width: '70%', height: '70%' }} stroke={2} />
-              </ActionIcon>
-            </a>
-          )}
-        </Group>
-      </Grid.Col>
-    );
-  };
 
   return (
     // <Grid gutter="sm">
@@ -159,7 +125,7 @@ export default function CatchDetailsGrid({ details, coordinates }: CatchDetailsG
         </Grid>
       </Fieldset>
 
-      <Fieldset variant='default' legend="Kalastusvälineet" m={0}>
+      {details.lure.data && <Fieldset variant='default' legend="Kalastusvälineet" m={0}>
         <Grid>
           <Grid.Col span={6}>
             <Group gap={'xs'} align='center'>
@@ -171,7 +137,7 @@ export default function CatchDetailsGrid({ details, coordinates }: CatchDetailsG
             <Text>{details.lure.data ?? '-'}</Text>
           </Grid.Col>
         </Grid>
-      </Fieldset>
+      </Fieldset>}
 
       <Fieldset variant='default' legend="Kalastaja" m={0}>
         <Grid>
@@ -186,6 +152,15 @@ export default function CatchDetailsGrid({ details, coordinates }: CatchDetailsG
           </Grid.Col>
         </Grid>
       </Fieldset>
+
+      {details.comment.data && <Fieldset variant='default' legend="Kommentti" m={0}>
+        <Group gap={'xs'} wrap='nowrap' align='top'>
+          <Box pt={2}>
+            <IconMessage size={20} />
+          </Box>
+          <Text size='md' fw={'normal'}>{details.comment.data}</Text>
+        </Group>
+      </Fieldset>}
       
     </Stack>
   );

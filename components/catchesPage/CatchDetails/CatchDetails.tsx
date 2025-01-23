@@ -29,6 +29,7 @@ export interface CatchDetails {
   date: { label: string; data: string };
   time: { label: string; data: string };
   caughtBy: { label: string; data: string };
+  comment: { label: string; data: string | null | undefined };
 }
 
 interface CatchDetailsProps {
@@ -136,6 +137,7 @@ export default function CatchDetails({
     date: { label: 'Päivämäärä', data: selectedCatch.date },
     time: { label: 'Aika', data: selectedCatch.time },
     caughtBy: { label: 'Kalastaja', data: selectedCatch.caughtBy.name },
+    comment: { label: 'Kommentti', data: selectedCatch.comment },
   };
 
   return (

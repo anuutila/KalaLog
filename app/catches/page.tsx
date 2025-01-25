@@ -34,8 +34,7 @@ import CatchesGrid from '@/components/catchesPage/CatchesGrid/CatchesGrid';
 import { useHeaderActions } from '@/context/HeaderActionsContext';
 import { useGlobalState } from '@/context/GlobalState';
 import CatchDetails from '@/components/catchesPage/CatchDetails/CatchDetails';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { set } from 'mongoose';
+import { useRouter } from 'next/navigation';
 
 const currentYear = new Date().getFullYear();
 
@@ -50,7 +49,6 @@ enum LocationColWidths {
 }
 
 const updateQueryParams = (selectedCatch: ICatch | null, router: ReturnType<typeof useRouter>) => {
-  console.log(selectedCatch);
   if (selectedCatch) {
     router.push(`?catchNumber=${selectedCatch.catchNumber}`, { scroll: false });
   } else {
@@ -62,7 +60,6 @@ export default function CatchesPage() {
   const gridRef = useRef<AgGridReact<ICatch>>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
-  const searchParams = useSearchParams();
   const { setActions } = useHeaderActions();
   const { catches, catchesError, loadingCatches } = useGlobalState();
   
@@ -89,14 +86,17 @@ export default function CatchesPage() {
   });
   
   useEffect(() => {
-    const catchNumber = searchParams.get('catchNumber');
+    const params = new URLSearchParams(window.location.search);
+    const catchNumber = params.get('catchNumber');
     if (catchNumber) {
-      const catchData = catches.find((catchItem) => catchItem.catchNumber.toString() === catchNumber);
+      const catchData = catches.find(
+        (catchItem) => catchItem.catchNumber.toString() === catchNumber
+      );
       if (catchData) {
         setSelectedCatch(catchData);
       }
     }
-  }, [searchParams, catches]);
+  }, [router, catches]);
 
   useEffect(() => {
     const newSpeciesColWidth = imageIconsEnabled ? SpeciesColWidths.WithIcon : SpeciesColWidths.NoIcon;

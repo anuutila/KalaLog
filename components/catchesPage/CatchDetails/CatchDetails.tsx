@@ -80,13 +80,13 @@ export default function CatchDetails({
             setImagesToShow((prev) => [...prev, noAccessPlaceholder]);
           }
         }
-      } else {
-        setImagesToShow([speciesPlaceholders[selectedCatch.species] || defaultPlaceholder]);
-      }
+      } 
     };
 
     if (selectedCatch.images && selectedCatch.images.length > 0) {
       fetchSignedImageURLs();
+    } else {
+      setImagesToShow([speciesPlaceholders[selectedCatch.species] || defaultPlaceholder]);
     }
   }, [selectedCatch]);
 

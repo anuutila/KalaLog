@@ -1,5 +1,5 @@
 import { Carousel, Embla } from '@mantine/carousel';
-import { Image, Box, ActionIcon } from '@mantine/core';
+import { Image, Box, ActionIcon, Text } from '@mantine/core';
 import { IconMaximize } from '@tabler/icons-react';
 import classes from './CatchDetails.module.css';
 import { useCallback, useEffect, useState } from 'react';
@@ -44,21 +44,35 @@ export default function CatchImageCarousel({
         getEmblaApi={setEmbla} // Get the Embla API instance
         pos={'relative'}
       >
-        {images.map((src, index) => (
-          <Carousel.Slide key={index}>
-            <Box pos="relative" w="100%" h={{ base: 300, md: 500}} bg="#f4f4f4">
+        {images.length > 0
+          ? images.map((src, index) => (
+            <Carousel.Slide key={index}>
+              <Box pos="relative" w="100%" h={{ base: 300, md: 500 }} bg="#f4f4f4">
+                <Image
+                  src={src}
+                  fit="cover"
+                  h={{ base: 300, md: 500 }}
+                  fallbackSrc="/no-image-placeholder.png"
+                  style={{
+                    backgroundColor: 'var(--mantine-color-dark-7)',
+                  }}
+                />
+              </Box>
+            </Carousel.Slide>
+          ))
+          : <Carousel.Slide>
+            <Box pos="relative" w="100%" h={{ base: 300, md: 500 }} bg="#f4f4f4">
               <Image
-                src={src}
+                src="/no-image-placeholder.png"
                 fit="cover"
-                h={{ base: 300, md: 500}}
+                h={{ base: 300, md: 500 }}
                 fallbackSrc="/no-image-placeholder.png"
                 style={{
                   backgroundColor: 'var(--mantine-color-dark-7)',
                 }}
               />
             </Box>
-          </Carousel.Slide>
-        ))}
+          </Carousel.Slide>}
       </Carousel>
       {!isFallbackImage && (
         <ActionIcon

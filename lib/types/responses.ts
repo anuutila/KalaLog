@@ -36,6 +36,15 @@ export type LoginResponse = Required<BaseResponse<JwtUserInfo>>;
 
 export type ImageUploadResponse = Required<BaseResponse<string>>;
 
+export interface ImageDeletionResponseData {
+  successfulDeletions: string[];
+  failedDeletions: string[];
+}
+
+export type ImageDeletionResponse = Required<BaseResponse<ImageDeletionResponseData>>;
+
+export type SignedImageURLsResponse = Required<BaseResponse<string[]>>;
+
 export type AuthorizationResponse = BaseResponse;
 
 export type LogoutResponse = BaseResponse;

@@ -34,7 +34,7 @@ export function capitalizeFirstLetter(value: string | null | undefined): string 
 }
 
 export function generateFolderName(catchNumber: number): string {
-  return `${process.env.COUDINARY_ROOT_FOLDER}/catches/catch_${String(catchNumber).padStart(5, '0')}`;
+  return `${process.env.CLOUDINARY_ROOT_FOLDER}/catches/catch_${String(catchNumber).padStart(5, '0')}`;
 }
 
 export function generatePublicId(catchNumber: number, imageIndex: number): string {
@@ -43,7 +43,7 @@ export function generatePublicId(catchNumber: number, imageIndex: number): strin
 
 export async function optimizeImage(file: File): Promise<File> {
   const options: Options = {
-    maxSizeMB: 4, // Target file size (e.g., 2MB)
+    maxSizeMB: 4, // Target file size
     useWebWorker: true, // Use Web Workers for faster processing
     alwaysKeepResolution: true, // Keep the original resolution
   };
@@ -85,7 +85,7 @@ export function extractNextImageIndex(urls: string[]): number {
     if (startIndex === -1) {
       throw new Error('Unexpected URL structure');
     }
-    const index: string = url.substring(startIndex, url.lastIndexOf('.')).split('_')[1];
+    const index: string = url.substring(startIndex).split('_')[1];
     indexes.push(parseInt(index));
   });
   return Math.max(...indexes) + 1;

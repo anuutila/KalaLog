@@ -17,7 +17,7 @@ export async function createCatch(catchData: Omit<ICatch, 'id' | 'createdAt' | '
   });
 }
 
-export async function editCatch(catchData: Omit<ICatch, 'id' | 'createdAt'>, catchId: string | undefined, addedImages: File[], deletedImages: string[]): Promise<CatchEditedResponse> {
+export async function editCatch(catchData: Omit<ICatch, 'id' | 'createdAt'>, catchId: string | undefined, addedImages: File[], deletedImages: (string | undefined)[]): Promise<CatchEditedResponse> {
   const catchAndImagesformData = createCatchAndImagesFormData(catchData, addedImages, deletedImages);
   return httpClient<CatchEditedResponse>(`${ApiEndpoints.Catches}?id=${catchId}`, {
     method: 'PUT',

@@ -9,16 +9,26 @@ import { Carousel } from "@mantine/carousel";
 import { useMediaQuery } from "@mantine/hooks";
 import { useGlobalState } from "@/context/GlobalState";
 import { UserRole } from "@/lib/types/user";
+import { SignedImageURLsResponse } from "@/lib/types/responses";
+import { getSignedImageURLs } from "@/services/api/imageService";
+import { handleApiError } from "@/lib/utils/handleApiError";
+
+const defaultPlaceholder = '/no-image-placeholder.png';
 
 export interface ImageUploadFormRef {
   clearImages: () => void;
+}
+
+interface ExistingImage {
+  publicId: string;
+  url: string;
 }
 
 interface ImageUploadFormProps {
   catchData?: ICatch | null;
   setFullscreenImage: (src: string) => void;
   setAddedImages: React.Dispatch<React.SetStateAction<File[]>>;
-  setDeletedImages?: React.Dispatch<React.SetStateAction<string[]>>;
+  setDeletedImages?: React.Dispatch<React.SetStateAction<(string | undefined)[]>>;
   ref?: ForwardedRef<ImageUploadFormRef>;
 }
 
@@ -30,14 +40,29 @@ export default function ImageUploadForm({
   ref,
 }: ImageUploadFormProps) {
   const { isLoggedIn, jwtUserInfo } = useGlobalState();
-  const [existingImages, setExistingImages] = useState<string[]>([]); // Existing images from the catch
+  const [existingImages, setExistingImages] = useState<ExistingImage[]>([]); // Existing images from the catch
   const [newImages, setNewImages] = useState<string[]>([]); // Previews for newly uploaded images
 
   const isSmallScreen = useMediaQuery('(max-width: 64em)');
 
   useEffect(() => {
     if (catchData) {
-      setExistingImages(catchData.images?.map(img => img.url) ?? []);
+      const fetchSignedImageURLs = async () => {
+        if (catchData.images && catchData.images.length > 0) {
+          try {
+            const publicIds = catchData.images.map(img => img.publicId);
+            const signedImageURLsResponse: SignedImageURLsResponse = await getSignedImageURLs(publicIds);
+            setExistingImages(signedImageURLsResponse.data.map((url, index) => ({ publicId: publicIds[index], url })));
+          } catch (error) {
+            handleApiError(error, 'signed URL generation');
+            for (let i = 0; i < catchData.images.length; i++) {
+              setExistingImages((prev) => [...prev, { publicId: '', url: defaultPlaceholder }]);
+            }
+          }
+        }
+      };
+
+      fetchSignedImageURLs();
     }
   }, [catchData]);
 
@@ -54,7 +79,7 @@ export default function ImageUploadForm({
 
   const handleDeleteExistingImage = (index: number) => {
     if (!setDeletedImages) return;
-    setDeletedImages((prev) => [...prev, existingImages[index]]);
+    setDeletedImages((prev) => [...prev, existingImages[index].publicId]);
     setExistingImages((prev) => prev.filter((_, i) => i !== index));
   };
 
@@ -116,18 +141,18 @@ export default function ImageUploadForm({
             containScroll={'trimSnaps'}
           >
             {/* Render existing images */}
-            {existingImages.map((url, index) => (
+            {existingImages.map((img, index) => (
               <Carousel.Slide key={`existing-${index}`}>
                 <Box pos="relative" w={150} h={110}>
                   <Image 
-                    src={url} 
+                    src={img.url} 
                     fallbackSrc="/no-image-placeholder.png"
                     alt={`Existing Image ${index}`} 
                     fit="cover" 
                     radius="md" 
                     w="100%" 
                     h="100%" 
-                    onClick={() => setFullscreenImage(url)}
+                    onClick={() => setFullscreenImage(img.url)}
                     style={{ cursor: 'pointer' }}
                   />
                   {setDeletedImages && <ActionIcon

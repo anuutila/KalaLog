@@ -4,7 +4,7 @@ import { ActionIcon, Box, Container, Group, Stack, Title } from '@mantine/core';
 import { IconPencil, IconTrash, IconX } from '@tabler/icons-react';
 import classes from './CatchDetails.module.css';
 import { useHeaderActions } from '@/context/HeaderActionsContext';
-import { CatchDeletedResponse } from '@/lib/types/responses';
+import { CatchDeletedResponse, SignedImageURLsResponse } from '@/lib/types/responses';
 import { showNotification } from '@/lib/notifications/notifications';
 import { useGlobalState } from '@/context/GlobalState';
 import { useLoadingOverlay } from '@/context/LoadingOverlayContext';
@@ -17,6 +17,8 @@ import ConfirmEditModal from './ConfirmEditModal';
 import CancelEditModal from './CancelEditModal';
 import { deleteCatch } from '@/services/api/catchService';
 import { handleApiError } from '@/lib/utils/handleApiError';
+import { getSignedImageURLs } from '@/services/api/imageService';
+import { UserRole } from '@/lib/types/user';
 
 export interface CatchDetails {
   species: { label: string; data: string };
@@ -47,17 +49,46 @@ const speciesPlaceholders: Record<string, string> = {
 };
 
 const defaultPlaceholder = '/no-image-placeholder.png';
+const noAccessPlaceholder = '/no-access-placeholder.png';
 
 export default function CatchDetails({
   selectedCatch,
   setSelectedCatch
 }: CatchDetailsProps) {
-  const { setCatches, isLoggedIn } = useGlobalState();
+  const { setCatches, isLoggedIn, jwtUserInfo } = useGlobalState();
   const { setActionsDisabled } = useHeaderActions();
   const { showLoading, hideLoading } = useLoadingOverlay();
   const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
   const [disableScroll, setDisableScroll] = useState(false);
   const [isInEditView, setIsInEditView] = useState(false);
+  const [imagesToShow, setImagesToShow] = useState<string[]>([]);
+
+  useEffect(() => {
+    const fetchSignedImageURLs = async () => {
+      if (selectedCatch.images && selectedCatch.images.length > 0) {
+        if (jwtUserInfo?.role === UserRole.EDITOR || jwtUserInfo?.role === UserRole.ADMIN) {
+          try {
+            const publicIds = selectedCatch.images.map(img => img.publicId);
+            const signedImageURLsResponse: SignedImageURLsResponse = await getSignedImageURLs(publicIds);
+            setImagesToShow(signedImageURLsResponse.data);
+          } catch (error) {
+            handleApiError(error, 'signed URL generation');
+          }
+        } else {
+          setImagesToShow([]);
+          for (let i = 0; i < selectedCatch.images.length; i++) {
+            setImagesToShow((prev) => [...prev, noAccessPlaceholder]);
+          }
+        }
+      } else {
+        setImagesToShow([speciesPlaceholders[selectedCatch.species] || defaultPlaceholder]);
+      }
+    };
+
+    if (selectedCatch.images && selectedCatch.images.length > 0) {
+      fetchSignedImageURLs();
+    }
+  }, [selectedCatch]);
 
   useEffect(() => {
     setDisableScroll(fullscreenImage !== null);
@@ -118,10 +149,6 @@ export default function CatchDetails({
       hideLoading();
     }
   };
-
-  const imagesToShow = selectedCatch.images && selectedCatch.images.length > 0
-    ? selectedCatch.images.map(img => img.url) // Use actual images if available
-    : [speciesPlaceholders[selectedCatch.species] || defaultPlaceholder]; // Use placeholder or fallback
 
   // Determine if fullscreen should be available
   const isFallbackImage = imagesToShow.length === 1 && imagesToShow[0] === defaultPlaceholder;

@@ -19,7 +19,7 @@ export const ICatchSchema = z.object({
   images: z
     .array(
       z.object({
-        url: z.string().url("Invalid image URL"),
+        publicId: z.string().min(1, "Public ID is required"),
         description: z.string().optional().nullable(),
       })
     )

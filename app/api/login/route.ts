@@ -6,13 +6,13 @@ import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
 import { CustomError } from '@/lib/utils/customError';
 import { handleError } from '@/lib/utils/handleError';
-import { LoginResponse } from '@/lib/types/responses';
+import { ErrorResponse, LoginResponse } from '@/lib/types/responses';
 import { IUser, IUserSchema, UserRole } from '@/lib/types/user';
 import { JwtUserInfo } from '@/lib/types/jwtUserInfo';
 
 const JWT_SECRET = process.env.JWT_SECRET as string;
 
-export async function POST(req: NextRequest) {
+export async function POST(req: NextRequest): Promise<NextResponse<LoginResponse | ErrorResponse>> {
   try {
     if (!JWT_SECRET) {
       throw new Error('JWT_SECRET is not defined in the environment');

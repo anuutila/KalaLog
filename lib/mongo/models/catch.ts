@@ -22,7 +22,7 @@ export const CatchSchema: Schema<ICatchModel> = new Schema({
   },
   images: [
     {
-      url: { type: String, required: false, default: null },
+      publicId: { type: String, required: false, default: null },
       description: { type: String, required: false, default: null, set: (value: string | null) => (value === "" ? null : capitalizeFirstLetter(value)) },
     },
   ],

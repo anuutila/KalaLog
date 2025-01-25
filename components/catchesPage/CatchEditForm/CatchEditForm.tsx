@@ -54,7 +54,7 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
   const [anglersDropdownOpened, setAnglersDropdownOpened] = useState<boolean>(false);
 
   const [addedImages, setAddedImages] = useState<File[]>([]);
-  const [deletedImages, setDeletedImages] = useState<string[]>([]);
+  const [deletedImages, setDeletedImages] = useState<(string | undefined)[]>([]);
   const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
 
   useEffect(() => {

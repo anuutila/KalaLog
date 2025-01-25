@@ -51,6 +51,7 @@ export async function POST(req: NextRequest): Promise<NextResponse<ImageUploadRe
               { quality: 'auto' },
               { fetch_format: 'auto' },
             ],
+            access_mode: 'authenticated',
           },
           (error, result) => {
             if (error) {

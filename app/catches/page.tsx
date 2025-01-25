@@ -91,11 +91,9 @@ export default function CatchesPage() {
   useEffect(() => {
     const catchNumber = searchParams.get('catchNumber');
     if (catchNumber) {
-      console.log(catchNumber);
-  
       const catchData = catches.find((catchItem) => catchItem.catchNumber.toString() === catchNumber);
       if (catchData) {
-        setSelectedCatch(catchData); // Update state only once when dependencies change
+        setSelectedCatch(catchData);
       }
     }
   }, [searchParams, catches]);

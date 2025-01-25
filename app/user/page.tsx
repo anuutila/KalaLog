@@ -1,18 +1,21 @@
 'use client';
 
+import AdminPanel from "@/components/AdminPanel/AdminPanel";
 import { useGlobalState } from "@/context/GlobalState";
 import { useLoadingOverlay } from "@/context/LoadingOverlayContext";
 import { showNotification } from "@/lib/notifications/notifications";
 import { ErrorResponse, LogoutResponse } from "@/lib/types/responses";
+import { UserRole } from "@/lib/types/user";
 import { handleApiError } from "@/lib/utils/handleApiError";
 import { logout } from "@/services/api/authservice";
-import { Button, Center, Container, Group, LoadingOverlay, Stack, Text, Title } from "@mantine/core";
+import { Button, Center, Container, Group, LoadingOverlay, Modal, Stack, Text, Title } from "@mantine/core";
 import { IconLogout, IconUser } from "@tabler/icons-react";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 export default function Page() {
   const { isLoggedIn, jwtUserInfo, setIsLoggedIn, setJwtUserInfo } = useGlobalState();
+  const [adminPanelOpen, setAdminPanelOpen] = useState(false);
   const { showLoading, hideLoading } = useLoadingOverlay();
   const router = useRouter();
 
@@ -53,7 +56,18 @@ export default function Page() {
             <IconUser />
             <Text>Käyttäjäsivut tulossa pian...</Text>
           </Group>
-          {isLoggedIn && <Button size="md" onClick={handleLogout}  leftSection={<IconLogout />}>Kirjaudu ulos</Button>}
+          {isLoggedIn && <Button size="md" onClick={handleLogout} leftSection={<IconLogout />}>Kirjaudu ulos</Button>}
+
+          {jwtUserInfo?.role === UserRole.ADMIN && <Button size="md" onClick={() => setAdminPanelOpen(true)}>Avaa admin paneeli</Button>}
+          <Modal
+            opened={adminPanelOpen}
+            onClose={() => setAdminPanelOpen(false)}
+            title="Admin paneeli"
+            size="lg"
+          >
+            <AdminPanel />
+          </Modal>
+
         </Stack>
       </Center>
     </Container>

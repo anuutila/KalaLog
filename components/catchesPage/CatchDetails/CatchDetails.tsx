@@ -199,14 +199,14 @@ export default function CatchDetails({
                   variant="light"
                   color="blue"
                   onClick={openConfirmEditModal}
-                  disabled={!isLoggedIn}
+                  disabled={!isLoggedIn || jwtUserInfo?.role === UserRole.VIEWER}
                 >
                   <IconPencil size={20} />
                 </ActionIcon>
               )}
               {/* Delete Button */}
               {!isInEditView && (
-                <ActionIcon size="lg" variant="light" color="red" disabled={!isLoggedIn} onClick={() => openConfirmDeleteModal()}>
+                <ActionIcon size="lg" variant="light" color="red" disabled={!isLoggedIn || jwtUserInfo?.role === UserRole.VIEWER} onClick={() => openConfirmDeleteModal()}>
                   <IconTrash size={20} />
                 </ActionIcon>
               )}

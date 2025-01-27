@@ -11,7 +11,7 @@ import { CatchCreaetedResponse, UsersByFirstNameResponse } from '@/lib/types/res
 import { UserRole } from '@/lib/types/user';
 import { CatchUtils } from '@/lib/utils/catchUtils';
 import { defaultSort, optimizeImage } from '@/lib/utils/utils';
-import { Alert, Autocomplete, Button, Checkbox, Combobox, Container, Fieldset, Group, Input, InputBase, NumberInput, Stack, TextInput, Title, useCombobox } from '@mantine/core';
+import { Alert, Autocomplete, Button, Checkbox, Combobox, Container, Fieldset, Group, Input, InputBase, NumberInput, Stack, Textarea, TextInput, Title, useCombobox } from '@mantine/core';
 import { IconCalendar, IconCheck, IconClock, IconFish, IconFishHook, IconInfoCircle, IconMap, IconMap2, IconMapPin, IconMessage, IconRipple, IconRuler2, IconRuler3, IconSelector, IconUser, IconUserQuestion, IconWeight } from '@tabler/icons-react';
 import { createCatch } from '@/services/api/catchService';
 import { handleApiError } from '@/lib/utils/handleApiError';
@@ -665,9 +665,8 @@ export default function Page() {
             </Combobox>
             )}
 
-            <TextInput
+            <Textarea
               size='md'
-              type='text'
               name="comment"
               label="Kommentti"
               placeholder="Vapaamuotoinen kommentti"
@@ -675,6 +674,9 @@ export default function Page() {
               leftSectionPointerEvents='none'
               value={formData.comment ?? ''}
               onChange={handleChange}
+              autosize
+              minRows={1}
+              maxRows={5}
             />
 
             <ImageUploadForm

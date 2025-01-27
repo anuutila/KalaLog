@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { cookies } from 'next/headers';
 import { AuthorizationResponse, ErrorResponse } from '../types/responses';
@@ -7,7 +7,7 @@ import { CustomError } from '../utils/customError';
 
 const JWT_SECRET = process.env.JWT_SECRET as string;
 
-export const authorize = async (req: NextRequest, authorizedRoles: string[]): Promise<NextResponse<AuthorizationResponse | ErrorResponse>> => {
+export const authorize = async (authorizedRoles: string[]): Promise<NextResponse<AuthorizationResponse | ErrorResponse>> => {
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get('token')?.value;

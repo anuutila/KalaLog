@@ -1,9 +1,7 @@
-import { authorize } from '@/lib/middleware/authorize';
 import dbConnect from '@/lib/mongo/dbConnect';
 import User from '@/lib/mongo/models/user';
-import { AuthorizationResponse, ErrorResponse } from '@/lib/types/responses';
 import { UserRole } from '@/lib/types/user';
-import { CustomError } from '@/lib/utils/customError';
+import { requireRole } from '@/lib/utils/authorization';
 import { handleError } from '@/lib/utils/handleError';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -12,14 +10,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     await dbConnect();
 
     // Check if the user is an admin
-    const response = await authorize(req, [UserRole.ADMIN]);
-    if (!response.ok) {
-      const errorResponse: ErrorResponse = await response.json();
-      throw new CustomError(errorResponse.message, response.status);
-    } else {
-      const authResponse: AuthorizationResponse = await response.json();
-      console.log(authResponse.message);
-    }
+    await requireRole([UserRole.ADMIN]);
 
     // Fetch all users except admin users
     const users = await User.find({ role: { $ne: UserRole.ADMIN } })

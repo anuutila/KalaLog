@@ -1,9 +1,7 @@
-import { authorize } from '@/lib/middleware/authorize';
 import dbConnect from '@/lib/mongo/dbConnect';
 import User from '@/lib/mongo/models/user';
-import { AuthorizationResponse, ErrorResponse } from '@/lib/types/responses';
 import { UserRole } from '@/lib/types/user';
-import { CustomError } from '@/lib/utils/customError';
+import { requireRole } from '@/lib/utils/authorization';
 import { handleError } from '@/lib/utils/handleError';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -12,15 +10,8 @@ export async function PUT(req: NextRequest): Promise<NextResponse> {
   try {
     await dbConnect();
 
-    // Check if the user is authorized
-    const response = await authorize(req, [UserRole.ADMIN]);
-    if (!response.ok) {
-      const errorResponse: ErrorResponse = await response.json();
-      throw new CustomError(errorResponse.message, response.status);
-    } else {
-      const authResponse: AuthorizationResponse = await response.json();
-      console.log(authResponse.message);
-    }
+    // Check if the user is an admin
+    await requireRole([UserRole.ADMIN]);
 
     const body = await req.json();
     const { userId, role } = body;

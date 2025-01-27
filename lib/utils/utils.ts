@@ -1,6 +1,5 @@
 import imageCompression, { Options } from "browser-image-compression";
 import { ICatch } from "../types/catch"
-import { parse } from "path";
 
 export function sortByDate(catches: ICatch[]): ICatch[] {
   return catches.sort((a, b) => {

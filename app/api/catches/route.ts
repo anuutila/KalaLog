@@ -2,14 +2,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongo/dbConnect';
 import Catch from '@/lib/mongo/models/catch';
 import { ICatch, ICatchSchema } from '@/lib/types/catch';
-import { authorize } from '@/lib/middleware/authorize';
 import { UserRole } from '@/lib/types/user';
-import { AuthorizationResponse, CatchCreaetedResponse, CatchDeletedResponse, CatchEditedResponse, CatchesResponse, ErrorResponse, ImageDeletionResponse, ImageUploadResponse } from '@/lib/types/responses';
+import { CatchCreaetedResponse, CatchDeletedResponse, CatchEditedResponse, CatchesResponse, ErrorResponse, ImageDeletionResponse, ImageUploadResponse } from '@/lib/types/responses';
 import { handleError } from '@/lib/utils/handleError';
-import { CustomError } from '@/lib/utils/customError';
 import { extractNextImageIndex, generateFolderName, generatePublicId } from '@/lib/utils/utils';
 import { ApiEndpoints } from '@/lib/constants/constants';
 import { cookies } from 'next/headers';
+import { requireRole } from '@/lib/utils/authorization';
 
 export async function GET(): Promise<NextResponse<CatchesResponse | ErrorResponse>> {
   await dbConnect();
@@ -66,16 +65,8 @@ export async function POST(req: NextRequest): Promise<NextResponse<CatchCreaeted
   const cookieStore = await cookies();
   const token = cookieStore.get('token')?.value;
   try {
-
     // Check if the user is authorized
-    const response = await authorize(req, [UserRole.ADMIN, UserRole.EDITOR]);
-    if (!response.ok) {
-      const errorResponse: ErrorResponse = await response.json();
-      throw new CustomError(errorResponse.message, response.status);
-    } else {
-      const authResponse: AuthorizationResponse = await response.json();
-      console.log(authResponse.message);
-    }
+    await requireRole([UserRole.ADMIN, UserRole.EDITOR]);
 
     await dbConnect();
 
@@ -222,14 +213,7 @@ export async function DELETE(req: NextRequest): Promise<NextResponse<CatchDelete
 
   try {
     // Check if the user is authorized
-    const response = await authorize(req, [UserRole.ADMIN, UserRole.EDITOR]);
-    if (!response.ok) {
-      const errorResponse: ErrorResponse = await response.json();
-      throw new CustomError(errorResponse.message, response.status);
-    } else {
-      const authResponse: AuthorizationResponse = await response.json();
-      console.log(authResponse.message);
-    }
+    await requireRole([UserRole.ADMIN, UserRole.EDITOR]);
 
     await dbConnect();
 
@@ -319,16 +303,8 @@ export async function PUT(req: NextRequest): Promise<NextResponse<CatchEditedRes
   const cookieStore = await cookies();
   const token = cookieStore.get('token')?.value;
   try {
-
     // Check if the user is authorized
-    const response = await authorize(req, [UserRole.ADMIN, UserRole.EDITOR]);
-    if (!response.ok) {
-      const errorResponse: ErrorResponse = await response.json();
-      throw new CustomError(errorResponse.message, response.status);
-    } else {
-      const authResponse: AuthorizationResponse = await response.json();
-      console.log(authResponse.message);
-    }
+    await requireRole([UserRole.ADMIN, UserRole.EDITOR]);
 
     await dbConnect();
 

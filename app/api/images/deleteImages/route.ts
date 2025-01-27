@@ -1,8 +1,7 @@
 import cloudinary from "@/lib/cloudinary/cloudinary";
-import { authorize } from "@/lib/middleware/authorize";
-import { AuthorizationResponse, ErrorResponse, ImageDeletionResponse } from "@/lib/types/responses";
+import { ErrorResponse, ImageDeletionResponse } from "@/lib/types/responses";
 import { UserRole } from "@/lib/types/user";
-import { CustomError } from "@/lib/utils/customError";
+import { requireRole } from "@/lib/utils/authorization";
 import { handleError } from "@/lib/utils/handleError";
 import { extractFolderName } from "@/lib/utils/utils";
 import { NextRequest, NextResponse } from "next/server";
@@ -10,14 +9,7 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(req: NextRequest): Promise<NextResponse<ImageDeletionResponse | ErrorResponse>> {
   try {
     // Check if the user is authorized
-    const response = await authorize(req, [UserRole.ADMIN, UserRole.EDITOR]);
-    if (!response.ok) {
-      const errorResponse: ErrorResponse = await response.json();
-      throw new CustomError(errorResponse.message, response.status);
-    } else {
-      const authResponse: AuthorizationResponse = await response.json();
-      console.log(authResponse.message);
-    }
+    await requireRole([UserRole.ADMIN, UserRole.EDITOR]);
 
     const { publicIds, deleteFolder } = await req.json();
 

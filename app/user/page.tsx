@@ -60,7 +60,7 @@ export default function Page() {
           </Group>
           {isLoggedIn && <Button size="md" onClick={handleLogout} leftSection={<IconLogout />}>Kirjaudu ulos</Button>}
 
-          {jwtUserInfo?.role === UserRole.ADMIN && <Button leftSection={<IconUserCog />} size="md" onClick={() => setAdminPanelOpen(true)}>Admin paneeli</Button>}
+          {isLoggedIn && jwtUserInfo?.role === UserRole.ADMIN && <Button leftSection={<IconUserCog />} size="md" onClick={() => setAdminPanelOpen(true)}>Admin paneeli</Button>}
           <Modal
             opened={adminPanelOpen}
             onClose={() => setAdminPanelOpen(false)}

@@ -8,7 +8,7 @@ export default function Page() {
     <Container size={'sm'} p={'md'} pt={'xl'}>
       <Center>
         <IconChartBar />
-        <Text ml={'sm'}>Tilastot tulossa pian...</Text>
+        <Text ml={'sm'}>Tilastot vielä työn alla...</Text>
       </Center>
     </Container>
   );

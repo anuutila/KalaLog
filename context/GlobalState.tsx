@@ -11,13 +11,13 @@ import { getUserInfo } from '@/services/api/userService';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
 interface GlobalState {
-  isLoggedIn: boolean;
+  isLoggedIn: boolean | null;
   jwtUserInfo: JwtUserInfo | null;
   catches: ICatch[];
   setCatches: React.Dispatch<React.SetStateAction<ICatch[]>>;
   catchesError: string | null;
   loadingCatches: boolean;
-  setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean | null>>;
   setJwtUserInfo: React.Dispatch<React.SetStateAction<JwtUserInfo | null>>;
   fetchCatches: () => Promise<void>;
 }
@@ -25,7 +25,7 @@ interface GlobalState {
 const GlobalContext = createContext<GlobalState | undefined>(undefined);
 
 export const GlobalStateProvider = ({ children }: { children: React.ReactNode }) => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
   const [jwtUserInfo, setJwtUserInfo] = useState<JwtUserInfo | null>(null);
   const [catches, setCatches] = useState<ICatch[]>([]);
   const [catchesError, setCatchesError] = useState<string | null>(null);
@@ -35,6 +35,7 @@ export const GlobalStateProvider = ({ children }: { children: React.ReactNode })
   useEffect(() => {
     const checkAuth = async () => {
       try {
+        console.log('Checking user info...');
         const userInfoResponse: UserInfoResponse = await getUserInfo();
         console.log(userInfoResponse.message);
         console.log('User info:', userInfoResponse.data?.jwtUserInfo);

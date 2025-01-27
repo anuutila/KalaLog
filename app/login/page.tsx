@@ -50,7 +50,7 @@ export default function Page() {
           <Title order={2} c={'white'}>Kirjaudu sisään</Title>
         </Center>
         <Stack>
-          <Fieldset variant='default' radius={'md'} pt={'md'} disabled={isLoggedIn}>
+          <Fieldset variant='default' radius={'md'} pt={'md'} disabled={isLoggedIn ?? false}>
             <form onSubmit={handleSubmit}>
               <Stack gap={'lg'}>
                 <TextInput

@@ -7,11 +7,9 @@ import { UserRole } from '@/lib/types/user';
 import { AuthorizationResponse, CatchCreaetedResponse, CatchDeletedResponse, CatchEditedResponse, CatchesResponse, ErrorResponse, ImageDeletionResponse, ImageUploadResponse } from '@/lib/types/responses';
 import { handleError } from '@/lib/utils/handleError';
 import { CustomError } from '@/lib/utils/customError';
-import { deleteImages, uploadImage } from '@/services/api/imageService';
-import { extractFolderName, extractNextImageIndex, extractPublicId, generateFolderName, generatePublicId } from '@/lib/utils/utils';
+import { extractNextImageIndex, generateFolderName, generatePublicId } from '@/lib/utils/utils';
 import { ApiEndpoints } from '@/lib/constants/constants';
 import { cookies } from 'next/headers';
-import cloudinary from '@/lib/cloudinary/cloudinary';
 
 export async function GET(): Promise<NextResponse<CatchesResponse | ErrorResponse>> {
   await dbConnect();

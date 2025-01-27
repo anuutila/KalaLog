@@ -84,19 +84,21 @@ export default function CatchesPage() {
     resizable: false,
     suppressHeaderFilterButton: true
   });
-  
+
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const catchNumber = params.get('catchNumber');
-    if (catchNumber) {
-      const catchData = catches.find(
-        (catchItem) => catchItem.catchNumber.toString() === catchNumber
-      );
-      if (catchData) {
-        setSelectedCatch(catchData);
+    if (catches.length > 0) {
+      const params = new URLSearchParams(window.location.search);
+      const catchNumber = params.get('catchNumber');
+      if (catchNumber) {
+        const catchData = catches.find(
+          (catchItem) => catchItem.catchNumber.toString() === catchNumber
+        );
+        if (catchData) {
+          setSelectedCatch(catchData);
+        }
       }
     }
-  }, [router, catches]);
+  }, [catches]);
 
   useEffect(() => {
     const newSpeciesColWidth = imageIconsEnabled ? SpeciesColWidths.WithIcon : SpeciesColWidths.NoIcon;

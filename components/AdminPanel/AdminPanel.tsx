@@ -12,7 +12,7 @@ export default function AdminPanel() {
     const fetchUsers = async () => {
       try {
         showLoading();
-        const response = await fetch('/api/users');
+        const response = await fetch('/api/users/adminPanelData');
         if (response.ok) {
           const data = await response.json();
           setUsers(data.users);

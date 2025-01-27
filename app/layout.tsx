@@ -12,7 +12,7 @@ import { Metadata, Viewport } from 'next';
 
 export const metadata: Metadata = {
   title: "KalaLog",
-  description: "KalaLog is a simple web application for logging your fishing catches.",
+  description: "KalaLog is a fishing diary web application for logging, viewing and analyzing your fishing catches.",
   generator: "Next.js",
   keywords: ["kala", "kalalog", "fishing"],
   creator: "Akseli Nuutila",

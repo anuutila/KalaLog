@@ -33,4 +33,4 @@
 
 ## Screenshots
 
-![alt text](public/catches-page.png)![alt text](public/catch-details-view.png)![alt text](public/new-catch-page.png)
+![cathces page](public/catches-page.png)![catch details view](public/catch-details-view.png)![new catch page](public/new-catch-page.png)

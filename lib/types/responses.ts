@@ -49,6 +49,17 @@ export type AuthorizationResponse = BaseResponse;
 
 export type LogoutResponse = BaseResponse;
 
+export interface UsersByFirstNameResponseData {
+  users: {
+    id: string | null;
+    username: string;
+    firstName: string;
+    lastName: string;
+  }[];
+}
+
+export type UsersByFirstNameResponse = Required<BaseResponse<UsersByFirstNameResponseData>>;
+
 // Common error response type
 export interface ErrorResponse {
   errorCode: string;

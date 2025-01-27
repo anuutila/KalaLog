@@ -6,5 +6,7 @@ export enum ApiEndpoints {
   Login = '/api/login',
   Logout = '/api/logout',
   Signup = '/api/signup',
-  UserInfo = '/api/userInfo',
+  UserInfo = '/api/users/userInfo',
+  UsersByFirstName = '/api/users/byFirstName',
+  AdminPanelData = '/api/users/adminPanelData',
 }

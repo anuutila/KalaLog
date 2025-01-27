@@ -7,15 +7,17 @@ import { useGlobalState } from '@/context/GlobalState';
 import { useLoadingOverlay } from '@/context/LoadingOverlayContext';
 import { showNotification } from '@/lib/notifications/notifications';
 import { ICatch } from '@/lib/types/catch';
-import { CatchCreaetedResponse } from '@/lib/types/responses';
+import { CatchCreaetedResponse, UsersByFirstNameResponse } from '@/lib/types/responses';
 import { UserRole } from '@/lib/types/user';
 import { CatchUtils } from '@/lib/utils/catchUtils';
 import { defaultSort, optimizeImage } from '@/lib/utils/utils';
-import { Alert, Autocomplete, Button, Checkbox, Container, Fieldset, Group, NumberInput, Stack, TextInput, Title } from '@mantine/core';
-import { IconCalendar, IconCheck, IconClock, IconFish, IconFishHook, IconInfoCircle, IconMap, IconMap2, IconMapPin, IconMessage, IconRipple, IconRuler2, IconRuler3, IconSelector, IconUser, IconWeight } from '@tabler/icons-react';
+import { Alert, Autocomplete, Button, Checkbox, Combobox, Container, Fieldset, Group, Input, InputBase, NumberInput, Stack, TextInput, Title, useCombobox } from '@mantine/core';
+import { IconCalendar, IconCheck, IconClock, IconFish, IconFishHook, IconInfoCircle, IconMap, IconMap2, IconMapPin, IconMessage, IconRipple, IconRuler2, IconRuler3, IconSelector, IconUser, IconUserQuestion, IconWeight } from '@tabler/icons-react';
 import { createCatch } from '@/services/api/catchService';
 import { handleApiError } from '@/lib/utils/handleApiError';
 import { DateTime } from 'luxon';
+import { getUsersByFirstName } from '@/services/api/userService';
+import classes from './page.module.css';
 
 export default function Page() {
   const { catches, setCatches, isLoggedIn, jwtUserInfo } = useGlobalState();
@@ -35,7 +37,7 @@ export default function Page() {
     },
     date: DateTime.now().toFormat('yyyy-MM-dd'),
     time: DateTime.now().toFormat('HH:mm'),
-    caughtBy: { name: '', userId: null },
+    caughtBy: { name: '', username: null, userId: null },
     createdBy: null,
     comment: null,
   });
@@ -72,8 +74,19 @@ export default function Page() {
   const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
   const [disableScroll, setDisableScroll] = useState(false);
 
+  const [matchingUsers, setMatchingUsers] = useState<{ id: string | null, username: string, firstName: string, lastName: string }[]>([]);
+  const [linkedUser, setLinkedUser] = useState<{ id: string | null, username: string, firstName: string, lastName: string } | null>();
+  const [userLinkingDone, setUserLinkingDone] = useState(false);
+  const [showUserLinkingDropdown, setShowUserLinkingDropdown] = useState(false);
+  const [isLinkingUser, setIsLinkingUser] = useState(false);
+
   const imageUploadFormRef = useRef<ImageUploadFormRef>(null);
   const scrollPositionRef = useRef(0);
+
+  const userCombobox = useCombobox({
+    onDropdownClose: () => userCombobox.resetSelectedOption(),
+    onDropdownOpen: () => userCombobox.updateSelectedOptionIndex('active'),
+  });
 
   useEffect(() => {
     setDisableScroll(fullscreenImage !== null);
@@ -199,6 +212,49 @@ export default function Page() {
     };
   }, [watchId]);
 
+  const fetchMatchingUsers = async (name: string) => {
+    setIsLinkingUser(true);
+    try {
+      const response: UsersByFirstNameResponse = await getUsersByFirstName(name);
+      const matchingUsers = response.data.users;
+
+      setMatchingUsers(matchingUsers);
+
+      if (matchingUsers.length === 1) {
+        // If only one match exists, automatically select it
+        setShowUserLinkingDropdown(false);
+        setLinkedUser(matchingUsers[0]);
+        setUserLinkingDone(true);
+
+      } else if (matchingUsers.length > 1) {
+        // Multiple matches require manual selection from a dropdown
+        setShowUserLinkingDropdown(true);
+
+        setLinkedUser(null);
+        setUserLinkingDone(false);
+      } else {
+        // No matches mean this is an unregistered user that won't be linked
+        setShowUserLinkingDropdown(false);
+        setLinkedUser(null);
+        setUserLinkingDone(true);
+      }
+    } catch (error) {
+      handleApiError(error, 'fetching matching users');
+    } finally {
+      setIsLinkingUser(false);
+    }
+  };
+
+  const linkUser = async (anglerName: string) => {
+    if (anglerName.trim()) {
+      await fetchMatchingUsers(anglerName.trim());
+    } else {
+      setShowUserLinkingDropdown(false);
+      setLinkedUser(null);
+      setMatchingUsers([]);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -218,7 +274,8 @@ export default function Page() {
         },
         caughtBy: {
           name: anglerName,
-          userId: null,
+          username: linkedUser?.username,
+          userId: linkedUser?.id ?? null,
         },
         createdBy: jwtUserInfo?.userId ?? null,
       };
@@ -256,7 +313,7 @@ export default function Page() {
         location: { bodyOfWater: 'Nerkoonjärvi', spot: null, coordinates: null },
         date: DateTime.now().toFormat('yyyy-MM-dd'),
         time: DateTime.now().toFormat('HH:mm'),
-        caughtBy: { name: '', userId: null },
+        caughtBy: { name: '', username: null, userId: null },
         comment: null,
       });
       setSpeciesValue('');
@@ -268,6 +325,10 @@ export default function Page() {
       setGpsError(null);
       setAnglerName('');
       handleClearImages();
+      setMatchingUsers([]);
+      setLinkedUser(null);
+      setUserLinkingDone(false);
+      setShowUserLinkingDropdown(false);
       if (watchId !== null) {
         navigator.geolocation.clearWatch(watchId);
         setWatchId(null);
@@ -364,6 +425,7 @@ export default function Page() {
   , [spotsDropdownOpened, filteredSpotOptions.length, spotValue]);
 
   const handleAnglerChange = useCallback((value: string) => {
+    setUserLinkingDone(false);
     setAnglerName(value);
     const filtered = anglerOptions.filter((option) =>
       option.toLowerCase().includes(value.toLowerCase().trim())
@@ -554,14 +616,55 @@ export default function Page() {
               value={anglerName}
               required
               onChange={handleAnglerChange}
+              onOptionSubmit={(val) => linkUser(val)}
               onFocus={() => setAnglersDropdownOpened(true)}
-              onBlur={() => setAnglersDropdownOpened(false)}
+              onBlur={() => {setAnglersDropdownOpened(false); linkUser(anglerName);}}
               rightSection={anglersRightSection}
               data={anglerOptions}
               defaultDropdownOpened={false}
               leftSection={<IconUser size={20} />}
               leftSectionPointerEvents='none'
             />
+
+            {showUserLinkingDropdown && (
+            <Combobox
+              store={userCombobox}
+              onOptionSubmit={(val) => {
+                const user = matchingUsers.find((user) => user.username === val);
+                setLinkedUser(user);
+                setUserLinkingDone(true);
+                userCombobox.closeDropdown();
+              }}
+              size="md"
+            >
+              <Combobox.Target>
+                <InputBase
+                  label="Valitse käyttäjä"
+                  component="button"
+                  type="button"
+                  pointer
+                  rightSection={<Combobox.Chevron />}
+                  rightSectionPointerEvents="none"
+                  onClick={() => userCombobox.toggleDropdown()}
+                  size="md"
+                  leftSection={<IconUserQuestion size={20}/>}
+                  leftSectionPointerEvents='none'
+                  required
+                >
+                  { linkedUser ? `${linkedUser?.firstName} ${linkedUser?.lastName} (${linkedUser?.username})` : <Input.Placeholder>Valitse oikea käyttäjä</Input.Placeholder>}
+                </InputBase>
+              </Combobox.Target>
+
+              <Combobox.Dropdown>
+                <Combobox.Options>{matchingUsers.map((user) => (
+                  <Combobox.Option key={user.id} value={user.username}>
+                    {user.firstName} {user.lastName} ({user.username})
+                  </Combobox.Option>
+                ))}</Combobox.Options>
+              </Combobox.Dropdown>
+            </Combobox>
+            )}
+
             <TextInput
               size='md'
               type='text'
@@ -590,12 +693,13 @@ export default function Page() {
             <Button 
               size='md' 
               type="submit" 
-              loading={isLoading} 
+              loading={isLoading || isLinkingUser} 
               loaderProps={{ type: 'dots' }} 
               my={'xs'} 
               leftSection={<IconCheck />} 
               radius={'md'}
-              disabled={!isFormValid}
+              disabled={!isFormValid || !userLinkingDone}
+              classNames={{ root: isLinkingUser ? classes.submitButtonDisabledLoading : '' }}
             >
               Lähetä
             </Button>

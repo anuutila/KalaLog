@@ -2,9 +2,8 @@
 
 import AdminPanel from "@/components/AdminPanel/AdminPanel";
 import { useGlobalState } from "@/context/GlobalState";
-import { useLoadingOverlay } from "@/context/LoadingOverlayContext";
 import { showNotification } from "@/lib/notifications/notifications";
-import { ErrorResponse, LogoutResponse } from "@/lib/types/responses";
+import { LogoutResponse } from "@/lib/types/responses";
 import { UserRole } from "@/lib/types/user";
 import { handleApiError } from "@/lib/utils/handleApiError";
 import { logout } from "@/services/api/authservice";

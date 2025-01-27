@@ -3,6 +3,7 @@ import { Container, Stack, Group, Text, Switch } from '@mantine/core';
 import { showNotification } from '@/lib/notifications/notifications';
 import { IUser, UserRole } from '@/lib/types/user';
 import { useLoadingOverlay } from '@/context/LoadingOverlayContext';
+import { ApiEndpoints } from '@/lib/constants/constants';
 
 export default function AdminPanel() {
   const [users, setUsers] = useState<IUser[]>([]);
@@ -12,7 +13,7 @@ export default function AdminPanel() {
     const fetchUsers = async () => {
       try {
         showLoading();
-        const response = await fetch('/api/users/adminPanelData');
+        const response = await fetch(ApiEndpoints.AdminPanelData);
         if (response.ok) {
           const data = await response.json();
           setUsers(data.users);

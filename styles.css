@@ -16,7 +16,7 @@
   
 /* For dark mode */
 :root[data-mantine-color-scheme="dark"] {
-  --mantine-color-body: #080808 !important;
+  --mantine-color-body: #0d0d0d !important;
 }
 
 .mantine-InputWrapper-root {

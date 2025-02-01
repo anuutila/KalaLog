@@ -2,6 +2,7 @@
 
 .footer {
   background-color: var(--footer-background-color) !important;
+  border-top: 1px solid var(--mantine-color-dark-7);
 }
 
 .tabs_group_footer {

@@ -42,7 +42,8 @@ export function showNotification(
     message,
     position: 'bottom-right',
     withBorder: true,
-    radius: 'md',
+    radius: 'lg',
+    bg: 'var(--mantine-color-dark-8)',
     autoClose: 4000
   });
 }

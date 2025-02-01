@@ -1,6 +1,6 @@
 .header {
   background-color: light-dark(var(--mantine-color-white), var(--mantine-color-dark-8));
-  /* position: fixed; */
+  border-bottom: 1px solid var(--mantine-color-dark-8);
 }
 
 .logo_title {

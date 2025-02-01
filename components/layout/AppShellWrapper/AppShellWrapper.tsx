@@ -57,7 +57,7 @@ export default function AppShellWrapper({ children }: { children: any }) {
               <AppShell header={{ height: { base: rem(45), md: rem(60) } }} footer={{ height: rem(60) }} padding="0">
                 <LayoutHeader pages={pages} tabs={tabs} pathname={pathname} />
                 <AppShell.Main style={{ color: 'var(--mantine-color-text)' }} pb={{ base: "calc(var(--app-shell-footer-offset, 0rem) + var(--app-shell-padding) + env(safe-area-inset-bottom))", md: 0}}>{children}</AppShell.Main>
-                <AppShell.Footer hiddenFrom="md" className={classes.footer}>
+                <AppShell.Footer hiddenFrom="md" withBorder={false} className={classes.footer}>
                   <Group className={classes.tabs_group_footer}>
                     {tabs.map((tab) => {
                       const isActive = pathname === tab.path || ((pathname.startsWith('/login') || pathname.startsWith('/signup')) && tab.path === '/user');

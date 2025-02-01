@@ -125,10 +125,10 @@ export default function TableSettingsDrawer({
   }
 
   return (
-    <Drawer.Root opened={opened} onClose={close} size="xs">
+    <Drawer.Root opened={opened} onClose={close} size="xs" >
       <Drawer.Overlay />
-      <Drawer.Content>
-        <Drawer.Header>
+      <Drawer.Content bg={'var(--mantine-color-dark-9)'} >
+        <Drawer.Header bg={'var(--mantine-color-dark-9)'}>
           <Drawer.Title fz="var(--mantine-font-size-lg)" fw="var(--mantine-heading-font-weight)">
             Taulukon asetukset
           </Drawer.Title>

@@ -82,7 +82,7 @@ export default function StatsBadges({ filteredCatches }: StatsBadgesProps) {
         h={28} 
         style={{ 
           color: `var(--mantine-color-${color}-3)`, 
-          background: `var(--mantine-color-${color}-light)` 
+          background: `var(--mantine-color-${color}-light-hover)` 
           /* , border: `2px solid rgba(${AllColorsRGB[color]}, 0.15)`*/
         }} 
         key={fishKey} 

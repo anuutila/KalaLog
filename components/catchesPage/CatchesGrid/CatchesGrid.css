@@ -1,5 +1,7 @@
 .grid-wrapper {
   height: calc(100dvh - 111.094px - var(--app-shell-footer-offset, 0rem) - var(--app-shell-header-offset, 0rem) - var(--mantine-spacing-md) - env(safe-area-inset-bottom));
+  --ag-header-background-color: #1a2536;
+  --ag-background-color: #141c2a;
 
   & .ag-root-wrapper {
     border-radius: var(--mantine-spacing-sm);

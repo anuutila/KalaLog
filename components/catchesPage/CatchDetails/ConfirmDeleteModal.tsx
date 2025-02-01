@@ -14,7 +14,7 @@ export default function ConfirmDeleteModal({ onConfirm }: ConfirmDeleteModalProp
     title: 'Poista saalis',
     centered: true,
     withCloseButton: true,
-    radius: 'md',
+    radius: 'lg',
     children: (
       <>
         <Text size="md" mb="md">
@@ -67,6 +67,6 @@ export default function ConfirmDeleteModal({ onConfirm }: ConfirmDeleteModalProp
       </>
     ),
     zIndex: 2000,
-    classNames: { title: classes.modalTitle }
+    classNames: { header: classes.modalHeader, body: classes.modalBody, title: classes.modalTitle }
   });
 }

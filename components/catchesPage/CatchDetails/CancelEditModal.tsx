@@ -12,7 +12,7 @@ export default function CancelEditModal({ onConfirm }: ConfirmEditModalProps) {
   modals.openConfirmModal({
     title: 'Peruuta muokkaus',
     centered: true,
-    radius: 'md',
+    radius: 'lg',
     children: (
       <Text size="md">
         Haluatko varmasti peruuttaa saaliin muokkauksen? Menetät kaikki tekemäsi muutokset.

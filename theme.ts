@@ -1,6 +1,6 @@
 'use client';
 
-import { Checkbox, createTheme } from '@mantine/core';
+import { Autocomplete, Checkbox, createTheme, Input, InputBase, InputWrapper, NumberInput, PasswordInput, PillsInput, Textarea, TextInput } from '@mantine/core';
 
 export const theme = createTheme({
   cursorType: 'pointer',
@@ -9,6 +9,41 @@ export const theme = createTheme({
     Checkbox: {
       defaultProps: {
         radius: 'sm',
+      },
+    },
+    InputBase: {
+      classNames: {
+        input: 'mantine-custom-input',
+      },
+    },
+    TextInput: {
+      classNames: {
+        input: 'mantine-custom-input',
+      },
+    },
+    PasswordInput: {
+      classNames: {
+        input: 'mantine-custom-input',
+      },
+    },
+    Autocomplete: {
+      classNames: {
+        input: 'mantine-custom-input',
+      },
+    },
+    NumberInput: {
+      classNames: {
+        input: 'mantine-custom-input',
+      },
+    },
+    Textarea: {
+      classNames: {
+        input: 'mantine-custom-input',
+      },
+    },
+    PillsInput: {
+      classNames: {
+        input: 'mantine-custom-input',
       },
     },
   },

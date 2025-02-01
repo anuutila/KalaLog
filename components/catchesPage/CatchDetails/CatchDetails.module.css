@@ -1,5 +1,15 @@
 .viewport {
-  border-radius: var(--mantine-radius-md);
+  border-radius: var(--mantine-radius-lg);
+}
+
+.modalHeader {
+  background-color: var(--mantine-color-dark-8);
+  --mb-padding: var(--mantine-spacing-lg);
+}
+
+.modalBody {
+  background-color: var(--mantine-color-dark-8);
+  --mb-padding: var(--mantine-spacing-lg);
 }
 
 .modalTitle {

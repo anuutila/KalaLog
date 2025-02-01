@@ -47,28 +47,28 @@ export default function CatchImageCarousel({
         {images.length > 0
           ? images.map((src, index) => (
             <Carousel.Slide key={index}>
-              <Box pos="relative" w="100%" h={{ base: 300, md: 500 }} bg="#f4f4f4">
+              <Box pos="relative" w="100%" h={{ base: 300, md: 500 }}>
                 <Image
                   src={src}
                   fit="cover"
                   h={{ base: 300, md: 500 }}
                   fallbackSrc="/no-image-placeholder.png"
                   style={{
-                    backgroundColor: 'var(--mantine-color-dark-7)',
+                    backgroundColor: 'var(--my-fieldset-background-color)',
                   }}
                 />
               </Box>
             </Carousel.Slide>
           ))
           : <Carousel.Slide>
-            <Box pos="relative" w="100%" h={{ base: 300, md: 500 }} bg="#f4f4f4">
+            <Box pos="relative" w="100%" h={{ base: 300, md: 500 }}>
               <Image
                 src="/no-image-placeholder.png"
                 fit="cover"
                 h={{ base: 300, md: 500 }}
                 fallbackSrc="/no-image-placeholder.png"
                 style={{
-                  backgroundColor: 'var(--mantine-color-dark-7)',
+                  backgroundColor: 'var(--my-fieldset-background-color)',
                 }}
               />
             </Box>
@@ -83,6 +83,7 @@ export default function CatchImageCarousel({
           variant="light"
           bg="rgba(0, 0, 0, 0.5)"
           onClick={() => setFullscreen(images[activeIndex])}
+          radius={'md'}
         >
           <IconMaximize size={20} color="white" />
         </ActionIcon>

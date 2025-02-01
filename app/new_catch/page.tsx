@@ -11,7 +11,7 @@ import { CatchCreaetedResponse, UsersByFirstNameResponse } from '@/lib/types/res
 import { UserRole } from '@/lib/types/user';
 import { CatchUtils } from '@/lib/utils/catchUtils';
 import { defaultSort, optimizeImage } from '@/lib/utils/utils';
-import { Alert, Autocomplete, Button, Checkbox, Combobox, Container, Fieldset, Group, Input, InputBase, NumberInput, Stack, Textarea, TextInput, Title, useCombobox } from '@mantine/core';
+import { Alert, Autocomplete, Button, Checkbox, Combobox, Container, Fieldset, Group, Input, InputBase, NumberInput, rem, Stack, Textarea, TextInput, Title, useCombobox } from '@mantine/core';
 import { IconCalendar, IconCheck, IconClock, IconFish, IconFishHook, IconInfoCircle, IconMap, IconMap2, IconMapPin, IconMessage, IconRipple, IconRuler2, IconRuler3, IconSelector, IconUser, IconUserQuestion, IconWeight } from '@tabler/icons-react';
 import { createCatch } from '@/services/api/catchService';
 import { handleApiError } from '@/lib/utils/handleApiError';
@@ -451,7 +451,7 @@ export default function Page() {
   return (
     <Container size='sm' p={'md'}>
       <Title c='white' order={2} mb={'md'} pl={4}>Saaliin tiedot</Title>
-      { (!isLoggedIn || jwtUserInfo?.role === UserRole.VIEWER )&& <Alert variant="light" color="red" radius="md" title="Huomio" icon={<IconInfoCircle />} mb={'md'}>
+      { (!isLoggedIn || jwtUserInfo?.role === UserRole.VIEWER )&& <Alert styles={{ label: { fontSize: rem(16) }, message: { fontSize: rem(16) }, icon: { width: 'calc(1.5rem* var(--mantine-scale))' } }} variant="light" color="red" radius="lg" title="Huomio" icon={<IconInfoCircle />} mb={'md'}>
         {jwtUserInfo?.role === UserRole.VIEWER ? 'Sinulla ei ole uuden saaliin lisäämiseen tarvittavia oikeuksia.' : 'Kirjaudu sisään lisätäksesi uuden saaliin.'}
       </Alert> }
       <form onSubmit={handleSubmit} ref={formRef}>

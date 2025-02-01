@@ -12,9 +12,9 @@ export default function ConfirmEditModal({ onConfirm }: ConfirmEditModalProps) {
   modals.openConfirmModal({
     title: 'Muokkaa saalista',
     centered: true,
-    radius: 'md',
+    radius: 'lg',
     children: (
-      <Text size="md">
+      <Text size="md" mb={'lg'}>
         Haluatko muokata saaliin tietoja?
       </Text>
     ),
@@ -22,7 +22,7 @@ export default function ConfirmEditModal({ onConfirm }: ConfirmEditModalProps) {
     confirmProps: { color: 'blue', leftSection: <IconEdit size={20}/>, radius: 'md' },
     onConfirm: () => onConfirm(),
     zIndex: 2000,
-    classNames: { title: classes.modalTitle }
+    classNames: { header: classes.modalHeader, body: classes.modalBody, title: classes.modalTitle }
   });
   
 }

@@ -154,7 +154,7 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
   );
 
   const bodyOfWaterOptions = useMemo(() =>
-    CatchUtils.getUniqueBodiesOfWater(catches),
+    CatchUtils.getUniqueBodiesOfWater(catches).map((item) => item.bodyOfWater),
     [catches]
   );
 

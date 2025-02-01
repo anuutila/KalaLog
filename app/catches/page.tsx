@@ -26,8 +26,8 @@ import {
 import { IconAdjustments } from '@tabler/icons-react';
 import { useDisclosure } from '@mantine/hooks';
 import { getColumnDefs } from '@/components/catchesPage/CatchesGrid/columnDefinitions';
-import { defaultVisibleColumns, displayLabelToFieldMap, FieldIdentifier, fieldToDisplayLabelMap, years } from '@/components/catchesPage/constants';
-import { getColumnOptions, getSelectAllOption, getYearOptions } from '@/components/catchesPage/optionGenerators';
+import { defaultVisibleColumns, displayLabelToFieldMap, FieldIdentifier, fieldToDisplayLabelMap } from '@/components/catchesPage/constants';
+import { getBodyOfWaterOptions, getColumnOptions, getSelectAllOption, getYearOptions } from '@/components/catchesPage/optionGenerators';
 import TableSettingsDrawer from '@/components/catchesPage/TableSettingsDrawer/TableSettingsDrawer';
 import CatchesOverview from '@/components/catchesPage/CatchesOverview/CatchesOverview';
 import CatchesGrid from '@/components/catchesPage/CatchesGrid/CatchesGrid';
@@ -35,8 +35,10 @@ import { useHeaderActions } from '@/context/HeaderActionsContext';
 import { useGlobalState } from '@/context/GlobalState';
 import CatchDetails from '@/components/catchesPage/CatchDetails/CatchDetails';
 import { useRouter } from 'next/navigation';
+import { DEFAULT_BODY_OF_WATER } from '@/lib/constants/constants';
+import { CatchUtils } from '@/lib/utils/catchUtils';
 
-const currentYear = new Date().getFullYear();
+const currentYear = new Date().getFullYear().toString();
 
 enum SpeciesColWidths {
   WithIcon = 95,
@@ -62,9 +64,12 @@ export default function CatchesPage() {
   const router = useRouter();
   const { setActions } = useHeaderActions();
   const { catches, catchesError, loadingCatches } = useGlobalState();
-  
+
   const [filteredCatches, setFilteredCatches] = useState<ICatch[]>([]);
+  const [uniqueYears, setUniqueYears] = useState<string[]>([]);
+  const [uniqueBodiesOfWater, setUniqueBodiesOfWater] = useState<string[]>([]);
   const [rowCount, setRowCount] = useState<number>(0);
+  const [selectedBodyOfWater, setSelectedBodyOfWater] = useState<string | null>(null);
   const [selectedYear, setSelectedYear] = useState<string | null>(null);
   const [opened, { open, close }] = useDisclosure(false);
   const [filtersEnabled, setFiltersEnabled] = useState(false);
@@ -107,19 +112,38 @@ export default function CatchesPage() {
   }, [imageIconsEnabled, locationIconsEnabled]);
   
   const onGridReady = useCallback((params: GridReadyEvent) => {
-    // Initial call to set the year filter
-    applyYearFilter(selectedYear);
     // Initial call to set the default column visibilities
     applyColumnVisibility();
-  }, [selectedYear]);
+
+    if (selectedYear) {
+      applyYearFilter(selectedYear);
+    }
+    if (selectedBodyOfWater) {
+      applyBodyOfWaterFilter(selectedBodyOfWater);
+    }
+  }, [selectedYear, selectedBodyOfWater]);
 
   useEffect(() => {
     if (catches.length > 0) {
-      const newYear = catches.some((catchItem) => catchItem.date.startsWith(`${currentYear}`))
-        ? currentYear.toString()
-        : (currentYear - 1).toString();
+      const uniqueYears = CatchUtils.getUniqueYears(catches).map((item) => item.year);
+      if (uniqueYears.length > 0) {
+        setUniqueYears(uniqueYears);
+        // Set the latest year as the default
+        setSelectedYear(uniqueYears[0]);
+      } else {
+        setUniqueYears([currentYear]);
+        setSelectedYear(currentYear);
+      }
 
-      setSelectedYear(newYear);
+      const uniqueBodiesOfWater = CatchUtils.getUniqueBodiesOfWater(catches);
+      if (uniqueBodiesOfWater.length > 0) {
+        setUniqueBodiesOfWater([...uniqueBodiesOfWater.map((item) => item.bodyOfWater)]);
+        // Set the body of water with most catches as the default
+        setSelectedBodyOfWater(uniqueBodiesOfWater[0].bodyOfWater);
+      } else {
+        setUniqueBodiesOfWater([DEFAULT_BODY_OF_WATER]);
+        setSelectedBodyOfWater(DEFAULT_BODY_OF_WATER);
+      }
     }
   }, [catches]);
 
@@ -181,24 +205,56 @@ export default function CatchesPage() {
         dateFrom: `${year}-01-01`,
         dateTo: `${year}-12-31`,
       };
-      gridRef.current!.api.setColumnFilterModel('date', filterModel).then(() => {
+      gridRef.current!.api.setColumnFilterModel(FieldIdentifier.Date, filterModel).then(() => {
         gridRef.current!.api.onFilterChanged();
       });
     } else {
-      // Clear all filters if 'All Years' is selected
-      gridRef.current!.api.setFilterModel(null);
+      // Clear filter if 'All Years' is selected
+      gridRef.current!.api.setColumnFilterModel(FieldIdentifier.Date, null).then(() => {
+        gridRef.current!.api.onFilterChanged();
+      });
     }
   }, []);
 
+  const applyBodyOfWaterFilter = useCallback((bodyOfWater: string | null) => {
+    if (bodyOfWater && bodyOfWater !== 'Kaikki vesialueet') {
+      const filterModel = {
+        filterType: 'text',
+        type: 'equals',
+        filter: bodyOfWater
+      };
+      gridRef.current!.api.setColumnFilterModel(FieldIdentifier.BodyOfWater, filterModel)
+        .then(() => {
+          gridRef.current!.api.onFilterChanged();
+        });
+    } else {
+      gridRef.current!.api.setColumnFilterModel(FieldIdentifier.BodyOfWater, null)
+        .then(() => {
+          gridRef.current!.api.onFilterChanged();
+        });
+    }
+  }, [selectedBodyOfWater, catches]);
+
   useEffect(() => {
-    if (gridRef.current && gridRef.current.api) {
+    if (gridRef.current?.api && selectedYear) {
       applyYearFilter(selectedYear);
     }
-  }, [selectedYear]);
+  }, [selectedYear, applyYearFilter]);
+  
+  useEffect(() => {
+    if (gridRef.current?.api && selectedBodyOfWater) {
+      applyBodyOfWaterFilter(selectedBodyOfWater);
+    }
+  }, [selectedBodyOfWater, applyBodyOfWaterFilter]);
 
   const columnsCombobox = useCombobox({
     onDropdownClose: () => columnsCombobox.resetSelectedOption(),
     onDropdownOpen: () => columnsCombobox.updateSelectedOptionIndex('active'),
+  });
+
+  const bodyOfWaterCombobox = useCombobox({
+    onDropdownClose: () => bodyOfWaterCombobox.resetSelectedOption(),
+    onDropdownOpen: () => bodyOfWaterCombobox.updateSelectedOptionIndex('active'),
   });
 
   const yearCombobox = useCombobox({
@@ -280,7 +336,8 @@ export default function CatchesPage() {
 
   const selectAllOption = getSelectAllOption(visibleColumns, colDefs);
   const columnOptions = getColumnOptions(colDefs, visibleColumns, fieldToDisplayLabelMap);
-  const yearOptions = getYearOptions(years, selectedYear);
+  const yearOptions = getYearOptions(['Kaikki vuodet', ...uniqueYears], selectedYear);
+  const bodyOfWaterOptions = getBodyOfWaterOptions(['Kaikki vesialueet', ...uniqueBodiesOfWater], selectedBodyOfWater); 
 
   return (
     <Container p={0} pt={'md'} pb={'md'} size={'sm'}>
@@ -298,6 +355,10 @@ export default function CatchesPage() {
           selectedYear={selectedYear}
           setSelectedYear={setSelectedYear}
           yearOptions={yearOptions}
+          bodyOfWaterCombobox={bodyOfWaterCombobox}
+          selectedBodyOfWater={selectedBodyOfWater}
+          setSelectedBodyOfWater={setSelectedBodyOfWater}
+          bodyOfWaterOptions={bodyOfWaterOptions}
           filtersSliderChecked={filtersEnabled}
           imageIconsEnabled={imageIconsEnabled}
           setImageIconsEnabled={setImageIconsEnabled}
@@ -314,6 +375,9 @@ export default function CatchesPage() {
         </Box>
 
         <CatchesOverview
+          uniqueBodiesOfWater={uniqueBodiesOfWater}
+          selectedBodyOfWater={selectedBodyOfWater}
+          uniqueYears={uniqueYears}
           selectedYear={selectedYear}
           rowCount={rowCount}
           filteredCatches={filteredCatches}

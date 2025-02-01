@@ -5,17 +5,23 @@ import { RefObject } from "react";
 import classes from "./CatchesOverview.module.css";
 
 interface CatchesOverviewProps {
+  uniqueYears: string[];
   selectedYear: string | null;
+  uniqueBodiesOfWater: string[];
+  selectedBodyOfWater: string | null;
   rowCount: number;
   filteredCatches: ICatch[];
   scrollRef: RefObject<HTMLDivElement>;
 }
 
-export default function CatchesOverview({ selectedYear, rowCount, filteredCatches, scrollRef }: CatchesOverviewProps) {
+export default function CatchesOverview({ uniqueYears, selectedYear, uniqueBodiesOfWater, selectedBodyOfWater, rowCount, filteredCatches, scrollRef }: CatchesOverviewProps) {
+  const bodyOfWaterTitle = selectedBodyOfWater === 'Kaikki vesialueet' ? `${selectedBodyOfWater} (${uniqueBodiesOfWater.length})` : selectedBodyOfWater;
+  const yearTitle = selectedYear === 'Kaikki vuodet' ? `${uniqueYears.at(-1)} - ${uniqueYears[0]}` : selectedYear;
 
   return (
     <Stack c="var(--mantine-color-text)" pb={'md'} w='100%' gap={0}>
-      <Title c='white' order={2} p={0} mb={'md'} ml={'md'} pl={4}>{selectedYear ?? '\u00A0'}</Title>
+      <Title c='white' order={2} p={0} mb={6} ml={'md'} pl={4}>{bodyOfWaterTitle ?? '. . . . . . .'}</Title>
+      <Title c='white' order={3} p={0} mb={'md'} ml={'md'} pl={4}>{yearTitle ?? '. . . .'}</Title>
       <Box style={{ position: "relative" }}>
         <ScrollArea viewportRef={scrollRef} type="never">
           <Group gap="sm" wrap="nowrap" pl="md" pr={30}>

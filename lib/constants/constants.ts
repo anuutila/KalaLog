@@ -10,3 +10,5 @@ export enum ApiEndpoints {
   UsersByFirstName = '/api/users/byFirstName',
   AdminPanelData = '/api/users/adminPanelData',
 }
+
+export const DEFAULT_BODY_OF_WATER = 'Nerkoonjärvi';

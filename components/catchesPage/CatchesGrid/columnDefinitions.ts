@@ -51,6 +51,15 @@ export const getColumnDefs = (
     valueFormatter: upperCaseFormatter,
   },
   {
+    field: 'location.bodyOfWater',
+    headerName: 'Vesialue',
+    wrapText: true,
+    autoHeight: true,
+    filter: true,
+    width: 110,
+    valueFormatter: upperCaseFormatter,
+  },
+  {
     field: 'location',
     headerName: 'Paikka',
     wrapText: true,

@@ -2,6 +2,7 @@ import { ICatch } from "@/lib/types/catch";
 import { ColDef } from 'ag-grid-community';
 import { Checkbox, CheckIcon, Combobox, Group } from "@mantine/core";
 import { FieldIdentifier, fieldToIconMap } from "./constants";
+import { DEFAULT_BODY_OF_WATER } from "@/lib/constants/constants";
 
 const currentYear = new Date().getFullYear();
 
@@ -29,7 +30,7 @@ export const getColumnOptions = (colDefs: ColDef<ICatch>[], visibleColumns: stri
     );
   });
 
-export const getYearOptions = (years: string[], selectedYear: string | null = currentYear.toString()) =>
+export const getYearOptions = (years: string[], selectedYear: string | null = currentYear.toString()) => (
   years.map((item) => (
     <Combobox.Option value={item} key={item} active={selectedYear === item}>
       <Group gap="sm">
@@ -37,7 +38,19 @@ export const getYearOptions = (years: string[], selectedYear: string | null = cu
         <span>{item}</span>
       </Group>
     </Combobox.Option>
-  ));
+  ))
+);
+
+export const getBodyOfWaterOptions = (bodiesOfWater: string[], selectedBodyOfWater: string | null = DEFAULT_BODY_OF_WATER) => (
+  bodiesOfWater.map((item) => (
+    <Combobox.Option value={item} key={item} active={selectedBodyOfWater === item}>
+      <Group gap="sm">
+        {selectedBodyOfWater === item ? <CheckIcon size={12} /> : null}
+        <span>{item}</span>
+      </Group>
+    </Combobox.Option>
+  ))
+);
 
 export const getSelectAllOption = (visibleColumns: string[], colDefs: ColDef<ICatch>[]) => (
   <Combobox.Option value="Valitse kaikki" key="selectAll" active={visibleColumns.length === colDefs.length}>

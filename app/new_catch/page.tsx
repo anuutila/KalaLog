@@ -31,7 +31,7 @@ export default function Page() {
     weight: undefined,
     lure: null,
     location: {
-      bodyOfWater: 'Nerkoonjärvi',
+      bodyOfWater: '',
       spot: null,
       coordinates: null,
     },
@@ -133,7 +133,7 @@ export default function Page() {
     const { name, value } = e.target;
 
     setFormData((prevData) => {
-      if (name === 'bodyOfWater' || name === 'coordinates') {
+      if (name === 'coordinates') {
         // Handle nested location object
         return {
           ...prevData,
@@ -270,6 +270,7 @@ export default function Page() {
         lure: lureValue,
         location: {
           ...formData.location,
+          bodyOfWater: bodyOfWaterValue,
           spot: spotValue,
         },
         caughtBy: {
@@ -310,7 +311,7 @@ export default function Page() {
         length: undefined,
         weight: undefined,
         lure: null,
-        location: { bodyOfWater: 'Nerkoonjärvi', spot: null, coordinates: null },
+        location: { bodyOfWater: '', spot: null, coordinates: null },
         date: DateTime.now().toFormat('yyyy-MM-dd'),
         time: DateTime.now().toFormat('HH:mm'),
         caughtBy: { name: '', username: null, userId: null },
@@ -321,6 +322,7 @@ export default function Page() {
       setWeightValue('');
       setLureValue('');
       setSpotValue('');
+      setBodyOfWaterValue('');
       setUseGps(false);
       setGpsError(null);
       setAnglerName('');
@@ -350,7 +352,7 @@ export default function Page() {
   );
 
   const bodyOfWaterOptions = useMemo(() =>
-    CatchUtils.getUniqueBodiesOfWater(catches),
+    CatchUtils.getUniqueBodiesOfWater(catches).map((item) => item.bodyOfWater),
     [catches]
   );
 

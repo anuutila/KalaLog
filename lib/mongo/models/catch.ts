@@ -1,6 +1,7 @@
 import mongoose, { Schema, Document } from 'mongoose';
 import { ICatch } from '@lib/types/catch';
 import { capitalizeFirstLetter } from '@/lib/utils/utils';
+import { DEFAULT_BODY_OF_WATER } from '@/lib/constants/constants';
 
 export interface ICatchModel extends Document, Omit<ICatch, 'id'> {}
 
@@ -11,7 +12,7 @@ export const CatchSchema: Schema<ICatchModel> = new Schema({
   weight: { type: Number, required: false, default: null },
   lure: { type: String, required: false, default: null, set: (value: string | null) => (value === "" ? null : capitalizeFirstLetter(value)) },
   location: {
-    bodyOfWater: { type: String, required: true, default: 'Nerkoonjärvi', set: (value: string) => capitalizeFirstLetter(value) },
+    bodyOfWater: { type: String, required: true, default: DEFAULT_BODY_OF_WATER, set: (value: string) => capitalizeFirstLetter(value) },
     spot: { type: String, required: false, default: null, set: (value: string | null) => (value === "" ? null : capitalizeFirstLetter(value)) },
     coordinates: { type: String, required: false, default: null, set: (value: string | null) => (value === "" ? null : value) },
   },

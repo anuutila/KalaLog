@@ -1,5 +1,5 @@
 .grid-wrapper {
-  height: calc(100dvh - 111.094px - var(--app-shell-footer-offset, 0rem) - var(--app-shell-header-offset, 0rem) - var(--mantine-spacing-md) - env(safe-area-inset-bottom));
+  height: calc(100dvh - 147.89px - var(--app-shell-footer-offset, 0rem) - var(--app-shell-header-offset, 0rem) - var(--mantine-spacing-md) - env(safe-area-inset-bottom));
   --ag-header-background-color: #1a2536;
   --ag-background-color: #141c2a;
 
@@ -66,6 +66,10 @@
   font-size: 12px;
   justify-content: space-between;
 
+  & .ag-paging-page-summary-panel {
+    margin-left: 0;
+  }
+
   & .ag-paging-row-summary-panel {
     display: none;
   }
@@ -79,7 +83,7 @@
 @media (min-width: $mantine-breakpoint-md) {
 
   .grid-wrapper {
-    height: calc(100dvh - 111.094px - var(--app-shell-footer-offset, 0rem) - var(--app-shell-header-offset, 0rem) - var(--mantine-spacing-xl) - env(safe-area-inset-bottom));
+    height: calc(100dvh - 147.89px - var(--app-shell-footer-offset, 0rem) - var(--app-shell-header-offset, 0rem) - var(--mantine-spacing-xl) - env(safe-area-inset-bottom));
   
     & .ag-root-wrapper {
       border-radius: var(--mantine-spacing-sm);
@@ -89,6 +93,10 @@
 
   .ag-paging-panel {
     justify-content: flex-end; 
+
+    & .ag-paging-page-summary-panel {
+      margin-left: var(--ag-cell-horizontal-padding);
+    }
   
     & .ag-paging-row-summary-panel {
       display: unset;
@@ -96,6 +104,24 @@
   
     & .ag-paging-description span:nth-of-type(1) {
       display: unset;
+    }
+  }
+
+}
+
+@media (max-width: 392px) {
+
+  .ag-paging-panel {
+    & .ag-paging-description span:nth-of-type(1) {
+      display: none;
+    }
+
+    & .ag-paging-description span:nth-of-type(3) {
+      display: none;
+    }
+
+    & .ag-paging-description span:nth-of-type(4) {
+      display: none;
     }
   }
 

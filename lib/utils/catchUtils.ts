@@ -29,14 +29,27 @@ export const CatchUtils = {
   },
 
   /**
-   * Get unique bodies of water
+   * Get unique bodies of water with their catch counts
    */
-  getUniqueBodiesOfWater(catches: ICatch[]): string[] {
-    return Array.from(new Set(
-      catches
-        .map(c => c.location.bodyOfWater)
-        .filter(body => body && body.trim().length > 0)
-    )).sort();
+  getUniqueBodiesOfWater(catches: ICatch[]): Array<{
+    bodyOfWater: string;
+    catchCount: number;
+  }> {
+    const bodyOfWaterMap = new Map<string, number>();
+
+    catches.forEach(c => {
+      const bodyOfWater = c.location.bodyOfWater;
+      if (!bodyOfWater) return;
+
+      bodyOfWaterMap.set(bodyOfWater, (bodyOfWaterMap.get(bodyOfWater) || 0) + 1);
+    });
+
+    return Array.from(bodyOfWaterMap.entries())
+      .map(([bodyOfWater, catchCount]) => ({
+        bodyOfWater,
+        catchCount
+      }))
+      .sort((a, b) => b.catchCount - a.catchCount);
   },
 
   /**
@@ -96,6 +109,28 @@ export const CatchUtils = {
         catchCount
       }))
       .sort((a, b) => b.catchCount - a.catchCount);
+  },
+
+  /**
+   * Get unique years with their catch counts
+   */
+  getUniqueYears(catches: ICatch[]): Array<{
+    year: string;
+    catchCount: number;
+  }> {
+    const yearMap = new Map<string, number>();
+
+    catches.forEach(c => {
+      const year = c.date.split('-')[0];
+      yearMap.set(year, (yearMap.get(year) || 0) + 1);
+    });
+
+    return Array.from(yearMap.entries())
+      .map(([year, catchCount]) => ({
+        year,
+        catchCount
+      }))
+      .sort((a, b) => b.year.localeCompare(a.year));
   },
 
   /**

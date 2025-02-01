@@ -2,7 +2,7 @@ import { ActionIcon, Combobox, Drawer, Group, Input, InputBase, Pill, PillsInput
 import { SetStateAction } from "react";
 import classes from "./TableSettingsDrawer.module.css";
 import "./TableSettingsDrawer.css";
-import { IconCalendar, IconInfoCircle, IconTableColumn } from "@tabler/icons-react";
+import { IconCalendar, IconInfoCircle, IconRipple, IconTableColumn } from "@tabler/icons-react";
 import { displayLabelToFieldMap, FieldIdentifier, fieldToIconMap } from "../constants";
 
 const MAX_DISPLAYED_VALUES = 2;
@@ -18,7 +18,11 @@ interface TableSettingsDrawerProps {
   yearCombobox: any;
   selectedYear: string | null;
   setSelectedYear: (year: string) => void;
-  yearOptions: any;
+  yearOptions: JSX.Element[];
+  bodyOfWaterCombobox: any;
+  selectedBodyOfWater: string | null;
+  setSelectedBodyOfWater: (bodyOfWater: string) => void;
+  bodyOfWaterOptions: JSX.Element[];
   filtersSliderChecked: boolean;
   setFiltersSliderChecked: (checked: boolean) => void;
   imageIconsEnabled: boolean;
@@ -40,6 +44,10 @@ export default function TableSettingsDrawer({
   selectedYear,
   setSelectedYear,
   yearOptions,
+  bodyOfWaterCombobox,
+  selectedBodyOfWater,
+  setSelectedBodyOfWater,
+  bodyOfWaterOptions,
   filtersSliderChecked,
   setFiltersSliderChecked,
   imageIconsEnabled,
@@ -182,6 +190,37 @@ export default function TableSettingsDrawer({
             </Combobox>
 
             <Combobox
+              store={bodyOfWaterCombobox}
+              onOptionSubmit={(val) => {
+                setSelectedBodyOfWater(val);
+                bodyOfWaterCombobox.closeDropdown();
+              }}
+              size="md"
+            >
+              <Combobox.Target>
+                <InputBase
+                  classNames={{ label: classes.input_label }}
+                  label="Valitse vesialue"
+                  component="button"
+                  type="button"
+                  pointer
+                  rightSection={<Combobox.Chevron />}
+                  rightSectionPointerEvents="none"
+                  onClick={() => bodyOfWaterCombobox.toggleDropdown()}
+                  size="md"
+                  leftSection={<IconRipple size={20}/>}
+                  leftSectionPointerEvents='none'
+                >
+                  {selectedBodyOfWater || <Input.Placeholder>Valitse vesialue</Input.Placeholder>}
+                </InputBase>
+              </Combobox.Target>
+
+              <Combobox.Dropdown>
+                <Combobox.Options>{bodyOfWaterOptions}</Combobox.Options>
+              </Combobox.Dropdown>
+            </Combobox>
+
+            <Combobox
               store={yearCombobox}
               onOptionSubmit={(val) => {
                 setSelectedYear(val);
@@ -192,7 +231,7 @@ export default function TableSettingsDrawer({
               <Combobox.Target>
                 <InputBase
                   classNames={{ label: classes.input_label }}
-                  label="Näytä saaliit vuodelta"
+                  label="Valitse vuosi"
                   component="button"
                   type="button"
                   pointer
@@ -211,6 +250,7 @@ export default function TableSettingsDrawer({
                 <Combobox.Options>{yearOptions}</Combobox.Options>
               </Combobox.Dropdown>
             </Combobox>
+
             <Stack>
               <Switch
                 classNames={{ body: classes.switch_body, label: classes.switch_input_label }}

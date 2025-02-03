@@ -30,7 +30,7 @@ const notificationDefaults: Record<NotificationType, { color: string; icon: JSX.
 export function showNotification(
   type: NotificationType,
   message: string,
-  options?: { title?: string; withTitle?: boolean }
+  options?: { title?: string; withTitle?: boolean; duration?: number }
 ) {
   const { color, icon, defaultTitle } = notificationDefaults[type];
 
@@ -44,6 +44,6 @@ export function showNotification(
     withBorder: true,
     radius: 'lg',
     bg: 'var(--mantine-color-dark-8)',
-    autoClose: 4000
+    autoClose: options?.duration || 4000,
   });
 }

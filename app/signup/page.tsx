@@ -47,8 +47,15 @@ export default function Page() {
 
     try {
       const signupResponse: SignUpResponse = await signup(formData);
-      console.log(signupResponse.message);
-      showNotification('success', signupResponse.message, { withTitle: false });
+      const linkedCatchesCount = signupResponse.data.linkedCatchesCount;
+      const linkedName = signupResponse.data.linkedName;
+      console.log(signupResponse.message, 'linkedCatchesCount:', linkedCatchesCount);
+
+      const message = linkedCatchesCount > 0 
+        ? `${signupResponse.message}. Linked ${linkedCatchesCount} catches caught by ${linkedName} to the new account.` 
+        : signupResponse.message;
+
+      showNotification('success', message, { withTitle: false, duration: linkedCatchesCount > 0 ? 10000 : 4000 });
 
       // Redirect to login page after successful registration
       router.push('/login');

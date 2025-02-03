@@ -30,7 +30,16 @@ export interface CatchEditedResponseData {
 
 export type CatchEditedResponse = Required<BaseResponse<CatchEditedResponseData>>;
 
-export type SignUpResponse = BaseResponse;
+export interface SignUpResponseData {
+  username: string;
+  firstName: string;
+  lastName: string;
+  id: string | undefined;
+  linkedCatchesCount: number;
+  linkedName?: string;
+}
+
+export type SignUpResponse = Required<BaseResponse<SignUpResponseData>>;
 
 export type LoginResponse = Required<BaseResponse<JwtUserInfo>>;
 

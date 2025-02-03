@@ -66,6 +66,7 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
   const [userLinkingDone, setUserLinkingDone] = useState(true);
   const [showUserLinkingDropdown, setShowUserLinkingDropdown] = useState(false);
   const [isLinkingUser, setIsLinkingUser] = useState(false);
+  const [nameEdited, setNameEdited] = useState(false);
 
   const userCombobox = useCombobox({
     onDropdownClose: () => userCombobox.resetSelectedOption(),
@@ -136,9 +137,6 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
   };
 
   const linkUser = async (anglerName: string) => {
-    if (userLinkingDone) {
-      return
-    }
     if (anglerName.trim()) {
       await fetchMatchingUsers(anglerName.trim());
     } else {
@@ -167,9 +165,9 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
         },
         caughtBy: {
           name: anglerName,
-          username: linkedUser?.username ?? (formData.caughtBy.username ?? null),
-          lastName: linkedUser?.lastName ?? (formData.caughtBy.lastName ?? null),
-          userId: linkedUser?.id ?? (formData.caughtBy.userId ?? null),
+          username: linkedUser?.username ?? (!nameEdited ? formData.caughtBy.username ?? null : null),
+          lastName: linkedUser?.lastName ?? (!nameEdited ? formData.caughtBy.lastName ?? null : null),
+          userId: linkedUser?.id ?? (!nameEdited ? formData.caughtBy.userId ?? null : null),
         }
       };
 
@@ -292,6 +290,8 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
   , [spotsDropdownOpened, filteredSpotOptions.length, spotValue]);
 
   const handleAnglerChange = useCallback((value: string) => {
+    setNameEdited(true);
+    setUserLinkingDone(false);
     setAnglerName(value);
     const filtered = anglerOptions.filter((option) =>
       option.toLowerCase().includes(value.toLowerCase().trim())
@@ -462,7 +462,7 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
               onChange={handleAnglerChange}
               onOptionSubmit={(val) => linkUser(val)}
               onFocus={() => setAnglersDropdownOpened(true)}
-              onBlur={() => { setAnglersDropdownOpened(false); linkUser(anglerName); }}
+              onBlur={() => { setAnglersDropdownOpened(false); if (!userLinkingDone) {linkUser(anglerName)}; }}
               rightSection={anglersRightSection}
               data={anglerOptions}
               defaultDropdownOpened={false}

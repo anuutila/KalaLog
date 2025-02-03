@@ -330,6 +330,7 @@ export default function CatchesPage() {
 
   const onRowClicked = useCallback((event: any) => {
     if (event?.data) {
+      console.log('Selected catch:', event.data);
       setSelectedCatch(event.data);
     }
   }, []);

@@ -246,9 +246,6 @@ export default function Page() {
   };
 
   const linkUser = async (anglerName: string) => {
-    if (userLinkingDone) {
-      return
-    }
     if (anglerName.trim()) {
       await fetchMatchingUsers(anglerName.trim());
     } else {
@@ -627,7 +624,7 @@ export default function Page() {
               onChange={handleAnglerChange}
               onOptionSubmit={(val) => linkUser(val)}
               onFocus={() => setAnglersDropdownOpened(true)}
-              onBlur={() => { setAnglersDropdownOpened(false); linkUser(anglerName); }}
+              onBlur={() => { setAnglersDropdownOpened(false); if (!userLinkingDone) {linkUser(anglerName)}; }}
               rightSection={anglersRightSection}
               data={anglerOptions}
               defaultDropdownOpened={false}

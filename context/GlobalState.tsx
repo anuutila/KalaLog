@@ -83,12 +83,14 @@ export const GlobalStateProvider = ({ children }: { children: React.ReactNode })
   
       // Collect names and their associated user IDs (null for unregistered users)
       catches.forEach((catchItem) => {
-        const name = catchItem.caughtBy.name;
+        // Extract the first word from the name to ensure only the first name is stored
+        const firstName = catchItem.caughtBy.name.split(' ')[0];
         const userId = catchItem.caughtBy.userId ?? null;
-        if (!nameOccurrences[name]) {
-          nameOccurrences[name] = new Set();
+        
+        if (!nameOccurrences[firstName]) {
+          nameOccurrences[firstName] = new Set();
         }
-        nameOccurrences[name].add(userId);
+        nameOccurrences[firstName].add(userId);
       });
   
       // Build display names based on conditions

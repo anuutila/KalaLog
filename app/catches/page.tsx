@@ -63,7 +63,7 @@ export default function CatchesPage() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const { setActions } = useHeaderActions();
-  const { catches, catchesError, loadingCatches } = useGlobalState();
+  const { catches, catchesError, loadingCatches, displayNameMap } = useGlobalState();
 
   const [filteredCatches, setFilteredCatches] = useState<ICatch[]>([]);
   const [uniqueYears, setUniqueYears] = useState<string[]>([]);
@@ -81,7 +81,8 @@ export default function CatchesPage() {
     imageIconsEnabled, 
     SpeciesColWidths.NoIcon, 
     locationIconsEnabled, 
-    LocationColWidths.NoIcon
+    LocationColWidths.NoIcon,
+    displayNameMap
   )); 
   const [defaultColDef, setDefaultColDef] = useState<ColDef>({
     sortable: true,
@@ -108,8 +109,8 @@ export default function CatchesPage() {
   useEffect(() => {
     const newSpeciesColWidth = imageIconsEnabled ? SpeciesColWidths.WithIcon : SpeciesColWidths.NoIcon;
     const newLocationColWidth = locationIconsEnabled ? LocationColWidths.WithIcon : LocationColWidths.NoIcon;
-    setColDefs(getColumnDefs(imageIconsEnabled, newSpeciesColWidth, locationIconsEnabled, newLocationColWidth));
-  }, [imageIconsEnabled, locationIconsEnabled]);
+    setColDefs(getColumnDefs(imageIconsEnabled, newSpeciesColWidth, locationIconsEnabled, newLocationColWidth, displayNameMap));
+  }, [imageIconsEnabled, locationIconsEnabled, displayNameMap]);
   
   const onGridReady = useCallback((params: GridReadyEvent) => {
     // Initial call to set the default column visibilities
@@ -128,8 +129,10 @@ export default function CatchesPage() {
       const uniqueYears = CatchUtils.getUniqueYears(catches).map((item) => item.year);
       if (uniqueYears.length > 0) {
         setUniqueYears(uniqueYears);
-        // Set the latest year as the default
-        setSelectedYear(uniqueYears[0]);
+        if (!selectedYear) {
+          // Set the latest year as the default
+          setSelectedYear(uniqueYears[0]);
+        }
       } else {
         setUniqueYears([currentYear]);
         setSelectedYear(currentYear);
@@ -138,8 +141,10 @@ export default function CatchesPage() {
       const uniqueBodiesOfWater = CatchUtils.getUniqueBodiesOfWater(catches);
       if (uniqueBodiesOfWater.length > 0) {
         setUniqueBodiesOfWater([...uniqueBodiesOfWater.map((item) => item.bodyOfWater)]);
-        // Set the body of water with most catches as the default
-        setSelectedBodyOfWater(uniqueBodiesOfWater[0].bodyOfWater);
+        if (!selectedBodyOfWater) {
+          // Set the body of water with most catches as the default
+          setSelectedBodyOfWater(uniqueBodiesOfWater[0].bodyOfWater);
+        }
       } else {
         setUniqueBodiesOfWater([DEFAULT_BODY_OF_WATER]);
         setSelectedBodyOfWater(DEFAULT_BODY_OF_WATER);

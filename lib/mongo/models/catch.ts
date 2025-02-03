@@ -19,6 +19,7 @@ export const CatchSchema: Schema<ICatchModel> = new Schema({
   time: { type: String, required: true },
   caughtBy: {
     name: { type: String, required: true, set: (value: string) => capitalizeFirstLetter(value) },
+    lastName: { type: String, required: false, default: null, set: (value: string | null) => (value === "" ? null : capitalizeFirstLetter(value)) },
     username: { type: String, required: false, default: null, set: (value: string | null) => (value === "" ? null : value) },
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null, required: false },
   },

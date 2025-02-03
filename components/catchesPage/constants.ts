@@ -21,7 +21,7 @@ export enum FieldIdentifier {
   Location = 'location',
   Time = 'time',
   Date = 'date',
-  CaughtBy = 'caughtBy.name',
+  CaughtBy = 'caughtBy',
 }
 
 export const fieldToDisplayLabelMap: Record<FieldIdentifier, string> = {

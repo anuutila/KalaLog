@@ -246,6 +246,9 @@ export default function Page() {
   };
 
   const linkUser = async (anglerName: string) => {
+    if (userLinkingDone) {
+      return
+    }
     if (anglerName.trim()) {
       await fetchMatchingUsers(anglerName.trim());
     } else {
@@ -276,6 +279,7 @@ export default function Page() {
         caughtBy: {
           name: anglerName,
           username: linkedUser?.username ?? null,
+          lastName: linkedUser?.lastName ?? null,
           userId: linkedUser?.id ?? null,
         },
         createdBy: jwtUserInfo?.userId ?? null,
@@ -285,16 +289,19 @@ export default function Page() {
       console.log(`With ${files.length} images`);
 
       // Optimize images before uploading
-      console.log('Optimizing images...');
-      const optimizedFiles = await Promise.all(
-        files.map(async (file) => {
-          const optimizedFile = await optimizeImage(file);
-          return optimizedFile;
-        })
-      );
+      let optimizedFiles: File[] | undefined = undefined;
+      if (files.length > 0) {
+        console.log('Optimizing images...');
+        optimizedFiles = await Promise.all(
+          files.map(async (file) => {
+            const optimizedFile = await optimizeImage(file);
+            return optimizedFile;
+          })
+        );
+      }
 
       // Send the catch details and image(s) to the API
-      const catchCreatedResponse: CatchCreaetedResponse = await createCatch(parsedFormData, optimizedFiles);
+      const catchCreatedResponse: CatchCreaetedResponse = await createCatch(parsedFormData, optimizedFiles ?? []);
       console.log(catchCreatedResponse.message, catchCreatedResponse.data);
       if (catchCreatedResponse.data.failedImageUploads) {
         showNotification('warning', catchCreatedResponse.message, { withTitle: true });

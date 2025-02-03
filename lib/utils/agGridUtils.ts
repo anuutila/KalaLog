@@ -1,5 +1,4 @@
 import { ValueFormatterParams } from 'ag-grid-community';
-import { ICatch } from '../types/catch';
 
 export function lengthFormatter(params: ValueFormatterParams) {
   return isNaN(params.value) || params.value === null ? '-' : `${params.value} cm`;

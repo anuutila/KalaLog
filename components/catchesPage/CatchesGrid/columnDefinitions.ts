@@ -8,7 +8,8 @@ export const getColumnDefs = (
   imageIconsEnabled: boolean, 
   speciesColumnWidth: number, 
   locationIconsEnabled: boolean, 
-  locationColumnWidth: number
+  locationColumnWidth: number,
+  displayNameMap: { [userId: string]: string }
 ): ColDef[] => [
   { field: 'species', 
     headerName: 'Laji', 
@@ -77,7 +78,24 @@ export const getColumnDefs = (
         value?.toLowerCase() || '',
     },
   },
-  { field: 'time', headerName: 'Aika', width: 75 },
-  { field: 'date', headerName: 'Pvm.', width: 90, valueFormatter: dateFormatter, filter: true },
-  { field: 'caughtBy.name', headerName: 'Kalastaja', width: 85, valueFormatter: upperCaseFormatter },
+  { 
+    field: 'time', 
+    headerName: 'Aika', 
+    width: 75 },
+  { 
+    field: 'date', 
+    headerName: 'Pvm.', 
+    width: 90, 
+    valueFormatter: dateFormatter, 
+    filter: true },
+  { 
+    field: 'caughtBy', 
+    headerName: 'Kalastaja', 
+    width: 85, valueFormatter: 
+    upperCaseFormatter, 
+    valueGetter: (params) => 
+      params.data.caughtBy?.userId && displayNameMap[params.data.caughtBy.userId] 
+        ? displayNameMap[params.data.caughtBy.userId] 
+        : params.data.caughtBy.name
+  },
 ];

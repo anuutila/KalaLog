@@ -29,7 +29,7 @@ export async function GET(): Promise<NextResponse<CatchesResponse | ErrorRespons
           ...catchItem,
           id: catchItem._id?.toString(), // Convert MongoDB ObjectId to string
           caughtBy: {
-            name: catchItem.caughtBy.name,
+            ...catchItem.caughtBy,
             userId: catchItem.caughtBy.userId?.toString(),
           },
           createdBy: catchItem.createdBy?.toString(),
@@ -168,7 +168,7 @@ export async function POST(req: NextRequest): Promise<NextResponse<CatchCreaeted
       ...newCatch.toObject(), // Ensure Mongoose document is converted to plain JS object
       id: newCatch._id?.toString(), // Convert MongoDB ObjectId to string
       caughtBy: {
-        name: newCatch.caughtBy.name,
+        ...newCatch.caughtBy,
         userId: newCatch.caughtBy.userId?.toString() || null, // Convert ObjectId or handle nulls
       },
       createdBy: newCatch.createdBy?.toString(),
@@ -281,7 +281,7 @@ export async function DELETE(req: NextRequest): Promise<NextResponse<CatchDelete
       ...deletedCatch.toObject(), // Ensure Mongoose document is converted to plain JS object
       id: deletedCatch._id?.toString(), // Convert MongoDB ObjectId to string
       caughtBy: {
-        name: deletedCatch.caughtBy.name,
+        ...deletedCatch.caughtBy,
         userId: deletedCatch.caughtBy.userId?.toString() || null, // Convert ObjectId or handle nulls
       },
       createdBy: deletedCatch.createdBy?.toString(),
@@ -459,7 +459,7 @@ export async function PUT(req: NextRequest): Promise<NextResponse<CatchEditedRes
       ...updatedCatch.toObject(), // Ensure Mongoose document is converted to plain JS object
       id: updatedCatch._id?.toString(), // Convert MongoDB ObjectId to string
       caughtBy: {
-        name: updatedCatch.caughtBy.name,
+        ...updatedCatch.caughtBy,
         userId: updatedCatch.caughtBy.userId?.toString() || null, // Convert ObjectId or handle nulls
       },
       createdBy: updatedCatch.createdBy?.toString(),

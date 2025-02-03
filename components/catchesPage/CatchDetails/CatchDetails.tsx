@@ -55,7 +55,7 @@ export default function CatchDetails({
   selectedCatch,
   setSelectedCatch
 }: CatchDetailsProps) {
-  const { setCatches, isLoggedIn, jwtUserInfo } = useGlobalState();
+  const { setCatches, isLoggedIn, jwtUserInfo, displayNameMap } = useGlobalState();
   const { setActionsDisabled } = useHeaderActions();
   const { showLoading, hideLoading } = useLoadingOverlay();
   const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
@@ -163,7 +163,7 @@ export default function CatchDetails({
     coordinates: { label: 'Koordinaatit', data: selectedCatch.location.coordinates },
     date: { label: 'Päivämäärä', data: selectedCatch.date },
     time: { label: 'Aika', data: selectedCatch.time },
-    caughtBy: { label: 'Kalastaja', data: selectedCatch.caughtBy.name },
+    caughtBy: { label: 'Kalastaja', data: selectedCatch.caughtBy.userId && displayNameMap[selectedCatch.caughtBy.userId] || selectedCatch.caughtBy.name },
     comment: { label: 'Kommentti', data: selectedCatch.comment },
   };
 

@@ -20,6 +20,7 @@ interface GlobalState {
   setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean | null>>;
   setJwtUserInfo: React.Dispatch<React.SetStateAction<JwtUserInfo | null>>;
   fetchCatches: () => Promise<void>;
+  displayNameMap: { [userId: string]: string };
 }
 
 const GlobalContext = createContext<GlobalState | undefined>(undefined);
@@ -30,6 +31,8 @@ export const GlobalStateProvider = ({ children }: { children: React.ReactNode })
   const [catches, setCatches] = useState<ICatch[]>([]);
   const [catchesError, setCatchesError] = useState<string | null>(null);
   const [loadingCatches, setLoadingCatches] = useState(false);
+  // Map of user IDs to display names that are used if there are duplicae names
+  const [displayNameMap, setDisplayNameMap] = useState<{ [userId: string]: string }>({}); 
 
   // Fetch login status
   useEffect(() => {
@@ -73,6 +76,46 @@ export const GlobalStateProvider = ({ children }: { children: React.ReactNode })
     fetchCatches();
   }, []);
 
+  useEffect(() => {
+    if (catches.length > 0) {
+      const nameOccurrences: { [firstName: string]: Set<string | null> } = {};
+      const idToDisplayNameMap: { [userId: string]: string } = {};
+  
+      // Collect names and their associated user IDs (null for unregistered users)
+      catches.forEach((catchItem) => {
+        const name = catchItem.caughtBy.name;
+        const userId = catchItem.caughtBy.userId ?? null;
+        if (!nameOccurrences[name]) {
+          nameOccurrences[name] = new Set();
+        }
+        nameOccurrences[name].add(userId);
+      });
+  
+      // Build display names based on conditions
+      catches.forEach((catchItem) => {
+        const { userId, name, username, lastName } = catchItem.caughtBy;
+        const userIdsForName = nameOccurrences[name];
+  
+        // Only modify registered users
+        if (userId) {
+          const hasDuplicateRegisteredUsers = [...userIdsForName].filter(id => id).length > 1;
+          const hasUnregisteredDuplicate = userIdsForName.has(null);
+  
+          if (hasDuplicateRegisteredUsers || hasUnregisteredDuplicate) {
+            // Add the display name for registered users with duplicates
+            const displayName = lastName
+              ? `${name} ${lastName.charAt(0)}.`
+              : `${name} (${username})`;
+  
+            idToDisplayNameMap[userId] = displayName;
+          }
+        }
+      });
+  
+      setDisplayNameMap(idToDisplayNameMap);
+    }
+  }, [catches]);
+
   return (
     <GlobalContext.Provider
       value={{
@@ -85,6 +128,7 @@ export const GlobalStateProvider = ({ children }: { children: React.ReactNode })
         setIsLoggedIn,
         setJwtUserInfo,
         fetchCatches,
+        displayNameMap,
       }}
     >
       {children}

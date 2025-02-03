@@ -14,15 +14,15 @@ export const UserRoleSchema = z.enum([UserRole.ADMIN, UserRole.EDITOR, UserRole.
 export const IUserSchema = z.object({
   username: z
     .string()
-    .min(1, "Username is required")
+    .min(2, "Username is required")
     .max(30, "Username cannot exceed 30 characters"),
   firstName: z
     .string()
-    .min(1, "First name is required")
+    .min(2, "First name is required")
     .max(50, "First name cannot exceed 50 characters"),
   lastName: z
     .string()
-    .min(1, "Last name is required")
+    .min(2, "Last name is required")
     .max(50, "Last name cannot exceed 50 characters"),
   email: z
     .string()

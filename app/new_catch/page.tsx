@@ -275,7 +275,7 @@ export default function Page() {
         },
         caughtBy: {
           name: anglerName,
-          username: linkedUser?.username,
+          username: linkedUser?.username ?? null,
           userId: linkedUser?.id ?? null,
         },
         createdBy: jwtUserInfo?.userId ?? null,
@@ -620,7 +620,7 @@ export default function Page() {
               onChange={handleAnglerChange}
               onOptionSubmit={(val) => linkUser(val)}
               onFocus={() => setAnglersDropdownOpened(true)}
-              onBlur={() => {setAnglersDropdownOpened(false); linkUser(anglerName);}}
+              onBlur={() => { setAnglersDropdownOpened(false); linkUser(anglerName); }}
               rightSection={anglersRightSection}
               data={anglerOptions}
               defaultDropdownOpened={false}
@@ -629,42 +629,53 @@ export default function Page() {
             />
 
             {showUserLinkingDropdown && (
-            <Combobox
-              store={userCombobox}
-              onOptionSubmit={(val) => {
-                const user = matchingUsers.find((user) => user.username === val);
-                setLinkedUser(user);
-                setUserLinkingDone(true);
-                userCombobox.closeDropdown();
-              }}
-              size="md"
-            >
-              <Combobox.Target>
-                <InputBase
-                  label="Valitse käyttäjä"
-                  component="button"
-                  type="button"
-                  pointer
-                  rightSection={<Combobox.Chevron />}
-                  rightSectionPointerEvents="none"
-                  onClick={() => userCombobox.toggleDropdown()}
-                  size="md"
-                  leftSection={<IconUserQuestion size={20}/>}
-                  leftSectionPointerEvents='none'
-                  required
-                >
-                  { linkedUser ? `${linkedUser?.firstName} ${linkedUser?.lastName} (${linkedUser?.username})` : <Input.Placeholder>Valitse oikea käyttäjä</Input.Placeholder>}
-                </InputBase>
-              </Combobox.Target>
+              <Combobox
+                store={userCombobox}
+                onOptionSubmit={(val) => {
+                  if (val === '0') {
+                    setLinkedUser(undefined);
+                    setUserLinkingDone(true);
+                    userCombobox.closeDropdown();
+                  } else {
+                    const user = matchingUsers.find((user) => user.username === val);
+                    setLinkedUser(user);
+                    setUserLinkingDone(true);
+                    userCombobox.closeDropdown();
+                  }
+                }}
+                size="md"
+              >
+                <Combobox.Target>
+                  <InputBase
+                    label="Valitse käyttäjä"
+                    component="button"
+                    type="button"
+                    pointer
+                    rightSection={<Combobox.Chevron />}
+                    rightSectionPointerEvents="none"
+                    onClick={() => userCombobox.toggleDropdown()}
+                    size="md"
+                    leftSection={<IconUserQuestion size={20} />}
+                    leftSectionPointerEvents='none'
+                    required
+                  >
+                    {linkedUser ? `${linkedUser?.firstName} ${linkedUser?.lastName} (${linkedUser?.username})` : (linkedUser === null ? <Input.Placeholder>Valitse oikea käyttäjä</Input.Placeholder> : 'Ei käyttäjätiliä') }
+                  </InputBase>
+                </Combobox.Target>
 
-              <Combobox.Dropdown>
-                <Combobox.Options>{matchingUsers.map((user) => (
-                  <Combobox.Option key={user.id} value={user.username}>
-                    {user.firstName} {user.lastName} ({user.username})
-                  </Combobox.Option>
-                ))}</Combobox.Options>
-              </Combobox.Dropdown>
-            </Combobox>
+                <Combobox.Dropdown>
+                  <Combobox.Options>
+                    {matchingUsers.map((user) => (
+                      <Combobox.Option key={user.id} value={user.username}>
+                        {user.firstName} {user.lastName} ({user.username})
+                      </Combobox.Option>
+                    ))}
+                    <Combobox.Option value="0">
+                      Ei käyttäjätiliä
+                    </Combobox.Option>
+                  </Combobox.Options>
+                </Combobox.Dropdown>
+              </Combobox>
             )}
 
             <Textarea
@@ -694,13 +705,13 @@ export default function Page() {
               />
             )}
 
-            <Button 
-              size='md' 
-              type="submit" 
-              loading={isLoading || isLinkingUser} 
-              loaderProps={{ type: 'dots' }} 
-              my={'xs'} 
-              leftSection={<IconCheck />} 
+            <Button
+              size='md'
+              type="submit"
+              loading={isLoading || isLinkingUser}
+              loaderProps={{ type: 'dots' }}
+              my={'xs'}
+              leftSection={<IconCheck />}
               radius={'md'}
               disabled={!isFormValid || !userLinkingDone}
               classNames={{ root: isLinkingUser ? classes.submitButtonDisabledLoading : '' }}

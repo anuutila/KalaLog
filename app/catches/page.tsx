@@ -334,6 +334,21 @@ export default function CatchesPage() {
     }
   }, []);
 
+  const resetTableSettings = () => {
+    setVisibleColumns(defaultVisibleColumns);
+    setSelectedYear(uniqueYears[0]);
+    setSelectedBodyOfWater(uniqueBodiesOfWater[0]);
+    setTimeout(() => {
+      setFiltersEnabled(false);
+    }, 150);
+    setTimeout(() => {
+      setImageIconsEnabled(false);
+    }, 100);
+    setTimeout(() => {
+      setLocationIconsEnabled(false);
+    }, 50);      
+  };
+
   useEffect(() => {
     setCatchDetailsOpen(!!selectedCatch); // Automatically open or close based on selectedCatch
     updateQueryParams(selectedCatch, router); // Update query params based on selectedCatch
@@ -371,6 +386,7 @@ export default function CatchesPage() {
           setLocationIconsEnabled={setLocationIconsEnabled}
           setFiltersSliderChecked={setFiltersEnabled}
           setVisibleColumns={setVisibleColumns}
+          resetTableSettings={resetTableSettings}
         />
 
         <Box pl={'xs'} pt={'sm'} visibleFrom='md'>

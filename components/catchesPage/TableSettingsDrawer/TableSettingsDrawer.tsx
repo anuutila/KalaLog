@@ -1,9 +1,9 @@
-import { ActionIcon, Combobox, Drawer, Group, Input, InputBase, Pill, PillsInput, Stack, Switch, Text, Tooltip } from "@mantine/core";
+import { Box, Button, Combobox, Drawer, Group, Input, InputBase, Pill, PillsInput, Stack, Switch, Text, Tooltip } from "@mantine/core";
 import { SetStateAction } from "react";
 import classes from "./TableSettingsDrawer.module.css";
 import "./TableSettingsDrawer.css";
-import { IconCalendar, IconInfoCircle, IconRipple, IconTableColumn } from "@tabler/icons-react";
-import { displayLabelToFieldMap, FieldIdentifier, fieldToIconMap } from "../constants";
+import { IconCalendar, IconInfoCircle, IconRestore, IconRipple, IconTableColumn } from "@tabler/icons-react";
+import { displayLabelToFieldMap, fieldToIconMap } from "../constants";
 
 const MAX_DISPLAYED_VALUES = 2;
 
@@ -30,6 +30,7 @@ interface TableSettingsDrawerProps {
   locationIconsEnabled: boolean;
   setLocationIconsEnabled: (enabled: boolean) => void;
   setVisibleColumns: (value: SetStateAction<string[]>) => void;
+  resetTableSettings: () => void;
 }
 
 export default function TableSettingsDrawer({
@@ -54,7 +55,8 @@ export default function TableSettingsDrawer({
   setImageIconsEnabled,
   locationIconsEnabled,
   setLocationIconsEnabled,
-  setVisibleColumns
+  setVisibleColumns,
+  resetTableSettings,
 }: TableSettingsDrawerProps) {
 
   const handleValueRemove = (val: string) => setVisibleColumns((current) => current.filter((v) => v !== val));
@@ -280,7 +282,19 @@ export default function TableSettingsDrawer({
                 size="md"
               />
             </Stack>
-            
+
+              <Box mt={'lg'}>
+                <Button
+                  onClick={resetTableSettings}
+                  variant="default"
+                  size="md"
+                  radius={'md'}
+                  leftSection={<IconRestore size={20} />}
+                >
+                  Palauta oletusasetukset
+                </Button>
+              </Box>
+
           </Stack>
         </Drawer.Body>
       </Drawer.Content>

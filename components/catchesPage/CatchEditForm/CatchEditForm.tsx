@@ -1,17 +1,19 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Autocomplete, Button, Container, Fieldset, Group, NumberInput, Stack, TextInput } from '@mantine/core';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Autocomplete, Button, Combobox, Container, Fieldset, Group, Input, InputBase, NumberInput, Stack, TextInput, useCombobox } from '@mantine/core';
 import { ICatch } from '@/lib/types/catch';
 import { useGlobalState } from '@/context/GlobalState';
-import { CatchEditedResponse } from '@/lib/types/responses';
+import { CatchEditedResponse, UsersByFirstNameResponse } from '@/lib/types/responses';
 import { showNotification } from '@/lib/notifications/notifications';
 import { CatchUtils } from '@/lib/utils/catchUtils';
-import { IconCalendar, IconClock, IconEdit, IconEraser, IconFish, IconFishHook, IconMap, IconMapPin, IconMessage, IconRipple, IconRuler2, IconSelector, IconUser, IconWeight } from '@tabler/icons-react';
+import { IconCalendar, IconClock, IconEdit, IconEraser, IconFish, IconFishHook, IconMap, IconMapPin, IconMessage, IconRipple, IconRuler2, IconSelector, IconUser, IconUserQuestion, IconWeight } from '@tabler/icons-react';
 import { useLoadingOverlay } from '@/context/LoadingOverlayContext';
 import FullscreenImage from '../CatchDetails/FullscreenImage';
 import ImageUploadForm from '@/components/ImageUploadForm/ImageUploadForm';
 import { editCatch } from '@/services/api/catchService';
 import { handleApiError } from '@/lib/utils/handleApiError';
 import { optimizeImage } from '@/lib/utils/utils';
+import { getUsersByFirstName } from '@/services/api/userService';
+import classes from './CatchEditForm.module.css';
 
 interface CatchEditFormProps {
   catchData: ICatch;
@@ -29,6 +31,8 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
 
   const [formData, setFormData] = useState<Omit<ICatch, 'id' | 'createdAt'>>(catchData);
   const [isLoading, setIsLoading] = useState(false);
+  const [isFormValid, setIsFormValid] = useState(false);
+  const formRef = useRef<HTMLFormElement>(null);
 
   const [speciesValue, setSpeciesValue] = useState<string>(catchData.species || '');
   const [filteredSpeciesOptions, setFiltereSpeciesOptions] = useState<string[]>([]);
@@ -56,6 +60,17 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
   const [addedImages, setAddedImages] = useState<File[]>([]);
   const [deletedImages, setDeletedImages] = useState<(string | undefined)[]>([]);
   const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
+
+  const [matchingUsers, setMatchingUsers] = useState<{ id: string | null, username: string, firstName: string, lastName: string }[]>([]);
+  const [linkedUser, setLinkedUser] = useState<{ id: string | null, username: string, firstName: string, lastName: string } | null>();
+  const [userLinkingDone, setUserLinkingDone] = useState(true);
+  const [showUserLinkingDropdown, setShowUserLinkingDropdown] = useState(false);
+  const [isLinkingUser, setIsLinkingUser] = useState(false);
+
+  const userCombobox = useCombobox({
+    onDropdownClose: () => userCombobox.resetSelectedOption(),
+    onDropdownOpen: () => userCombobox.updateSelectedOptionIndex('active'),
+  });
 
   useEffect(() => {
     setDisableScroll(fullscreenImage !== null);
@@ -87,6 +102,52 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
     });
   };
 
+  const fetchMatchingUsers = async (name: string) => {
+    setIsLinkingUser(true);
+    try {
+      const response: UsersByFirstNameResponse = await getUsersByFirstName(name);
+      const matchingUsers = response.data.users;
+
+      setMatchingUsers(matchingUsers);
+
+      if (matchingUsers.length === 1) {
+        // If only one match exists, automatically select it
+        setShowUserLinkingDropdown(false);
+        setLinkedUser(matchingUsers[0]);
+        setUserLinkingDone(true);
+
+      } else if (matchingUsers.length > 1) {
+        // Multiple matches require manual selection from a dropdown
+        setShowUserLinkingDropdown(true);
+
+        setLinkedUser(null);
+        setUserLinkingDone(false);
+      } else {
+        // No matches mean this is an unregistered user that won't be linked
+        setShowUserLinkingDropdown(false);
+        setLinkedUser(null);
+        setUserLinkingDone(true);
+      }
+    } catch (error) {
+      handleApiError(error, 'fetching matching users');
+    } finally {
+      setIsLinkingUser(false);
+    }
+  };
+
+  const linkUser = async (anglerName: string) => {
+    if (userLinkingDone) {
+      return
+    }
+    if (anglerName.trim()) {
+      await fetchMatchingUsers(anglerName.trim());
+    } else {
+      setShowUserLinkingDropdown(false);
+      setLinkedUser(null);
+      setMatchingUsers([]);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     showLoading();
@@ -106,7 +167,9 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
         },
         caughtBy: {
           name: anglerName,
-          userId: formData.caughtBy.userId || null,
+          username: linkedUser?.username ?? (formData.caughtBy.username ?? null),
+          lastName: linkedUser?.lastName ?? (formData.caughtBy.lastName ?? null),
+          userId: linkedUser?.id ?? (formData.caughtBy.userId ?? null),
         }
       };
 
@@ -243,9 +306,17 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
       null
   , [anglersDropdownOpened, filteredAnglerOptions.length, anglerName]);
 
+  const handleFormChange = () => {
+    setIsFormValid(formRef.current?.checkValidity() ?? false)
+  };
+
+  useEffect(() => {
+    handleFormChange();
+  }, [speciesValue, anglerName, bodyOfWaterValue, formData.date, formData.time]);
+
   return (
     <Container size={'sm'} p={'0'} maw={'100%'}>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} ref={formRef}>
         <Fieldset disabled={isLoading} variant='default' radius={'md'} pt={'md'}>
           <Stack gap={'lg'}>
 
@@ -389,14 +460,66 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
               value={anglerName}
               required
               onChange={handleAnglerChange}
+              onOptionSubmit={(val) => linkUser(val)}
               onFocus={() => setAnglersDropdownOpened(true)}
-              onBlur={() => setAnglersDropdownOpened(false)}
+              onBlur={() => { setAnglersDropdownOpened(false); linkUser(anglerName); }}
               rightSection={anglersRightSection}
               data={anglerOptions}
               defaultDropdownOpened={false}
-              leftSection={<IconUser size={20}/>}
+              leftSection={<IconUser size={20} />}
               leftSectionPointerEvents='none'
             />
+
+            {showUserLinkingDropdown && (
+              <Combobox
+                store={userCombobox}
+                onOptionSubmit={(val) => {
+                  if (val === '0') {
+                    setLinkedUser(undefined);
+                    setUserLinkingDone(true);
+                    userCombobox.closeDropdown();
+                  } else {
+                    const user = matchingUsers.find((user) => user.username === val);
+                    setLinkedUser(user);
+                    setUserLinkingDone(true);
+                    userCombobox.closeDropdown();
+                  }
+                }}
+                size="md"
+              >
+                <Combobox.Target>
+                  <InputBase
+                    label="Valitse käyttäjä"
+                    component="button"
+                    type="button"
+                    pointer
+                    rightSection={<Combobox.Chevron />}
+                    rightSectionPointerEvents="none"
+                    onClick={() => userCombobox.toggleDropdown()}
+                    size="md"
+                    leftSection={<IconUserQuestion size={20} />}
+                    leftSectionPointerEvents='none'
+                    required
+                  >
+                    {linkedUser ? `${linkedUser?.firstName} ${linkedUser?.lastName} (${linkedUser?.username})` : (linkedUser === null ? <Input.Placeholder>Valitse oikea käyttäjä</Input.Placeholder> : 'Ei käyttäjätiliä')}
+                  </InputBase>
+                </Combobox.Target>
+
+                <Combobox.Dropdown>
+                  <Combobox.Options>
+                    {matchingUsers.map((user) => (
+                      <Combobox.Option key={user.id} value={user.username}>
+                        {user.firstName} {user.lastName} ({user.username})
+                      </Combobox.Option>
+                    ))}
+                    <Combobox.Option value="0">
+                      Ei käyttäjätiliä
+                    </Combobox.Option>
+                  </Combobox.Options>
+                </Combobox.Dropdown>
+              </Combobox>
+            )}
+
             <TextInput
               size='md'
               type='text'
@@ -424,11 +547,19 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
             )}
 
             <Group mt="xs" mb={'xs'} grow>
-              <Button size='md' variant="default" onClick={() => openCancelEditModal()} leftSection={<IconEraser size={20}/>}>
-                Cancel
+              <Button size='md' variant="default" onClick={() => openCancelEditModal()} leftSection={<IconEraser size={20} />}>
+                Peruuta
               </Button>
-              <Button size='md' type="submit" loading={isLoading} loaderProps={{ type: 'dots' }} leftSection={<IconEdit size={20}/>} >
-                Save
+              <Button
+                size='md'
+                type="submit"
+                loading={isLoading || isLinkingUser}
+                loaderProps={{ type: 'dots' }}
+                leftSection={<IconEdit size={20} />}
+                disabled={!isFormValid || !userLinkingDone}
+                classNames={{ root: isLinkingUser ? classes.submitButtonDisabledLoading : '' }}
+              >
+                Tallenna
               </Button>
             </Group>
           </Stack>

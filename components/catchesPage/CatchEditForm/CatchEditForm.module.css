@@ -1,0 +1,4 @@
+.submitButtonDisabledLoading {
+  --button-bg: var(--mantine-color-dark-6);
+  --button-color: var(--mantine-color-dark-3);
+}

@@ -3,7 +3,7 @@ import { ICatch } from "@/lib/types/catch";
 import { Badge, Box, Group, ScrollArea, Stack, Title } from "@mantine/core";
 import { RefObject } from "react";
 import classes from "./CatchesOverview.module.css";
-import { IconCalendar, IconCalendarFilled, IconMapPin, IconMapPinFilled, IconPin, IconRipple } from "@tabler/icons-react";
+import { IconCalendarFilled, IconMapPinFilled } from "@tabler/icons-react";
 
 interface CatchesOverviewProps {
   uniqueYears: string[];

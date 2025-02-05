@@ -3,6 +3,7 @@ import { ICatch } from "@/lib/types/catch";
 import { Badge, Box, Group, ScrollArea, Stack, Title } from "@mantine/core";
 import { RefObject } from "react";
 import classes from "./CatchesOverview.module.css";
+import { IconCalendar, IconCalendarFilled, IconMapPin, IconMapPinFilled, IconPin, IconRipple } from "@tabler/icons-react";
 
 interface CatchesOverviewProps {
   uniqueYears: string[];
@@ -20,8 +21,18 @@ export default function CatchesOverview({ uniqueYears, selectedYear, uniqueBodie
 
   return (
     <Stack c="var(--mantine-color-text)" pb={'md'} w='100%' gap={0}>
-      <Title c='white' order={2} p={0} mb={6} ml={'md'} pl={4}>{bodyOfWaterTitle ?? '. . . . . . .'}</Title>
-      <Title c='white' order={3} p={0} mb={'md'} ml={'md'} pl={4}>{yearTitle ?? '. . . .'}</Title>
+      <Group align="center" ml={'md'} mb={6} gap={6}>
+        <Box w={24} h={{ base:'100%', md: 24 }}>
+          <IconMapPinFilled size={24} color="rgba(255,255,255,0.5)" stroke={1} />
+        </Box>
+        <Title c='white' order={2} p={0}>{bodyOfWaterTitle ?? '. . . . . . .'}</Title>
+      </Group>
+      <Group align="center" mb={'md'} ml={'md'} gap={6} h={'100%'}>
+        <Box w={24} h={{ base:28, md: 24 }}>
+          <IconCalendarFilled size={24} color="rgba(255,255,255,0.5)" stroke={1} />
+        </Box>
+        <Title c='white' order={3} p={0}>{yearTitle ?? '. . . .'}</Title>
+      </Group>
       <Box style={{ position: "relative" }}>
         <ScrollArea viewportRef={scrollRef} type="never">
           <Group gap="sm" wrap="nowrap" pl="md" pr={30}>

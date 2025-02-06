@@ -1,6 +1,6 @@
 'use client';
 
-import { createTheme } from '@mantine/core';
+import { Combobox, createTheme } from '@mantine/core';
 
 export const theme = createTheme({
   cursorType: 'pointer',
@@ -44,6 +44,11 @@ export const theme = createTheme({
     PillsInput: {
       classNames: {
         input: 'mantine-custom-input',
+      },
+    },
+    Combobox: {
+      defaultProps: {
+        transitionProps: { transition: 'scale-y' },
       },
     },
   },

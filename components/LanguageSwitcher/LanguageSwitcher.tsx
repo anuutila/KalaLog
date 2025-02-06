@@ -58,6 +58,7 @@ export default function LanguageSwitcher() {
   return (
     <>
       <Combobox
+        transitionProps={{ transition: 'slide-left' }}
         store={combobox}
         width={150}
         position="bottom-end"

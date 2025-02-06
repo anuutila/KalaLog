@@ -1,8 +1,10 @@
 import { AgGridReact } from "ag-grid-react";
+import { AG_GRID_LOCALE_FI, AG_GRID_LOCALE_EN } from '@ag-grid-community/locale'
 import { ICatch } from "@/lib/types/catch";
-import { useMemo } from "react";
+import { use, useMemo } from "react";
 import CustomNoRowsOverlay from "./CustomNoRowsOverlay/CustomNoRowsOverlay";
 import "./CatchesGrid.css";
+import { useTranslations } from "next-intl";
 
 interface CatchesGridProps {
   gridRef: React.RefObject<AgGridReact<ICatch>>;
@@ -14,6 +16,7 @@ interface CatchesGridProps {
   catchesError: string | null;
   loadingCatches: boolean;
   onRowClicked: (event: any) => void;
+  locale: string;
 }
 
 export default function CatchesGrid({
@@ -26,17 +29,23 @@ export default function CatchesGrid({
   catchesError,
   loadingCatches,
   onRowClicked,
+  locale
 }: CatchesGridProps) {
+  const t = useTranslations('CatchesPage.Table');
 
   const noRowsOverlayComponentParams = useMemo(() => {
     return {
       noRowsMessageFunc: () =>
-        catchesError ? catchesError : 'Ei näytettäviä saaliita', 
+        catchesError ? catchesError : t('NoData'), 
     };
   }, [catchesError]);
+
+  const localeText = useMemo(() => {
+    return locale === 'fi' ? AG_GRID_LOCALE_FI : AG_GRID_LOCALE_EN;
+  }, [locale]);
   
   return (
-    <div className="ag-theme-quartz-dark grid-wrapper">
+    <div key={locale} className="ag-theme-quartz-dark grid-wrapper">
       <AgGridReact<ICatch>
         ref={gridRef}
         rowData={catches}
@@ -50,6 +59,7 @@ export default function CatchesGrid({
         noRowsOverlayComponentParams={noRowsOverlayComponentParams}
         loading={loadingCatches}
         onRowClicked={onRowClicked}
+        localeText={localeText}
       />
     </div>
   )

@@ -6,7 +6,7 @@ import { DEFAULT_BODY_OF_WATER } from "@/lib/constants/constants";
 
 const currentYear = new Date().getFullYear();
 
-export const getColumnOptions = (colDefs: ColDef<ICatch>[], visibleColumns: string[], displayLabelMap: Record<FieldIdentifier, string>) =>
+export const getColumnOptions = (colDefs: ColDef<ICatch>[], visibleColumns: string[], displayLabelMap: Record<FieldIdentifier, string>, t: any) =>
   colDefs.map((col) => {
     const field: string = col.field ?? '?';
     const header: string = col.headerName ?? '?';
@@ -24,36 +24,36 @@ export const getColumnOptions = (colDefs: ColDef<ICatch>[], visibleColumns: stri
             style={{ pointerEvents: 'none' }}
           />
           <Icon size={20} />
-          <span>{displayLabel}</span>
+          <span>{t(displayLabel)}</span>
         </Group>
       </Combobox.Option>
     );
   });
 
-export const getYearOptions = (years: string[], selectedYear: string | null = currentYear.toString()) => (
+export const getYearOptions = (years: string[], selectedYear: string | null = currentYear.toString(), t: any) => (
   years.map((item) => (
     <Combobox.Option value={item} key={item} active={selectedYear === item}>
       <Group gap="sm">
         {selectedYear === item ? <CheckIcon size={12} /> : null}
-        <span>{item}</span>
+        <span>{item === "AllYears" ? t('CatchesPage.TableSettings.AllYears') : item}</span>
       </Group>
     </Combobox.Option>
   ))
 );
 
-export const getBodyOfWaterOptions = (bodiesOfWater: string[], selectedBodyOfWater: string | null = DEFAULT_BODY_OF_WATER) => (
+export const getBodyOfWaterOptions = (bodiesOfWater: string[], selectedBodyOfWater: string | null = DEFAULT_BODY_OF_WATER, t: any) => (
   bodiesOfWater.map((item) => (
     <Combobox.Option value={item} key={item} active={selectedBodyOfWater === item}>
       <Group gap="sm">
         {selectedBodyOfWater === item ? <CheckIcon size={12} /> : null}
-        <span>{item}</span>
+        <span>{item === "AllBodiesOfWater" ? t('CatchesPage.TableSettings.AllBodiesOfWater') : item}</span>
       </Group>
     </Combobox.Option>
   ))
 );
 
-export const getSelectAllOption = (visibleColumns: string[], colDefs: ColDef<ICatch>[]) => (
-  <Combobox.Option value="Valitse kaikki" key="selectAll" active={visibleColumns.length === colDefs.length}>
+export const getSelectAllOption = (value: string, visibleColumns: string[], colDefs: ColDef<ICatch>[]) => (
+  <Combobox.Option value={value} key="selectAll" active={visibleColumns.length === colDefs.length}>
     <Group gap="xs">
       <Checkbox
         checked={visibleColumns.length === colDefs.length}
@@ -62,7 +62,7 @@ export const getSelectAllOption = (visibleColumns: string[], colDefs: ColDef<ICa
         tabIndex={-1}
         style={{ pointerEvents: 'none' }}
       />
-      <span>Valitse kaikki</span>
+      <span>{value}</span>
     </Group>
   </Combobox.Option>
 );

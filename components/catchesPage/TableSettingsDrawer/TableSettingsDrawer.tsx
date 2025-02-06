@@ -4,6 +4,7 @@ import classes from "./TableSettingsDrawer.module.css";
 import "./TableSettingsDrawer.css";
 import { IconCalendar, IconInfoCircle, IconRestore, IconRipple, IconTableColumn } from "@tabler/icons-react";
 import { displayLabelToFieldMap, fieldToIconMap } from "../constants";
+import { useTranslations } from "next-intl";
 
 const MAX_DISPLAYED_VALUES = 2;
 
@@ -58,6 +59,9 @@ export default function TableSettingsDrawer({
   setVisibleColumns,
   resetTableSettings,
 }: TableSettingsDrawerProps) {
+  const t = useTranslations();
+  const tTable = useTranslations('CatchesPage.TableSettings');
+  const tCommon = useTranslations('Common');
 
   const handleValueRemove = (val: string) => setVisibleColumns((current) => current.filter((v) => v !== val));
 
@@ -69,7 +73,7 @@ export default function TableSettingsDrawer({
 
       return (
       <Pill key={item} withRemoveButton onRemove={() => handleValueRemove(item)} fz={'var(--mantine-font-size-sm)'}>
-        {<Group h={'100%'} gap={'xs'} align="center" wrap="nowrap"><Icon size={16} /><Text fz={'sm'}>{item}</Text></Group>}
+        {<Group h={'100%'} gap={'xs'} align="center" wrap="nowrap"><Icon size={16} /><Text fz={'sm'}>{t(item)}</Text></Group>}
       </Pill>
       )
     });
@@ -84,11 +88,11 @@ export default function TableSettingsDrawer({
         <Text
           fw={500}
         >
-          Näytä kameraikonit
+          {tTable('ImageIcons')}
         </Text>
         <Tooltip
           onClick={(event) => event.preventDefault()}
-          label="Näytä kameraikoni saaliin laji-sarakkeessa, jos saaliille on lisätty yksi tai useampi kuva."
+          label={tTable('ImageIconsInfo')}
           withArrow
           multiline
           w={200}
@@ -114,11 +118,11 @@ export default function TableSettingsDrawer({
         <Text
           fw={500}
         >
-          Näytä sijainti-ikonit
+          {tTable('LocationIcons')}
         </Text>
         <Tooltip
           onClick={(event) => event.preventDefault()}
-          label="Näytä sijainti-ikoni saaliin sijainti-sarakkeessa, jos saaliille on lisätty tarkat koordinaatit."
+          label={tTable('LocationIconsInfo')}
           withArrow
           multiline
           w={200}
@@ -140,7 +144,7 @@ export default function TableSettingsDrawer({
       <Drawer.Content bg={'var(--mantine-color-dark-9)'} >
         <Drawer.Header bg={'var(--mantine-color-dark-9)'}>
           <Drawer.Title fz="var(--mantine-font-size-lg)" fw="var(--mantine-heading-font-weight)">
-            Taulukon asetukset
+            {tTable('Title')}
           </Drawer.Title>
           <Drawer.CloseButton />
         </Drawer.Header>
@@ -152,7 +156,7 @@ export default function TableSettingsDrawer({
                   classNames={{ label: classes.input_label }}
                   pointer
                   onClick={() => columnsCombobox.toggleDropdown()}
-                  label="Näytä sarakkeet"
+                  label={tTable('Columns')}
                   fz={'var(--mantine-font-size-md)'}
                   rightSection={<Combobox.Chevron />}
                   rightSectionPointerEvents="none"
@@ -165,11 +169,11 @@ export default function TableSettingsDrawer({
                       <>
                         {pillValues}
                         {visibleColumns.length > MAX_DISPLAYED_VALUES && (
-                          <Pill>+{visibleColumns.length - (MAX_DISPLAYED_VALUES - 1)} muuta</Pill>
+                          <Pill>+{visibleColumns.length - (MAX_DISPLAYED_VALUES - 1)} {tCommon('Others')}</Pill>
                         )}
                       </>
                     ) : (
-                      <Input.Placeholder>Valitse yksi tai useampi</Input.Placeholder>
+                      <Input.Placeholder>{tCommon("OneOrMore")}</Input.Placeholder>
                     )}
                     <Combobox.EventsTarget>
                       {/* Replace the hidden input with a non-focusable div */}
@@ -202,7 +206,7 @@ export default function TableSettingsDrawer({
               <Combobox.Target>
                 <InputBase
                   classNames={{ label: classes.input_label }}
-                  label="Valitse vesialue"
+                  label={tTable('BodyOfWater')}
                   component="button"
                   type="button"
                   pointer
@@ -213,7 +217,7 @@ export default function TableSettingsDrawer({
                   leftSection={<IconRipple size={20}/>}
                   leftSectionPointerEvents='none'
                 >
-                  {selectedBodyOfWater || <Input.Placeholder>Valitse vesialue</Input.Placeholder>}
+                  {selectedBodyOfWater === "AllBodiesOfWater" ? t('CatchesPage.TableSettings.AllBodiesOfWater') : selectedBodyOfWater || <Input.Placeholder>{tTable('BodyOfWater')}</Input.Placeholder>}
                 </InputBase>
               </Combobox.Target>
 
@@ -233,7 +237,7 @@ export default function TableSettingsDrawer({
               <Combobox.Target>
                 <InputBase
                   classNames={{ label: classes.input_label }}
-                  label="Valitse vuosi"
+                  label={tTable('Year')}
                   component="button"
                   type="button"
                   pointer
@@ -244,7 +248,7 @@ export default function TableSettingsDrawer({
                   leftSection={<IconCalendar size={20}/>}
                   leftSectionPointerEvents='none'
                 >
-                  {selectedYear || <Input.Placeholder>Valitse vuosi</Input.Placeholder>}
+                  {selectedYear === "AllYears" ? t('CatchesPage.TableSettings.AllYears') : selectedYear || <Input.Placeholder>{tTable('Year')}</Input.Placeholder>}
                 </InputBase>
               </Combobox.Target>
 
@@ -258,7 +262,7 @@ export default function TableSettingsDrawer({
                 classNames={{ body: classes.switch_body, label: classes.switch_input_label }}
                 checked={filtersSliderChecked}
                 fw={500}
-                label="Näytä suodattimet"
+                label={tTable('Filters')}
                 labelPosition='left'
                 onChange={(event) => setFiltersSliderChecked(event.currentTarget.checked)}
                 size="md"
@@ -291,7 +295,7 @@ export default function TableSettingsDrawer({
                   radius={'md'}
                   leftSection={<IconRestore size={20} />}
                 >
-                  Palauta oletusasetukset
+                  {tTable('Restore')}
                 </Button>
               </Box>
 

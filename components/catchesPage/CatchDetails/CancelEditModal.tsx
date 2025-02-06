@@ -2,27 +2,32 @@ import { Text } from '@mantine/core';
 import { modals } from '@mantine/modals';
 import classes from './CatchDetails.module.css';
 import { IconEraser } from '@tabler/icons-react';
+import { useTranslations } from 'next-intl';
 
 interface ConfirmEditModalProps {
   onConfirm: () => void;
+  t: any;
 }
 
-export default function CancelEditModal({ onConfirm }: ConfirmEditModalProps) {
+export default function CancelEditModal({ onConfirm, t }: ConfirmEditModalProps) {
+  const title = t('Modals.CancelEdit.Title');
+  const content = t('Modals.CancelEdit.Content');
+  const confirmLabel = t('Common.Cancel');
+  const cancelLabel = t('Modals.CancelEdit.Continue');
 
   modals.openConfirmModal({
-    title: 'Peruuta muokkaus',
+    title: title,
     centered: true,
     radius: 'lg',
     children: (
       <Text size="md">
-        Haluatko varmasti peruuttaa saaliin muokkauksen? Menetät kaikki tekemäsi muutokset.
+        {content}
       </Text>
     ),
-    labels: { confirm: 'Peruuta', cancel: 'Jatka muokkausta' },
-    confirmProps: { color: 'red' , leftSection: <IconEraser size={20} />},
+    labels: { confirm: confirmLabel, cancel: cancelLabel },
+    confirmProps: { color: 'red', leftSection: <IconEraser size={20} /> },
     onConfirm: () => onConfirm(),
     zIndex: 2000,
     classNames: { title: classes.modalTitle }
-  });
-  
+  })
 }

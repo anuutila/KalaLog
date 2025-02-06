@@ -9,9 +9,11 @@ import Link from 'next/link';
 import { signup } from '@/services/api/authservice';
 import { HttpClientError } from '@/services/httpClient';
 import { handleApiError } from '@/lib/utils/handleApiError';
-import { IconAt, IconLock, IconUser } from '@tabler/icons-react';
+import { IconAt, IconLock, IconUser, IconUserPlus } from '@tabler/icons-react';
+import { useTranslations } from 'next-intl';
 
 export default function Page() {
+  const t = useTranslations('SignupPage');
   const [formData, setFormData] = useState({
     username: '',
     firstName: '',
@@ -84,7 +86,7 @@ export default function Page() {
     <Container size={'xs'} px="md" py="xl">
       <Stack align="stretch">
         <Center mb="md">
-          <Title order={2} c={'white'}>Rekisteröidy</Title>
+          <Title order={2} c={'white'}>{t('Title')}</Title>
         </Center>
         <Stack>
           <Fieldset variant="default" radius={'md'} pt={'md'} disabled={loading}>
@@ -92,8 +94,8 @@ export default function Page() {
               <Stack gap="md">
                 <TextInput
                   size="md"
-                  label="Käyttäjätunnus"
-                  placeholder="Käyttäjätunnus"
+                  label={t('Username')}
+                  placeholder={t('Username')}
                   name="username"
                   value={formData.username}
                   onChange={handleChange}
@@ -104,9 +106,9 @@ export default function Page() {
                 />
                 <TextInput
                   size="md"
-                  label="Etunimi"
+                  label={t('FirstName')}
+                  placeholder={t('FirstName')}
                   name="firstName"
-                  placeholder='Etunimi'
                   value={formData.firstName}
                   onChange={handleChange}
                   required
@@ -116,8 +118,8 @@ export default function Page() {
                 />
                 <TextInput
                   size="md"
-                  label="Sukunimi"
-                  name="lastName"
+                  label={t('LastName')}
+                  name={t('LastName')}
                   placeholder='Sukunimi'
                   value={formData.lastName}
                   onChange={handleChange}
@@ -128,10 +130,10 @@ export default function Page() {
                 />
                 <TextInput
                   size="md"
-                  label="Sähköposti"
+                  label={t('Email')}
                   // type="email"
                   name="email"
-                  placeholder='Sähköposti'
+                  placeholder={t('Email')}
                   value={formData.email}
                   onChange={handleChange}
                   required
@@ -141,9 +143,9 @@ export default function Page() {
                 />
                 <PasswordInput
                   size="md"
-                  label="Salasana"
+                  label={t('Password')}
+                  placeholder={t('Password')}
                   name="password"
-                  placeholder="Salasana"
                   value={formData.password}
                   onChange={handleChange}
                   required
@@ -153,28 +155,28 @@ export default function Page() {
                 />
                 <PasswordInput
                   size="md"
-                  label="Vahvista salasana"
+                  label={t('ConfirmPassword')}
+                  placeholder={t('ConfirmPassword')}
                   name="confirmPassword"
-                  placeholder="Vahvista salasana"
                   value={formData.confirmPassword}
                   onChange={handleChange}
                   required
                   leftSection={<IconLock size={20}/>}
                   leftSectionPointerEvents="none"
-                  error={formData.confirmPassword && formData.password !== formData.confirmPassword ? 'Salasanat eivät täsmää' : null}
+                  error={formData.confirmPassword && formData.password !== formData.confirmPassword ? t('PasswordMismatch') : null}
                 />
                 {/* {error && <Text color="red" size="sm">{error}</Text>} */}
-                <Button my={'xs'} radius={'md'} type="submit" size="md" loading={loading} loaderProps={{ type: 'dots' }} disabled={!isFormValid || formData.password !== formData.confirmPassword}>
-                  Rekisteröidy
+                <Button leftSection={<IconUserPlus />} my={'xs'} radius={'md'} type="submit" size="md" loading={loading} loaderProps={{ type: 'dots' }} disabled={!isFormValid || formData.password !== formData.confirmPassword}>
+                  {t('Signup')}
                 </Button>
               </Stack>
             </form>
           </Fieldset>
           <Stack align="center" lh="xs" ta="center" mt="lg">
             <Text size="md">
-              Onko sinulla jo käyttäjätili?<br />
+              {t('AlreadyHaveAccount')}<br />
               <Link href="/login">
-                <span style={{ color: '#0070f3', textDecoration: 'underline' }}>Kirjaudu sisään tästä</span>
+                <span style={{ color: '#0070f3', textDecoration: 'underline' }}>{t('Login')}</span>
               </Link>
             </Text>
           </Stack>

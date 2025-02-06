@@ -12,6 +12,7 @@ import { UserRole } from "@/lib/types/user";
 import { SignedImageURLsResponse } from "@/lib/types/responses";
 import { getSignedImageURLs } from "@/services/api/imageService";
 import { handleApiError } from "@/lib/utils/handleApiError";
+import { useTranslations } from "next-intl";
 
 const defaultPlaceholder = '/no-image-placeholder.png';
 
@@ -39,6 +40,7 @@ export default function ImageUploadForm({
   setDeletedImages,
   ref,
 }: ImageUploadFormProps) {
+  const t = useTranslations();
   const { isLoggedIn, jwtUserInfo } = useGlobalState();
   const [existingImages, setExistingImages] = useState<ExistingImage[]>([]); // Existing images from the catch
   const [newImages, setNewImages] = useState<string[]>([]); // Previews for newly uploaded images
@@ -93,7 +95,7 @@ export default function ImageUploadForm({
   return (
     <Stack gap={0}>
       <Text size="md" fw={500} mb={4}>
-        Lisää kuva
+      {t('NewCatchPage.AddPicture')}
       </Text>
       <Dropzone
         onDrop={handleDrop}
@@ -119,10 +121,10 @@ export default function ImageUploadForm({
           </Dropzone.Idle>
           <div>
             <Text size="md" inline>
-              Lisää kuvia saaliista
+              {t('NewCatchPage.AddPictureInfo')}
             </Text>
             <Text size="sm" c="var(--mantine-color-dimmed)" inline mt={7}>
-              Kuvan maksimikoko 10Mt
+            {t('NewCatchPage.AddPictureInfo2')}
             </Text>
           </div>
         </Group>
@@ -130,7 +132,7 @@ export default function ImageUploadForm({
 
       {(newImages.length > 0 || existingImages.length > 0) && (
         <Box mt={'md'}>
-          <Text fw={500} mb={4}>Kuvat {`(${[...existingImages, ...newImages].length})`}</Text>
+          <Text fw={500} mb={4}>{`${t('NewCatchPage.Pictures')} (${[...existingImages, ...newImages].length})`}</Text>
           <Carousel
             height={110}
             slideSize={150}

@@ -21,12 +21,12 @@ export interface Page {
 }
 
 const pages: Page[] = [
-  {path: '/new_catch', label: 'Uusi saalis'},
-  {path: '/catches', label: 'Saaliit'},
-  {path: '/statistics', label: 'Tilastot'},
-  {path: '/user', label: 'Käyttäjä'},
-  {path: '/login', label: 'Käyttäjä'},
-  {path: '/signup', label: 'Käyttäjä'},
+  {path: '/new_catch', label: 'Pages.NewCatch'},
+  {path: '/catches', label: 'Pages.Catches'},
+  {path: '/statistics', label: 'Pages.Stats'},
+  {path: '/user', label: 'Pages.Account'},
+  {path: '/login', label: 'Pages.Account'},
+  {path: '/signup', label: 'Pages.Account'},
 ];
 
 export interface Tab {
@@ -37,10 +37,10 @@ export interface Tab {
 }
 
 const tabs: Tab[] = [
-  { value: 'new_catch', icon: IconCirclePlus, label: 'Uusi saalis', path: '/new_catch' },
-  { value: 'catches', icon: IconFish, label: 'Saaliit', path: '/catches' },
-  { value: 'statistics', icon: IconChartBar, label: 'Tilastot', path: '/statistics' },
-  { value: 'user', icon: IconUserCircle, label: 'Käyttäjä', path: '/user' },
+  { value: 'new_catch', icon: IconCirclePlus, label: 'Pages.NewCatch', path: '/new_catch' },
+  { value: 'catches', icon: IconFish, label: 'Pages.Catches', path: '/catches' },
+  { value: 'statistics', icon: IconChartBar, label: 'Pages.Stats', path: '/statistics' },
+  { value: 'user', icon: IconUserCircle, label: 'Pages.Account', path: '/user' },
 ];
 
 export default function AppShellWrapper({ children }: { children: any }) {

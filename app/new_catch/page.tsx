@@ -18,8 +18,12 @@ import { handleApiError } from '@/lib/utils/handleApiError';
 import { DateTime } from 'luxon';
 import { getUsersByFirstName } from '@/services/api/userService';
 import classes from './page.module.css';
+import { useTranslations } from 'next-intl';
 
 export default function Page() {
+  const t = useTranslations();
+  const tFishEnFi = useTranslations('FishEnFi');
+  const tNewCatch = useTranslations('NewCatchPage');
   const { catches, setCatches, isLoggedIn, jwtUserInfo } = useGlobalState();
   const { showLoading, hideLoading } = useLoadingOverlay();
   const [isFormValid, setIsFormValid] = useState(false);
@@ -264,7 +268,7 @@ export default function Page() {
       // Prepare form data for submission
       const parsedFormData: Omit<ICatch, 'id' | 'createdAt' | 'catchNumber'> = {
         ...formData,
-        species: speciesValue,
+        species: tFishEnFi.has(speciesValue) ? tFishEnFi(speciesValue) : speciesValue,
         length: typeof lengthValue === 'string' ? null : lengthValue,
         weight: typeof weightValue === 'string' ? null : weightValue,
         lure: lureValue,
@@ -348,7 +352,7 @@ export default function Page() {
     }
   };
 
-  const speciesOptions = ['Ahven', 'Hauki', 'Kuha'];
+  const speciesOptions = [t('Fish.Ahven'), t('Fish.Hauki'), t('Fish.Kuha')];
 
   const lureOptions = useMemo(() => 
     CatchUtils.getUniqueLures(catches).map((lure) => lure.lure).filter((lure) => lure !== '?'), 
@@ -456,9 +460,9 @@ export default function Page() {
 
   return (
     <Container size='sm' p={'md'}>
-      <Title c='white' order={2} mb={'md'} pl={4}>Saaliin tiedot</Title>
-      { (!isLoggedIn || jwtUserInfo?.role === UserRole.VIEWER )&& <Alert styles={{ label: { fontSize: rem(16) }, message: { fontSize: rem(16) }, icon: { width: 'calc(1.5rem* var(--mantine-scale))' } }} variant="light" color="red" radius="lg" title="Huomio" icon={<IconInfoCircle />} mb={'md'}>
-        {jwtUserInfo?.role === UserRole.VIEWER ? 'Sinulla ei ole uuden saaliin lisäämiseen tarvittavia oikeuksia.' : 'Kirjaudu sisään lisätäksesi uuden saaliin.'}
+      <Title c='white' order={2} mb={'md'} pl={4}>{tNewCatch('CatchInfo')}</Title>
+      { (!isLoggedIn || jwtUserInfo?.role === UserRole.VIEWER )&& <Alert styles={{ label: { fontSize: rem(16) }, message: { fontSize: rem(16) }, icon: { width: 'calc(1.5rem* var(--mantine-scale))' } }} variant="light" color="red" radius="lg" title={tNewCatch('AlertTitle')} icon={<IconInfoCircle />} mb={'md'}>
+        {jwtUserInfo?.role === UserRole.VIEWER ? tNewCatch('AlertText1') : tNewCatch('AlertText2')}
       </Alert> }
       <form onSubmit={handleSubmit} ref={formRef}>
         <Fieldset disabled={!isLoggedIn || jwtUserInfo?.role === UserRole.VIEWER || isLoading} variant='default' radius={'md'} pt={'md'}>
@@ -468,8 +472,8 @@ export default function Page() {
               size='md'
               type='text'
               name='species'
-              label="Kalalaji"
-              placeholder='Kalalaji'
+              label={tNewCatch('Species')}
+              placeholder={tNewCatch('Species')}
               value={speciesValue}
               required
               onChange={handleSpeciesChange}
@@ -485,7 +489,7 @@ export default function Page() {
               <NumberInput
                 size='md'
                 name='length'
-                label="Pituus"
+                label={t('Common.Length')}
                 step={0.01}
                 min={0}
                 max={999}
@@ -500,7 +504,7 @@ export default function Page() {
               <NumberInput
                 size='md'
                 name='weight'
-                label="Paino"
+                label={t('Common.Weight')}
                 step={0.01}
                 min={0}
                 max={999}
@@ -516,8 +520,8 @@ export default function Page() {
             <Autocomplete
               size='md'
               type='text'
-              label="Viehe"
-              placeholder='Vieheen merkki ja malli'
+              label={t('Common.Lure')}
+              placeholder={tNewCatch('Placeholders.Lure')}
               name='lure'
               value={lureValue}
               onChange={handleLureChange}
@@ -534,8 +538,8 @@ export default function Page() {
                 size='md'
                 type='text'
                 name='bodyOfWater'
-                label="Vesialue"
-                placeholder="Järven, joen tai meren nimi"
+                label={t('Common.BodyOfWater')}
+                placeholder={tNewCatch('Placeholders.BodyOfWater')}
                 value={bodyOfWaterValue}
                 onChange={handleBodyOfWaterChange}
                 onFocus={() => setBodiesOfWaterDropdownOpened(true)}
@@ -551,8 +555,8 @@ export default function Page() {
                 size='md'
                 type='text'
                 name='spot'
-                label="Paikka"
-                placeholder="Tarkka paikan nimi"
+                label={t('Common.Spot')}
+                placeholder={tNewCatch('Placeholders.Spot')}
                 value={spotValue}
                 onChange={handleSpotChange}
                 onFocus={() => setSpotsDropdownOpened(true)}
@@ -568,7 +572,7 @@ export default function Page() {
                   size='md'
                   type='text'
                   name='coordinates'
-                  label="Koordinaatit"
+                  label={tNewCatch('Coordinates')}
                   placeholder="N, E"
                   value={formData.location.coordinates ?? ''}
                   onChange={handleChange}
@@ -582,7 +586,7 @@ export default function Page() {
                   size='md'
                   checked={useGps && gpsError === null}
                   onChange={handleGpsToggle}
-                  label="GPS-koordinaatit"
+                  label={tNewCatch('GPSCoordinates')}
                   error={gpsError}
                 />
               </Group>
@@ -593,7 +597,7 @@ export default function Page() {
                 size='md'
                 type='date'
                 name="date"
-                label="Päivämäärä"
+                label={t('Common.Date')}
                 leftSection={<IconCalendar size={20}/>}
                 leftSectionPointerEvents='none'
                 value={formData.date}
@@ -604,7 +608,7 @@ export default function Page() {
                 size='md'
                 type='time'
                 name="time"
-                label="Aika"
+                label={t('Common.Time')}
                 placeholder="--.--"
                 leftSection={<IconClock size={20}/>}
                 leftSectionPointerEvents='none'
@@ -617,8 +621,8 @@ export default function Page() {
               size='md'
               type='text'
               name='caughtBy'
-              label="Kalastajan nimi"
-              placeholder="Kalastajan etunimi"
+              label={tNewCatch('CaughtBy')}
+              placeholder={tNewCatch('Placeholders.CaughtBy')}
               value={anglerName}
               required
               onChange={handleAnglerChange}
@@ -651,7 +655,7 @@ export default function Page() {
               >
                 <Combobox.Target>
                   <InputBase
-                    label="Valitse käyttäjä"
+                    label={tNewCatch('SelectUser')}
                     component="button"
                     type="button"
                     pointer
@@ -675,7 +679,7 @@ export default function Page() {
                       </Combobox.Option>
                     ))}
                     <Combobox.Option value="0">
-                      Ei käyttäjätiliä
+                      {tNewCatch('NoUser')}
                     </Combobox.Option>
                   </Combobox.Options>
                 </Combobox.Dropdown>
@@ -685,8 +689,8 @@ export default function Page() {
             <Textarea
               size='md'
               name="comment"
-              label="Kommentti"
-              placeholder="Vapaamuotoinen kommentti"
+              label={t('Common.Comment')}
+              placeholder={tNewCatch('Placeholders.Comment')}
               leftSection={<IconMessage size={20} />}
               leftSectionPointerEvents='none'
               value={formData.comment ?? ''}
@@ -720,7 +724,7 @@ export default function Page() {
               disabled={!isFormValid || !userLinkingDone}
               classNames={{ root: isLinkingUser ? classes.submitButtonDisabledLoading : '' }}
             >
-              Lähetä
+              {tNewCatch('Submit')}
             </Button>
           </Stack>
         </Fieldset>

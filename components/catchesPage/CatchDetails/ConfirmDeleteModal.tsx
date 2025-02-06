@@ -5,51 +5,59 @@ import { IconTrash } from '@tabler/icons-react';
 
 interface ConfirmDeleteModalProps {
   onConfirm: () => void;
+  t: any;
 }
 
-export default function ConfirmDeleteModal({ onConfirm }: ConfirmDeleteModalProps) {
+export default function ConfirmDeleteModal({ onConfirm, t }: ConfirmDeleteModalProps) {
+  const title = t('Modals.DeleteCatch.Title');
+  const content = t('Modals.DeleteCatch.Content');
+  const confirmLabel = t('Common.Delete');
+  const cancelLabel = t('Common.Cancel');
+  const confirmationtext = t('Modals.DeleteCatch.ConfirmationText');
+  const placeholder = t('Modals.DeleteCatch.Placeholder');
   let confirmationText = '';
 
-  const modalId = modals.open({
-    title: 'Poista saalis',
+  modals.open({
+    id: 'confirm-delete-modal',
+    title: title,
     centered: true,
     withCloseButton: true,
     radius: 'lg',
     children: (
       <>
         <Text size="md" mb="md">
-          Haluatko varmasti poistaa tämän saaliin? Kirjoita 'POISTA' vahvistaaksesi.
+        {content}
         </Text>
         <TextInput
           mb="lg"
-          placeholder="Kirjoita 'POISTA' vahvistaaksesi"
+          placeholder={placeholder}
           onChange={(event) => {
             confirmationText = event.currentTarget.value;
 
             // Dynamically update modal when input changes
-            if (confirmationText === 'POISTA') {
+            if (confirmationText === confirmationtext) {
               modals.updateModal({
-                modalId,
+                modalId: 'confirm-delete-modal',
                 children: (
                   <>
                     <Text size="md" mb="md">
-                      Haluatko varmasti poistaa tämän saaliin? Kirjoita 'POISTA' vahvistaaksesi.
+                    {content}
                     </Text>
                     <TextInput mb={'lg'} value={confirmationText} onChange={() => {}} disabled />
                     <Group justify='end' mt="md">
-                      <Button variant="default" onClick={() => modals.close(modalId)}>
-                        Peruuta
+                      <Button variant="default" onClick={() => modals.close('confirm-delete-modal')}>
+                        {cancelLabel}
                       </Button>
                       <Button
                         color="red"
-                        disabled={confirmationText !== 'POISTA'}
+                        disabled={confirmationText !== confirmationtext}
                         leftSection={<IconTrash size={20}/>}
                         onClick={() => {
                           onConfirm();
-                          modals.close(modalId);
+                          modals.close('confirm-delete-modal');
                         }}
                       >
-                        Poista
+                        {confirmLabel}
                       </Button>
                     </Group>
                   </>
@@ -59,10 +67,10 @@ export default function ConfirmDeleteModal({ onConfirm }: ConfirmDeleteModalProp
           }}
         />
         <Group justify='end' mt="md">
-          <Button variant="default" onClick={() => modals.close(modalId)}>
-            Peruuta
+          <Button variant="default" onClick={() => modals.close('confirm-delete-modal')}>
+            {cancelLabel}
           </Button>
-          <Button disabled leftSection={<IconTrash size={20}/>}>Poista</Button>
+          <Button disabled leftSection={<IconTrash size={20}/>}>{confirmLabel}</Button>
         </Group>
       </>
     ),

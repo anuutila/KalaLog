@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Badge } from "@mantine/core";
 import { ICatch } from "@/lib/types/catch";
 import classes from "./StatsBadges.module.css";
+import { useTranslations } from "next-intl";
 
 interface StatsBadgesProps {
   filteredCatches: ICatch[];
@@ -54,6 +55,7 @@ enum AllColorsRGB {
 const additionalColors = Object.keys(AdditionalColorsRGB);
 
 export default function StatsBadges({ filteredCatches }: StatsBadgesProps) {
+  const t = useTranslations('Fish');
 
   // Helper function to get random color from the additionalColors array
   const getRandomColor = () => {
@@ -91,7 +93,7 @@ export default function StatsBadges({ filteredCatches }: StatsBadgesProps) {
         classNames={{ root: classes.root, label: classes.label}} 
         size="lg"
       >
-        {displayName}: {count}
+        {t.has(displayName) ? t(displayName) : displayName}: {count}
       </Badge>
     );
   });

@@ -9,6 +9,7 @@ import { handleApiError } from "@/lib/utils/handleApiError";
 import { logout } from "@/services/api/authservice";
 import { Button, Center, Container, Group, LoadingOverlay, Modal, Stack, Text, Title } from "@mantine/core";
 import { IconLogout, IconUser, IconUserCog } from "@tabler/icons-react";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -16,6 +17,7 @@ export default function Page() {
   const { isLoggedIn, jwtUserInfo, setIsLoggedIn, setJwtUserInfo } = useGlobalState();
   const [adminPanelOpen, setAdminPanelOpen] = useState(false);
   const router = useRouter();
+  const t = useTranslations();
 
   useEffect(() => {
     if (isLoggedIn === null) return;
@@ -52,18 +54,18 @@ export default function Page() {
     <Container size={'sm'} p={'md'} pt={'xl'}>
       <Center>
         <Stack align="center" gap={'xl'}>
-          <Title c={'white'} order={3}>Hei, {jwtUserInfo?.firstname}!</Title>
+          <Title c={'white'} order={3}>{t('UserPage.Title', {name: jwtUserInfo?.firstname})}</Title>
           <Group mb={'md'}>
             <IconUser />
-            <Text>Käyttäjäsivut vielä työn alla...</Text>
+            <Text>{t('UserPage.WIP')}</Text>
           </Group>
-          {isLoggedIn && <Button size="md" onClick={handleLogout} leftSection={<IconLogout />}>Kirjaudu ulos</Button>}
+          {isLoggedIn && <Button size="md" onClick={handleLogout} leftSection={<IconLogout />}>{t('UserPage.Logout')}</Button>}
 
-          {isLoggedIn && jwtUserInfo?.role === UserRole.ADMIN && <Button leftSection={<IconUserCog />} size="md" onClick={() => setAdminPanelOpen(true)}>Admin paneeli</Button>}
+          {isLoggedIn && jwtUserInfo?.role === UserRole.ADMIN && <Button leftSection={<IconUserCog />} size="md" onClick={() => setAdminPanelOpen(true)}>{t('UserPage.AdminPanel')}</Button>}
           <Modal
             opened={adminPanelOpen}
             onClose={() => setAdminPanelOpen(false)}
-            title="Admin paneeli"
+            title={t('UserPage.AdminPanel')}
             size="lg"
           >
             <AdminPanel />

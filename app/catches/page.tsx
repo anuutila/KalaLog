@@ -21,6 +21,7 @@ import {
   Button,
   Container,
   Stack,
+  Text,
   useCombobox,
 } from '@mantine/core';
 import { IconAdjustments } from '@tabler/icons-react';
@@ -37,6 +38,7 @@ import CatchDetails from '@/components/catchesPage/CatchDetails/CatchDetails';
 import { useRouter } from 'next/navigation';
 import { DEFAULT_BODY_OF_WATER } from '@/lib/constants/constants';
 import { CatchUtils } from '@/lib/utils/catchUtils';
+import { useLocale, useTranslations } from 'next-intl';
 
 const currentYear = new Date().getFullYear().toString();
 
@@ -59,6 +61,8 @@ const updateQueryParams = (selectedCatch: ICatch | null, router: ReturnType<type
 }
 
 export default function CatchesPage() {
+  const locale = useLocale();
+  const t = useTranslations();
   const gridRef = useRef<AgGridReact<ICatch>>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
@@ -82,7 +86,8 @@ export default function CatchesPage() {
     SpeciesColWidths.NoIcon, 
     locationIconsEnabled, 
     LocationColWidths.NoIcon,
-    displayNameMap
+    displayNameMap,
+    t
   )); 
   const [defaultColDef, setDefaultColDef] = useState<ColDef>({
     sortable: true,
@@ -109,8 +114,8 @@ export default function CatchesPage() {
   useEffect(() => {
     const newSpeciesColWidth = imageIconsEnabled ? SpeciesColWidths.WithIcon : SpeciesColWidths.NoIcon;
     const newLocationColWidth = locationIconsEnabled ? LocationColWidths.WithIcon : LocationColWidths.NoIcon;
-    setColDefs(getColumnDefs(imageIconsEnabled, newSpeciesColWidth, locationIconsEnabled, newLocationColWidth, displayNameMap));
-  }, [imageIconsEnabled, locationIconsEnabled, displayNameMap]);
+    setColDefs(getColumnDefs(imageIconsEnabled, newSpeciesColWidth, locationIconsEnabled, newLocationColWidth, displayNameMap, t));
+  }, [imageIconsEnabled, locationIconsEnabled, displayNameMap, locale]);
   
   const onGridReady = useCallback((params: GridReadyEvent) => {
     // Initial call to set the default column visibilities
@@ -169,7 +174,7 @@ export default function CatchesPage() {
   useEffect(() => {
     // Set the header actions for this page
     setActions(
-      <ActionIcon variant='default' onClick={open} disabled={catchDetailsOpen}><IconAdjustments size={20}/></ActionIcon>
+      <ActionIcon bg={'var(--mantine-color-dark-8)'} variant='default' onClick={open} disabled={catchDetailsOpen}><IconAdjustments size={20}/></ActionIcon>
     );
 
     // Cleanup when leaving the page
@@ -204,7 +209,7 @@ export default function CatchesPage() {
   }, [updateRowCount, updateFilteredCatches]);
 
   const applyYearFilter = useCallback((year: string | null) => {
-    if (year && year !== 'Kaikki vuodet') {
+    if (year && year !== 'AllYears') { 
       const filterModel = {
         type: 'inRange',
         dateFrom: `${year}-01-01`,
@@ -222,7 +227,7 @@ export default function CatchesPage() {
   }, []);
 
   const applyBodyOfWaterFilter = useCallback((bodyOfWater: string | null) => {
-    if (bodyOfWater && bodyOfWater !== 'Kaikki vesialueet') {
+    if (bodyOfWater && bodyOfWater !== 'AllBodiesOfWater') {
       const filterModel = {
         filterType: 'text',
         type: 'equals',
@@ -355,10 +360,10 @@ export default function CatchesPage() {
     updateQueryParams(selectedCatch, router); // Update query params based on selectedCatch
   }, [selectedCatch]);
 
-  const selectAllOption = getSelectAllOption(visibleColumns, colDefs);
-  const columnOptions = getColumnOptions(colDefs, visibleColumns, fieldToDisplayLabelMap);
-  const yearOptions = getYearOptions(['Kaikki vuodet', ...uniqueYears], selectedYear);
-  const bodyOfWaterOptions = getBodyOfWaterOptions(['Kaikki vesialueet', ...uniqueBodiesOfWater], selectedBodyOfWater); 
+  const selectAllOption = getSelectAllOption(t("Common.SelectAll"), visibleColumns, colDefs);
+  const columnOptions = getColumnOptions(colDefs, visibleColumns, fieldToDisplayLabelMap, t);
+  const yearOptions = getYearOptions(['AllYears', ...uniqueYears], selectedYear, t);
+  const bodyOfWaterOptions = getBodyOfWaterOptions(['AllBodiesOfWater', ...uniqueBodiesOfWater], selectedBodyOfWater, t); 
 
   return (
     <Container p={0} pt={'md'} pb={'md'} size={'sm'}>
@@ -392,7 +397,7 @@ export default function CatchesPage() {
 
         <Box pl={'xs'} pt={'sm'} visibleFrom='md'>
           <Button variant="default" onClick={open} radius={'md'} bg="var(--mantine-color-dark-7)" leftSection={<IconAdjustments size={20} />}>
-            Taulukon asetukset
+            {t('CatchesPage.TableSettings.Button')}
           </Button>
         </Box>
 
@@ -425,6 +430,7 @@ export default function CatchesPage() {
           catchesError={catchesError}
           loadingCatches={loadingCatches}
           onRowClicked={onRowClicked}
+          locale={locale}
         />
       </Box>
 

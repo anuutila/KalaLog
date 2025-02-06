@@ -3,9 +3,8 @@
 import { showNotification } from '@/lib/notifications/notifications';
 import { ICatch } from '@/lib/types/catch';
 import { JwtUserInfo } from '@/lib/types/jwtUserInfo';
-import { CatchesResponse, ErrorResponse, UserInfoResponse } from '@/lib/types/responses';
+import { CatchesResponse, UserInfoResponse } from '@/lib/types/responses';
 import { handleApiError } from '@/lib/utils/handleApiError';
-import { defaultSort, sortByDate, sortByTime } from '@/lib/utils/utils';
 import { getCatches } from '@/services/api/catchService';
 import { getUserInfo } from '@/services/api/userService';
 import React, { createContext, useContext, useEffect, useState } from 'react';

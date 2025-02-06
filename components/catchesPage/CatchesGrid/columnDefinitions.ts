@@ -9,10 +9,11 @@ export const getColumnDefs = (
   speciesColumnWidth: number, 
   locationIconsEnabled: boolean, 
   locationColumnWidth: number,
-  displayNameMap: { [userId: string]: string }
+  displayNameMap: { [userId: string]: string },
+  t: any
 ): ColDef[] => [
   { field: 'species', 
-    headerName: 'Laji', 
+    headerName: t('Common.Species'), 
     width: speciesColumnWidth, // 65 without and 95 with icon
     cellRenderer: speciesCellRenderer,
     cellRendererParams: {
@@ -20,7 +21,7 @@ export const getColumnDefs = (
     },
   },
   {
-    headerName: 'Kuva',
+    headerName: t('Common.Picture'),
     field: 'image',
     valueGetter: (params) => params.data.images?.length > 0,
     cellRenderer: 'agCheckboxCellRenderer',
@@ -29,7 +30,7 @@ export const getColumnDefs = (
   },
   {
     field: 'length',
-    headerName: 'Pituus',
+    headerName: t('Common.Length'),
     sortingOrder: ['desc', 'asc', null],
     comparator: customUnitComparator,
     width: 88,
@@ -37,7 +38,7 @@ export const getColumnDefs = (
   },
   {
     field: 'weight',
-    headerName: 'Paino',
+    headerName: t('Common.Weight'),
     sortingOrder: ['desc', 'asc', null],
     comparator: customUnitComparator,
     width: 83,
@@ -45,7 +46,7 @@ export const getColumnDefs = (
   },
   {
     field: 'lure',
-    headerName: 'Viehe',
+    headerName: t('Common.Lure'),
     wrapText: true,
     autoHeight: true,
     width: 120,
@@ -53,7 +54,7 @@ export const getColumnDefs = (
   },
   {
     field: 'location.bodyOfWater',
-    headerName: 'Vesialue',
+    headerName: t('Common.BodyOfWater'),
     wrapText: true,
     autoHeight: true,
     filter: true,
@@ -62,7 +63,7 @@ export const getColumnDefs = (
   },
   {
     field: 'location',
-    headerName: 'Paikka',
+    headerName: t('Common.Spot'),
     wrapText: true,
     autoHeight: true,
     width: locationColumnWidth, // 120 without and 150 with icon
@@ -80,17 +81,17 @@ export const getColumnDefs = (
   },
   { 
     field: 'time', 
-    headerName: 'Aika', 
+    headerName: t('Common.Time'), 
     width: 75 },
   { 
     field: 'date', 
-    headerName: 'Pvm.', 
+    headerName: t('Common.DateShort'), 
     width: 90, 
     valueFormatter: dateFormatter, 
     filter: true },
   { 
     field: 'caughtBy', 
-    headerName: 'Kalastaja', 
+    headerName: t('Common.CaughtBy'),
     width: 85, valueFormatter: 
     upperCaseFormatter, 
     valueGetter: (params) => 

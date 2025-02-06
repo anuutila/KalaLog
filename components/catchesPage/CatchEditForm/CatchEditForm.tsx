@@ -14,6 +14,7 @@ import { handleApiError } from '@/lib/utils/handleApiError';
 import { optimizeImage } from '@/lib/utils/utils';
 import { getUsersByFirstName } from '@/services/api/userService';
 import classes from './CatchEditForm.module.css';
+import { useTranslations } from 'next-intl';
 
 interface CatchEditFormProps {
   catchData: ICatch;
@@ -23,11 +24,12 @@ interface CatchEditFormProps {
   setDisableScroll: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const speciesOptions = ['Ahven', 'Hauki', 'Kuha'];
-
 export default function CatchEditForm({ catchData, setIsInEditView, setSelectedCatch, openCancelEditModal, setDisableScroll }: CatchEditFormProps) {
   const { catches, setCatches } = useGlobalState();
   const { showLoading, hideLoading } = useLoadingOverlay();
+  const t = useTranslations();
+  const tNewCatch = useTranslations('NewCatchPage');
+  const tFishEnFi = useTranslations('FishEnFi');
 
   const [formData, setFormData] = useState<Omit<ICatch, 'id' | 'createdAt'>>(catchData);
   const [isLoading, setIsLoading] = useState(false);
@@ -155,7 +157,7 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
       // Prepare updated catch data
       const updatedCatch: ICatch = {
         ...formData,
-        species: speciesValue,
+        species: tFishEnFi.has(speciesValue) ? tFishEnFi(speciesValue) : speciesValue,
         length: (typeof lengthValue === 'string' || lengthValue === 0) ? null : lengthValue,
         weight: (typeof weightValue === 'string' || weightValue === 0) ? null : weightValue,
         lure: lureValue,
@@ -208,6 +210,8 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
       setIsLoading(false);
     }
   };
+
+  const speciesOptions = [t('Fish.Ahven'), t('Fish.Hauki'), t('Fish.Kuha')];
 
   const lureOptions = useMemo(() => 
     CatchUtils.getUniqueLures(catches).map((lure) => lure.lure).filter((lure) => lure !== '?'), 
@@ -324,9 +328,9 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
               size='md'
               type='text'
               name='species'
-              label="Kalalaji"
               value={speciesValue}
-              placeholder='Kalalaji'
+              label={tNewCatch('Species')}
+              placeholder={tNewCatch('Species')}
               required
               onChange={handleSpeciesChange}
               onFocus={() => setSpeciesDropdownOpened(true)}
@@ -341,7 +345,7 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
               <NumberInput
                 size="md"
                 name="length"
-                label="Pituus"
+                label={t('Common.Length')}
                 step={0.01}
                 min={0}
                 max={999}
@@ -355,7 +359,7 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
               <NumberInput
                 size="md"
                 name="weight"
-                label="Paino"
+                label={t('Common.Weight')}
                 step={0.01}
                 min={0}
                 max={999}
@@ -370,8 +374,8 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
             <Autocomplete
               size='md'
               type='text'
-              label="Viehe"
-              placeholder='Vieheen merkki ja malli'
+              label={t('Common.Lure')}
+              placeholder={tNewCatch('Placeholders.Lure')}
               name='lure'
               value={lureValue}
               onChange={handleLureChange}
@@ -386,8 +390,8 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
                 size='md'
                 type='text'
                 name='bodyOfWater'
-                label="Vesialue"
-                placeholder="Järven, joen tai meren nimi"
+                label={t('Common.BodyOfWater')}
+                placeholder={tNewCatch('Placeholders.BodyOfWater')}
                 value={bodyOfWaterValue}
                 onChange={handleBodyOfWaterChange}
                 onFocus={() => setBodiesOfWaterDropdownOpened(true)}
@@ -403,8 +407,8 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
               size='md'
               type='text'
               name='spot'
-              label="Paikka"
-              placeholder="Tarkka paikan nimi"
+              label={t('Common.Spot')}
+              placeholder={tNewCatch('Placeholders.Spot')}
               value={spotValue}
               onChange={handleSpotChange}
               onFocus={() => setSpotsDropdownOpened(true)}
@@ -419,7 +423,7 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
                 size='md'
                 type='text'
                 name='coordinates'
-                label="Koordinaatit"
+                label={tNewCatch('Coordinates')}
                 placeholder="N, E"
                 value={formData.location.coordinates ?? ''}
                 onChange={handleChange}
@@ -432,7 +436,7 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
                 size="md"
                 type="date"
                 name="date"
-                label="Päivämäärä"
+                label={t('Common.Date')}
                 value={formData.date}
                 onChange={handleChange}
                 required
@@ -443,7 +447,7 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
                 size="md"
                 type="time"
                 name="time"
-                label="Aika"
+                label={t('Common.Time')}
                 value={formData.time}
                 onChange={handleChange}
                 required
@@ -455,8 +459,8 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
               size='md'
               type='text'
               name='caughtBy'
-              label="Kalastajan nimi"
-              placeholder=""
+              label={tNewCatch('CaughtBy')}
+              placeholder={tNewCatch('Placeholders.CaughtBy')}
               value={anglerName}
               required
               onChange={handleAnglerChange}
@@ -489,7 +493,7 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
               >
                 <Combobox.Target>
                   <InputBase
-                    label="Valitse käyttäjä"
+                    label={tNewCatch('SelectUser')}
                     component="button"
                     type="button"
                     pointer
@@ -513,7 +517,7 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
                       </Combobox.Option>
                     ))}
                     <Combobox.Option value="0">
-                      Ei käyttäjätiliä
+                      {tNewCatch('NoUser')}
                     </Combobox.Option>
                   </Combobox.Options>
                 </Combobox.Dropdown>
@@ -524,8 +528,8 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
               size='md'
               type='text'
               name="comment"
-              label="Kommentti"
-              placeholder="Vapaamuotoinen kommentti"
+              label={t('Common.Comment')}
+              placeholder={tNewCatch('Placeholders.Comment')}
               leftSection={<IconMessage size={20} />}
               leftSectionPointerEvents='none'
               value={formData.comment ?? ''}
@@ -548,7 +552,7 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
 
             <Group mt="xs" mb={'xs'} grow>
               <Button size='md' variant="default" onClick={() => openCancelEditModal()} leftSection={<IconEraser size={20} />}>
-                Peruuta
+                {t('Common.Cancel')}
               </Button>
               <Button
                 size='md'
@@ -559,7 +563,7 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
                 disabled={!isFormValid || !userLinkingDone}
                 classNames={{ root: isLinkingUser ? classes.submitButtonDisabledLoading : '' }}
               >
-                Tallenna
+                {t('Common.Save')}
               </Button>
             </Group>
           </Stack>

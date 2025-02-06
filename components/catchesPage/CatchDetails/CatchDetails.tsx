@@ -19,6 +19,7 @@ import { deleteCatch } from '@/services/api/catchService';
 import { handleApiError } from '@/lib/utils/handleApiError';
 import { getSignedImageURLs } from '@/services/api/imageService';
 import { UserRole } from '@/lib/types/user';
+import { useTranslations } from 'next-intl';
 
 export interface CatchDetails {
   species: { label: string; data: string };
@@ -55,6 +56,7 @@ export default function CatchDetails({
   selectedCatch,
   setSelectedCatch
 }: CatchDetailsProps) {
+  const t = useTranslations();
   const { setCatches, isLoggedIn, jwtUserInfo, displayNameMap } = useGlobalState();
   const { setActionsDisabled } = useHeaderActions();
   const { showLoading, hideLoading } = useLoadingOverlay();
@@ -111,7 +113,7 @@ export default function CatchDetails({
     ConfirmEditModal({
       onConfirm: () => {
         setIsInEditView(true);
-      },
+      }, t
     });
   };
 
@@ -119,7 +121,7 @@ export default function CatchDetails({
     CancelEditModal({
       onConfirm: () => {
         setIsInEditView(false);
-      },
+      }, t
     });
   };
 
@@ -127,7 +129,7 @@ export default function CatchDetails({
     ConfirmDeleteModal({
       onConfirm: () => {
         handleDeleteCatch(selectedCatch.id);
-      },
+      }, t
     });
   };
 
@@ -154,17 +156,17 @@ export default function CatchDetails({
   const isFallbackImage = imagesToShow.length === 1 && imagesToShow[0] === defaultPlaceholder;
 
   const details: CatchDetails = {
-    species: { label: 'Kalalaji', data: selectedCatch.species },
-    length: { label: 'Pituus', data: selectedCatch.length },
-    weight: { label: 'Paino', data: selectedCatch.weight },
-    lure: { label: 'Viehe', data: selectedCatch.lure },
-    bodyOfWater: { label: 'Vesialue', data: selectedCatch.location.bodyOfWater },
-    spot: { label: 'Paikka', data: selectedCatch.location.spot },
-    coordinates: { label: 'Koordinaatit', data: selectedCatch.location.coordinates },
-    date: { label: 'Päivämäärä', data: selectedCatch.date },
-    time: { label: 'Aika', data: selectedCatch.time },
-    caughtBy: { label: 'Kalastaja', data: selectedCatch.caughtBy.userId && displayNameMap[selectedCatch.caughtBy.userId] || selectedCatch.caughtBy.name },
-    comment: { label: 'Kommentti', data: selectedCatch.comment },
+    species: { label: t('Common.FishSpecies'), data: selectedCatch.species },
+    length: { label: t('Common.Length'), data: selectedCatch.length },
+    weight: { label: t('Common.Weight'), data: selectedCatch.weight },
+    lure: { label: t('Common.Lure'), data: selectedCatch.lure },
+    bodyOfWater: { label: t('Common.BodyOfWater'), data: selectedCatch.location.bodyOfWater },
+    spot: { label: t('Common.Spot'), data: selectedCatch.location.spot },
+    coordinates: { label: t('Common.Coordinates'), data: selectedCatch.location.coordinates },
+    date: { label: t('Common.Date'), data: selectedCatch.date },
+    time: { label: t('Common.Time'), data: selectedCatch.time },
+    caughtBy: { label: t('Common.CaughtBy'), data: selectedCatch.caughtBy.userId && displayNameMap[selectedCatch.caughtBy.userId] || selectedCatch.caughtBy.name },
+    comment: { label: t('Common.Comment'), data: selectedCatch.comment },
   };
 
   return (
@@ -187,7 +189,7 @@ export default function CatchDetails({
           {/* Header */}
           <Group>
             <Title c='white' order={2} p={0} mr={'auto'} pl={4}>
-              {isInEditView ? 'Muokkaa saalista' : `Saalis #${selectedCatch.catchNumber}`}
+              {isInEditView ? t("CatchesPage.EditCatch") : `${t('Common.Catch')} #${selectedCatch.catchNumber}`}
             </Title>
 
             {/* Close, Edit, Delete Buttons */}

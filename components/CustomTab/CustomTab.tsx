@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { TablerIcon } from '@tabler/icons-react';
 import { Button } from '@mantine/core';
 import classes from './CustomTab.module.css';
+import { useTranslations } from 'next-intl';
 
 interface CustomTabProps {
   icon: TablerIcon;
@@ -11,7 +12,10 @@ interface CustomTabProps {
   isActive: boolean;
 }
 
-const CustomTab: React.FC<CustomTabProps> = ({ icon: Icon, path, label, isActive }) => (
+export default function CustomTab({ icon: Icon, path, label, isActive }: CustomTabProps) {
+  const t = useTranslations();
+
+  return (
   <Link href={path} passHref className={classes.link} prefetch>
     <Button
       component="span"
@@ -24,10 +28,9 @@ const CustomTab: React.FC<CustomTabProps> = ({ icon: Icon, path, label, isActive
         <div>
           <Icon className={classes.icon} />
         </div>
-        <span className={classes.label}>{label}</span>
+        <span className={classes.label}>{t(label)}</span>
       </div>
     </Button>
   </Link>
-);
-
-export default CustomTab;
+  )
+};

@@ -1,0 +1,151 @@
+{
+  "Common": {
+    "Catch": "Saalis",
+    "Species": "Laji",
+    "FishSpecies": "Kalalaji",
+    "Picture": "Kuva",
+    "Length": "Pituus",
+    "Weight": "Paino",
+    "Lure": "Viehe",
+    "BodyOfWater": "Vesialue",
+    "Spot": "Paikka",
+    "Coordinates": "Koordinaatit",
+    "Time": "Aika",
+    "Date": "Päivämäärä",
+    "DateShort": "Pvm.",
+    "Location": "Sijainti",
+    "CaughtBy": "Kalastaja",
+    "Comment": "Kommentti",
+    "Save": "Tallenna",
+    "Cancel": "Peruuta",
+    "Edit": "Muokkaa",
+    "Delete": "Poista",
+    "Ok": "Ok",
+    "Close": "Sulje",
+    "SelectAll": "Valitse kaikki",
+    "Total": "Yhteensä",
+    "Others": "muuta",
+    "OneOrMore": "Valitse yksi tai useampi"
+  },
+  "Fish": {
+    "Pike": "Hauki",
+    "Perch": "Ahven",
+    "Zander": "Kuha",
+    "Bream": "Lahna",
+    "Roach": "Särki",
+    "Ruffe": "Kiiski",
+    "Hauki": "Hauki",
+    "Ahven": "Ahven",
+    "Kuha": "Kuha",
+    "Lahna": "Lahna",
+    "Särki": "Särki",
+    "Kiiski": "Kiiski"
+  },
+  "FishEnFi": {
+    "Pike": "Hauki",
+    "Perch": "Ahven",
+    "Zander": "Kuha"
+  },
+  "Pages": {
+    "NewCatch": "Uusi saalis",
+    "Catches": "Saaliit",
+    "Stats": "Tilastot",
+    "Account": "Käyttäjä"
+  },
+  "NewCatchPage": {
+    "CatchInfo": "Saaliin tiedot",
+    "AlertTitle": "Huomio!",
+    "AlertText1": "Sinulla ei ole uuden saaliin lisäämiseen tarvittavia oikeuksia.",
+    "AlertText2": "Kirjaudu sisään lisätäksesi uuden saaliin.",
+    "Species": "Kalalaji",
+    "Coordinates": "Koordinaatit",
+    "GPSCoordinates": "GPS-koordinaatit",
+    "CaughtBy": "Kalastaja",
+    "SelectUser": "Valitse käyttäjä",
+    "NoUser": "Ei käyttäjätiliä",
+    "AddPicture": "Lisää kuva",
+    "AddPictureInfo": "Lisää kuvia saaliista",
+    "AddPictureInfo2": "Kuvan maksimikoko 10Mt",
+    "Pictures": "Kuvat",
+    "Submit": "Lähetä",
+    "Placeholders": {
+      "Lure": "Vieheen merkki ja malli",
+      "BodyOfWater": "Järven, joen tai meren nimi",
+      "Spot": "Tarkka paikan nimi",
+      "CaughtBy": "Kalastajan etunimi",
+      "Comment": "Vapaamuotoinen kommentti"
+    }
+  },
+  "CatchesPage": {
+    "TableSettings": {
+      "Button" : "Taulukon asetukset",
+      "Title": "Taulukon asetukset",
+      "Columns": "Näytä sarakkeet",
+      "BodyOfWater": "Valitse vesialue",
+      "AllBodiesOfWater": "Kaikki vesialueet",
+      "Year": "Valitse vuosi",
+      "AllYears": "Kaikki vuodet",
+      "Filters": "Näytä suodattimet",
+      "ImageIcons": "Näytä kameraikonit",
+      "ImageIconsInfo": "Näytä kameraikoni laji-sarakkeessa, jos saaliille on lisätty yksi tai useampi kuva.",
+      "LocationIcons": "Näytä sijainti-ikonit",
+      "LocationIconsInfo": "Näytä sijainti-ikoni sijainti-sarakkeessa, jos saaliille on lisätty tarkat koordinaatit.",
+      "Restore": "Palauta oletusasetukset"
+    },
+    "Table": {
+      "NoData": "Ei näytettäviä saaliita."
+    },
+    "EditCatch": "Muokkaa saalista"
+  },
+  "Modals": {
+    "EditCatch": {
+      "Title": "Muokkaa saalista",
+      "Content": "Haluatko muokata saaliin tietoja?"
+    },
+    "CancelEdit": {
+      "Title": "Peruuta muokkaus",
+      "Content": "Haluatko varmasti peruuttaa saaliin muokkauksen? Menetät kaikki tekemäsi muutokset.",
+      "Continue": "Jatka muokkaamista"
+    },
+    "DeleteCatch": {
+      "Title": "Poista saalis",
+      "Content": "Haluatko varmasti poistaa tämän saaliin? Kirjoita 'POISTA' alla olevaan kenttään vahvistaaksesi poiston.",
+      "Placeholder": "Kirjoita 'POISTA' vahvistaaksesi",
+      "ConfirmationText": "POISTA"
+    }
+  },
+  "LoginPage": {
+    "Title": "Kirjaudu sisään",
+    "UsernameOrEmail": "Käyttäjätunnus tai sähköposti",
+    "Password": "Salasana",
+    "Login": "Kirjaudu",
+    "NoAccount": "Ei vielä käyttäjätiliä?",
+    "Register": "Rekisteröidy tästä"
+  },
+  "SignupPage": {
+    "Title": "Rekisteröidy",
+    "Username": "Käyttäjätunnus",
+    "FirstName": "Etunimi",
+    "LastName": "Sukunimi",
+    "Email": "Sähköposti",
+    "Password": "Salasana",
+    "ConfirmPassword": "Vahvista salasana",
+    "PasswordMismatch": "Salasanat eivät täsmää",
+    "Signup": "Rekisteröidy",
+    "AlreadyHaveAccount": "Onko sinulla jo käyttäjätili?",
+    "Login": "Kirjaudu sisään tästä"
+  },
+  "StaticsPage": {
+    "WIP": "Tilastot ovat vielä työn alla..."
+  },
+  "UserPage": {
+    "WIP": "Käyttäjäsivut ovat vielä työn alla...",
+    "Title": "Hei, {name}!",
+    "Logout": "Kirjaudu ulos",
+    "AdminPanel": "Admin paneeli"
+  },
+  "Locales": {
+    "en": "🇬🇧 Englanti",
+    "fi": "🇫🇮 Suomi"
+  }
+}

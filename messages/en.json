@@ -1,0 +1,151 @@
+{
+  "Common": {
+    "Catch": "Catch",
+    "Species": "Species",
+    "FishSpecies": "Fish species",
+    "Picture": "Picture",
+    "Length": "Length",
+    "Weight": "Weight",
+    "Lure": "Lure",
+    "BodyOfWater": "Body of water",
+    "Spot": "Spot",
+    "Coordinates": "Coordinates",
+    "Time": "Time",
+    "Date": "Date",
+    "DateShort": "Date",
+    "Location": "Location",
+    "CaughtBy": "Angler",
+    "Comment": "Comment",
+    "Save": "Save",
+    "Cancel": "Cancel",
+    "Edit": "Edit",
+    "Delete": "Delete",
+    "Ok": "Ok",
+    "Close": "Close",
+    "SelectAll": "Select all",
+    "Total": "Total",
+    "Others": "others",
+    "OneOrMore": "Select one or more"
+  },
+  "Fish": {
+    "Pike": "Pike",
+    "Perch": "Perch",
+    "Zander": "Zander",
+    "Bream": "Bream",
+    "Roach": "Roach",
+    "Ruffe": "Ruffe",
+    "Hauki": "Pike",
+    "Ahven": "Perch",
+    "Kuha": "Zander",
+    "Lahna": "Bream",
+    "Särki": "Roach",
+    "Kiiski": "Ruffe"
+  },
+  "FishEnFi": {
+    "Pike": "Hauki",
+    "Perch": "Ahven",
+    "Zander": "Kuha"
+  },
+  "Pages": {
+    "NewCatch": "New catch",
+    "Catches": "Catches",
+    "Stats": "Statistics",
+    "Account": "Account"
+  },
+  "NewCatchPage": {
+    "CatchInfo": "Catch information",
+    "AlertTitle": "Attention!",
+    "AlertText1": "You do not have the necessary rights to add a new catch.",
+    "AlertText2": "Log in to add a new catch.",
+    "Species": "Fish species",
+    "Coordinates": "Coordinates",
+    "GPSCoordinates": "GPS coordinates",
+    "CaughtBy": "Angler",
+    "SelectUser": "Select user",
+    "NoUser": "No user account",
+    "AddPicture": "Add picture",
+    "AddPictureInfo": "Add pictures of the catch",
+    "AddPictureInfo2": "Maximum picture size 10MB",
+    "Pictures": "Pictures",
+    "Submit": "Submit",
+    "Placeholders": {
+      "Lure": "Lure brand and model",
+      "BodyOfWater": "Name of the lake, river, or sea",
+      "Spot": "Exact location name",
+      "CaughtBy": "Angler's first name",
+      "Comment": "Free-form comment"
+    }
+  },
+  "CatchesPage": {
+    "TableSettings": {
+      "Button": "Table settings",
+      "Title": "Table settings",
+      "Columns": "Show columns",
+      "BodyOfWater": "Select body of water",
+      "AllBodiesOfWater": "All bodies of water",
+      "Year": "Select year",
+      "AllYears": "All years",
+      "Filters": "Show filters",
+      "ImageIcons": "Show camera icons",
+      "ImageIconsInfo": "Show a camera icon in the species column if one or more images have been added to the catch.",
+      "LocationIcons": "Show location icons",
+      "LocationIconsInfo": "Show a location icon in the location column if precise coordinates have been added to the catch.",
+      "Restore": "Restore defaults"
+    },
+    "Table": {
+      "NoData": "No catches to display."
+    },
+    "EditCatch": "Edit catch"
+  },
+  "Modals": {
+    "EditCatch": {
+      "Title": "Edit catch",
+      "Content": "Do you want to edit the catch information?"
+    },
+    "CancelEdit": {
+      "Title": "Cancel edit",
+      "Content": "Are you sure you want to cancel editing the catch? All unsaved changes will be lost.",
+      "Continue": "Continue editing"
+    },
+    "DeleteCatch": {
+      "Title": "Delete catch",
+      "Content": "Are you sure you want to delete this catch? Type 'DELETE' in the field below to confirm the deletion.",
+      "Placeholder": "Type 'DELETE' to confirm",
+      "ConfirmationText": "DELETE"
+    }
+  },
+  "LoginPage": {
+    "Title": "Log in",
+    "UsernameOrEmail": "Username or email",
+    "Password": "Password",
+    "Login": "Log in",
+    "NoAccount": "Don't have an account yet?",
+    "Register": "Register here"
+  },
+  "SignupPage": {
+    "Title": "Sign up",
+    "Username": "Username",
+    "FirstName": "First name",
+    "LastName": "Last name",
+    "Email": "Email",
+    "Password": "Password",
+    "ConfirmPassword": "Confirm password",
+    "PasswordMismatch": "Passwords do not match",
+    "Signup": "Sign up",
+    "AlreadyHaveAccount": "Already have an account?",
+    "Login": "Log in here"
+  },
+  "StaticsPage": {
+    "WIP": "Statistics are still a work in progress..."
+  },
+  "UserPage": {
+    "WIP": "User pages are still a work in progress...",
+    "Title": "Hello, {name}!",
+    "Logout": "Log out",
+    "AdminPanel": "Admin panel"
+  },
+  "Locales": {
+    "en": "🇬🇧 English",
+    "fi": "🇫🇮 Finnish"
+  }
+}

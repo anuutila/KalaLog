@@ -10,9 +10,11 @@ import { IconLock, IconLogin2, IconUser } from '@tabler/icons-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 
 export default function Page() {
   const { isLoggedIn, setIsLoggedIn, setJwtUserInfo } = useGlobalState();
+  const t = useTranslations('LoginPage');
 
   const [emailOrUsername, setEmailOrUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -47,7 +49,7 @@ export default function Page() {
     <Container size={'xs'} px={'md'} py={'xl'}>
       <Stack align='stretch'>
         <Center mb={'md'}>
-          <Title order={2} c={'white'}>Kirjaudu sisään</Title>
+          <Title order={2} c={'white'}>{t('Title')}</Title>
         </Center>
         <Stack>
           <Fieldset variant='default' radius={'md'} pt={'md'} disabled={isLoggedIn ?? false}>
@@ -55,8 +57,8 @@ export default function Page() {
               <Stack gap={'lg'}>
                 <TextInput
                   size='md'
-                  label="Käyttäjätunnus tai sähköposti"
-                  placeholder='Käyttäjätunnus tai sähköposti'
+                  label={t('UsernameOrEmail')}
+                  placeholder={t('UsernameOrEmail')}
                   type="text"
                   name="emailOrUsername"
                   value={emailOrUsername}
@@ -67,9 +69,9 @@ export default function Page() {
                 />
                 <PasswordInput
                   size='md'
-                  label="Salasana"
+                  label={t('Password')}
+                  placeholder={t('Password')}
                   name="password"
-                  placeholder='Salasana'
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
@@ -88,16 +90,16 @@ export default function Page() {
                   loaderProps={{ type: 'dots' }}
                   disabled={!password || !emailOrUsername}
                 >
-                  Kirjaudu
+                  {t('Login')}
                 </Button>
               </Stack>
             </form>
           </Fieldset>
           <Stack align='center' lh={'xs'} ta={'center'} mt={'lg'}>
             <Text size='md'>
-              Ei vielä käyttäjätiliä?<br />
+              {t('NoAccount')}<br />
               <Link href="/signup">
-                <span style={{ color: '#0070f3', textDecoration: 'underline' }}>Rekisteröidy tästä</span>
+                <span style={{ color: '#0070f3', textDecoration: 'underline' }}>{t('Register')}</span>
               </Link>
             </Text>
           </Stack>

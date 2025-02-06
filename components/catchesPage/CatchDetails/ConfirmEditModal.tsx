@@ -1,28 +1,32 @@
 import { Text } from '@mantine/core';
 import { modals } from '@mantine/modals';
 import classes from './CatchDetails.module.css';
-import { IconEdit, IconPencil } from '@tabler/icons-react';
+import { IconEdit } from '@tabler/icons-react';
 
 interface ConfirmEditModalProps {
   onConfirm: () => void;
+  t: any;
 }
 
-export default function ConfirmEditModal({ onConfirm }: ConfirmEditModalProps) {
+export default function ConfirmEditModal({ onConfirm, t }: ConfirmEditModalProps) {
+  const title = t('Modals.EditCatch.Title');
+  const content = t('Modals.EditCatch.Content');
+  const confirmLabel = t('Common.Edit');
+  const cancelLabel = t('Common.Cancel');
 
   modals.openConfirmModal({
-    title: 'Muokkaa saalista',
+    title: title,
     centered: true,
     radius: 'lg',
     children: (
       <Text size="md" mb={'lg'}>
-        Haluatko muokata saaliin tietoja?
+        {content}
       </Text>
     ),
-    labels: { confirm: 'Muokkaa', cancel: 'Peruuta' },
-    confirmProps: { color: 'blue', leftSection: <IconEdit size={20}/>, radius: 'md' },
+    labels: { confirm: confirmLabel, cancel: cancelLabel },
+    confirmProps: { color: 'blue', leftSection: <IconEdit size={20} />, radius: 'md' },
     onConfirm: () => onConfirm(),
     zIndex: 2000,
     classNames: { header: classes.modalHeader, body: classes.modalBody, title: classes.modalTitle }
-  });
-  
+  })
 }

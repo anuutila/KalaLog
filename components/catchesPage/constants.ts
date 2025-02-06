@@ -25,16 +25,16 @@ export enum FieldIdentifier {
 }
 
 export const fieldToDisplayLabelMap: Record<FieldIdentifier, string> = {
-  [FieldIdentifier.Species]: 'Laji',
-  [FieldIdentifier.Image]: 'Kuva',
-  [FieldIdentifier.Length]: 'Pituus',
-  [FieldIdentifier.Weight]: 'Paino',
-  [FieldIdentifier.Lure]: 'Viehe',
-  [FieldIdentifier.BodyOfWater]: 'Vesialue',
-  [FieldIdentifier.Location]: 'Paikka',
-  [FieldIdentifier.Time]: 'Aika',
-  [FieldIdentifier.Date]: 'Pvm.',
-  [FieldIdentifier.CaughtBy]: 'Kalastaja',
+  [FieldIdentifier.Species]: 'Common.Species',
+  [FieldIdentifier.Image]: 'Common.Picture',
+  [FieldIdentifier.Length]: 'Common.Length',
+  [FieldIdentifier.Weight]: 'Common.Weight',
+  [FieldIdentifier.Lure]: 'Common.Lure',
+  [FieldIdentifier.BodyOfWater]: 'Common.BodyOfWater',
+  [FieldIdentifier.Location]: 'Common.Location',
+  [FieldIdentifier.Time]: 'Common.Time',
+  [FieldIdentifier.Date]: 'Common.Date',
+  [FieldIdentifier.CaughtBy]: 'Common.CaughtBy',
 };
 
 export const fieldToIconMap: Record<FieldIdentifier, React.ElementType> = {

@@ -4,8 +4,11 @@ import { AppShell, Container, Group, Text, Title } from "@mantine/core";
 import CustomTab from "../../CustomTab/CustomTab";
 import classes from "./LayoutHeader.module.css";
 import React from "react";
+import LanguageSwitcher from "@/components/LanguageSwitcher/LanguageSwitcher";
+import { useTranslations } from "next-intl";
 
 export default function LayoutHeader({ pages, tabs, pathname }: { pages: Page[]; tabs: Tab[]; pathname: string }) {
+  const t = useTranslations();
   const { actions, actionsDisabled } = useHeaderActions();
 
   return (
@@ -32,10 +35,12 @@ export default function LayoutHeader({ pages, tabs, pathname }: { pages: Page[];
               </Group>
               <Group justify="center">
                 <Text inherit fw={600}>
-                  {pages.find((page) => page.path === pathname)?.label}
+                  {t(pages.find((page) => page.path === pathname)?.label)}
                 </Text>
               </Group>
-              <Group justify="end"></Group>
+              <Group justify="end">
+                <LanguageSwitcher />
+              </Group>
             </Group>
             <Group visibleFrom="md" classNames={{ root: classes.tabs_group_header }}>
               {tabs.map((tab) => (

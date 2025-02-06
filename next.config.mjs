@@ -1,5 +1,8 @@
 import bundleAnalyzer from '@next/bundle-analyzer';
 import withPWA from 'next-pwa';
+import createNextIntlPlugin from 'next-intl/plugin';
+
+const withNextIntl = createNextIntlPlugin();
 
 const withBundleAnalyzer = bundleAnalyzer({
   enabled: process.env.ANALYZE === 'true',
@@ -33,4 +36,4 @@ export default withPWA({
   disable: process.env.NODE_ENV === "development",        // disable PWA in the development environment
   register: true,         // register the PWA service worker
   skipWaiting: true,      // skip waiting for service worker activation
-})(withBundleAnalyzer(nextConfig));
+})(withBundleAnalyzer(withNextIntl(nextConfig)));

@@ -67,7 +67,7 @@ export async function POST(req: NextRequest): Promise<NextResponse<LoginResponse
     const response = NextResponse.json<LoginResponse>({ message: `Login successful. Hi ${validatedUser.firstName}! 👋`, data: jwtUserInfo }, { status: 200 });
 
     const cookieStore = await cookies();
-    cookieStore.set('token', token, { httpOnly: true, secure: true });
+    cookieStore.set('KALALOG_TOKEN', token, { httpOnly: true, secure: true });
 
     return response;
   } catch (error: unknown) {

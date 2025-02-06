@@ -1,6 +1,6 @@
 'use client';
 
-import { Autocomplete, Checkbox, createTheme, Input, InputBase, InputWrapper, NumberInput, PasswordInput, PillsInput, Textarea, TextInput } from '@mantine/core';
+import { createTheme } from '@mantine/core';
 
 export const theme = createTheme({
   cursorType: 'pointer',

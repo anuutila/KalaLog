@@ -9,6 +9,8 @@ import { SpeedInsights } from '@vercel/speed-insights/next';
 import { ColorSchemeScript } from '@mantine/core';
 import AppShellWrapper from '@/components/layout/AppShellWrapper/AppShellWrapper';
 import { Metadata, Viewport } from 'next';
+import { getLocale, getMessages } from 'next-intl/server';
+import { NextIntlClientProvider } from 'next-intl';
 
 export const metadata: Metadata = {
   title: "KalaLog",
@@ -38,18 +40,23 @@ export const viewport: Viewport = {
   themeColor: '#141414',
 }
 
-export default function RootLayout({ children }: { children: any }) {
+export default async function RootLayout({ children }: { children: any }) {
+  const locale = await getLocale();
+  const messages = await getMessages();
+
   return (
-    <html lang="fi" suppressHydrationWarning>
+    <html lang={locale} suppressHydrationWarning>
       <head>
         <ColorSchemeScript defaultColorScheme="dark" forceColorScheme="dark" />
       </head>
       <body>
-        <AppShellWrapper>
-          {children}
-        </AppShellWrapper>
-        <SpeedInsights />
-        <Analytics />
+        <NextIntlClientProvider messages={messages} locale={locale}>
+          <AppShellWrapper>
+            {children}
+          </AppShellWrapper>
+          <SpeedInsights />
+          <Analytics />
+        </NextIntlClientProvider>
       </body>
     </html>
   );

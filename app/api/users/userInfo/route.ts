@@ -9,7 +9,7 @@ const JWT_SECRET = process.env.JWT_SECRET as string;
 export async function GET(req: Request): Promise<NextResponse<UserInfoResponse>> {
   try {
     const cookieStore = await cookies();
-    const token = cookieStore.get('token')?.value;
+    const token = cookieStore.get('KALALOG_TOKEN')?.value;
     if (!token) {
       return NextResponse.json<UserInfoResponse>({ message: 'User not logged in', data: { loggedIn: false, jwtUserInfo: null } }, { status: 200 });
     }

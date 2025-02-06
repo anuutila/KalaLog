@@ -63,7 +63,7 @@ export async function POST(req: NextRequest): Promise<NextResponse<CatchCreaeted
   const uploadedImages = [];
 
   const cookieStore = await cookies();
-  const token = cookieStore.get('token')?.value;
+  const token = cookieStore.get('KALALOG_TOKEN')?.value;
   try {
     // Check if the user is authorized
     await requireRole([UserRole.ADMIN, UserRole.EDITOR]);
@@ -126,7 +126,7 @@ export async function POST(req: NextRequest): Promise<NextResponse<CatchCreaeted
         const response = await fetch(`${apiBase}${ApiEndpoints.UploadImage}`, {
           method: 'POST',
           headers: {
-            'Cookie': `token=${token}`, // Include the JWT token
+            'Cookie': `KALALOG_TOKEN=${token}`, // Include the JWT token
           },
           body: formData,
         });
@@ -198,7 +198,7 @@ export async function POST(req: NextRequest): Promise<NextResponse<CatchCreaeted
     const response = await fetch(`${apiBase}${ApiEndpoints.DeleteImages}`, {
       method: 'POST',
       headers: {
-        'Cookie': `token=${token}`, // Include the JWT token
+        'Cookie': `KALALOG_TOKEN=${token}`, // Include the JWT token
       },
       body: JSON.stringify({ publicIds, deleteFolder }),
     });
@@ -209,7 +209,7 @@ export async function POST(req: NextRequest): Promise<NextResponse<CatchCreaeted
 
 export async function DELETE(req: NextRequest): Promise<NextResponse<CatchDeletedResponse | ErrorResponse>> {
   const cookieStore = await cookies();
-  const token = cookieStore.get('token')?.value;
+  const token = cookieStore.get('KALALOG_TOKEN')?.value;
 
   try {
     // Check if the user is authorized
@@ -243,7 +243,7 @@ export async function DELETE(req: NextRequest): Promise<NextResponse<CatchDelete
         `${apiBase}${ApiEndpoints.DeleteImages}`, {
         method: 'POST',
         headers: {
-          'Cookie': `token=${token}`, // Include the JWT token
+          'Cookie': `KALALOG_TOKEN=${token}`, // Include the JWT token
         },
         body: JSON.stringify({ publicIds, deleteFolder }),
       });
@@ -301,7 +301,7 @@ export async function PUT(req: NextRequest): Promise<NextResponse<CatchEditedRes
   const allImages: { publicId: string, description?: string | null | undefined}[] = [];
 
   const cookieStore = await cookies();
-  const token = cookieStore.get('token')?.value;
+  const token = cookieStore.get('KALALOG_TOKEN')?.value;
   try {
     // Check if the user is authorized
     await requireRole([UserRole.ADMIN, UserRole.EDITOR]);
@@ -376,7 +376,7 @@ export async function PUT(req: NextRequest): Promise<NextResponse<CatchEditedRes
         `${apiBase}${ApiEndpoints.DeleteImages}`, {
         method: 'POST',
         headers: {
-          'Cookie': `token=${token}`, // Include the JWT token
+          'Cookie': `KALALOG_TOKEN=${token}`, // Include the JWT token
         },
         body: JSON.stringify({ publicIds, deleteFolder }),
       });
@@ -412,7 +412,7 @@ export async function PUT(req: NextRequest): Promise<NextResponse<CatchEditedRes
         const response = await fetch(`${apiBase}${ApiEndpoints.UploadImage}`, {
           method: 'POST',
           headers: {
-            'Cookie': `token=${token}`, // Include the JWT token
+            'Cookie': `KALALOG_TOKEN=${token}`, // Include the JWT token
           },
           body: formData,
         });
@@ -500,7 +500,7 @@ export async function PUT(req: NextRequest): Promise<NextResponse<CatchEditedRes
       const response = await fetch(`${apiBase}${ApiEndpoints.DeleteImages}`, {
         method: 'POST',
         headers: {
-          'Cookie': `token=${token}`, // Include the JWT token
+          'Cookie': `KALALOG_TOKEN=${token}`, // Include the JWT token
         },
         body: JSON.stringify({ imageIds, deleteFolder }),
       });

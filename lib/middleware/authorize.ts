@@ -10,7 +10,7 @@ const JWT_SECRET = process.env.JWT_SECRET as string;
 export const authorize = async (authorizedRoles: string[]): Promise<NextResponse<AuthorizationResponse | ErrorResponse>> => {
   try {
     const cookieStore = await cookies();
-    const token = cookieStore.get('token')?.value;
+    const token = cookieStore.get('KALALOG_TOKEN')?.value;
 
     if (!token) {
       throw new CustomError('Unauthorized. Missing JWT token.', 401);

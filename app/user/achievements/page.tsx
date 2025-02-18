@@ -23,7 +23,7 @@ export default function Page() {
   const [sortedAchievements, setSortedAchievements] = useState<IAchievementConfig[]>([]);
   const [userStars, setUserStars] = useState<number>(0);
   const [totalStars, setTotalStars] = useState<number>(0);
-
+  const [xp, setXP] = useState<number>(0);
 
   useEffect(() => {
     // Set the header actions for this page
@@ -53,6 +53,7 @@ export default function Page() {
     // Then sort and calculate stars
     sortAchievements(achievements, newUserAchDict);
     calculateStars(achievements);
+    calculateXP(achievements);
   }, [achievements]);
 
   async function getAchievements() {
@@ -94,6 +95,14 @@ export default function Page() {
     setTotalStars(amountOfStars);
   }
 
+  function calculateXP(achievementsData: IAchievement[]) {
+    const xpAmount = achievementsData.reduce((acc, ach) => {
+      acc += ach.totalXP;
+      return acc;
+    }, 0);
+    setXP(xpAmount);
+  }
+
   return (
     <Container py={'md'} px={'xs'} size={'sm'}>
       <Center>
@@ -102,6 +111,9 @@ export default function Page() {
             {`${userStars} / ${totalStars}`}
           </Title>
           <IconStarFilled color='white' style={{ width: '1.5rem', height: '1.5rem', marginLeft: '0.5rem' }} />
+          <Title order={2} style={{ color: 'white' }} lh={1} ml={'xl'}>
+            {`${xp} XP`}
+          </Title>
         </Group>
       </Center>
       <Stack gap={'md'}>

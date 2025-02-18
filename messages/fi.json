@@ -161,36 +161,49 @@
     "weight_catch": {
       "Name": "Suurkala",
       "Description": "Nappaa yli {value} kg painava kala",
+      "DescSingular": "Nappaa yli 1 kg painava kala",
       "Progress": "Suurin kala:\u00A0\u00A0 {progress} kg"
     },
     "species_amount": {
       "Name": "Iktyologi",
-      "Description": "Nappaa {value} eri kalalajia"
+      "Description": "Nappaa {value} eri kalalajia",
+      "Progress": "Lajeja napattu:\u00A0\u00A0 {progress}"
     },
     "total_catches": {
       "Name": "Fishunter",
       "Description": "Nappaa yhteensä {value} kalaa",
+      "DescSingular": "Nappaa yksi kala",
       "Progress": "Saaliita yhteensä:\u00A0\u00A0 {progress}"
     },
     "pike_amount": {
       "Name": "Haukimestari",
-      "Description": "Nappaa {value} haukea"
+      "Description": "Nappaa {value} haukea",
+      "DescSingular": "Nappaa yksi hauki",
+      "Progress": "Haukia yhteensä:\u00A0\u00A0 {progress}"
     },
     "perch_amount": {
       "Name": "Ahvenmestari",
-      "Description": "Nappaa {value} ahventa"
+      "Description": "Nappaa {value} ahventa",
+      "DescSingular": "Nappaa yksi ahven",
+      "Progress": "Ahvenia yhteensä:\u00A0\u00A0 {progress}"
     },
     "zander_amount": {
       "Name": "Kuhamestari",
-      "Description": "Nappaa {value} kuhaa"
+      "Description": "Nappaa {value} kuhaa",
+      "DescSingular": "Nappaa yksi kuha",
+      "Progress": "Kuhia yhteensä:\u00A0\u00A0 {progress}"
     },
     "bream_amount": {
       "Name": "Lahnamestari",
-      "Description": "Nappaa {value} lahnaa"
+      "Description": "Nappaa {value} lahnaa",
+      "DescSingular": "Nappaa yksi lahna",
+      "Progress": "Lahnoja yhteensä:\u00A0\u00A0 {progress}"
     },
     "roach_amount": {
       "Name": "Särkimestari",
-      "Description": "Nappaa {value} särkeä"
+      "Description": "Nappaa {value} särkeä",
+      "DescSingular": "Nappaa yksi särki",
+      "Progress": "Särkiä yhteensä:\u00A0\u00A0 {progress}"
     },
     "kahen_kilon_siika": {
       "Name": "Kahen kilon siika",
@@ -198,15 +211,18 @@
     },
     "lure_amount": {
       "Name": "Viehearsenaali",
-      "Description": "Nappaa kala {value} eri vieheellä"
+      "Description": "Nappaa kala {value} eri vieheellä",
+      "Progress": "Käytettyjä vieheitä:\u00A0\u00A0 {progress}"
     },
     "spot_amount": {
       "Name": "Kalaopas",
-      "Description": "Nappaa kala {value} eri paikasta samalla vesialueella (GPS-koordinaatit)"
+      "Description": "Nappaa kala {value} eri paikasta samalla vesialueella (GPS-koordinaatit väh. 200 m päässä toisistaan)",
+      "Progress": "Paikkojen määrä:\u00A0\u00A0 {progress}"
     },
     "bodies_of_water_amount": {
       "Name": "Reissumies",
-      "Description": "Nappaa kala {value} eri vesialueelta"
+      "Description": "Nappaa kala {value} eri vesialueelta",
+      "Progress": "Vesialueiden määrä:\u00A0\u00A0 {progress}"
     },
     "four_seasons": {
       "Name": "Vuoden ympäri",

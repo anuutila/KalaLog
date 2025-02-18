@@ -29,6 +29,28 @@ export const CatchUtils = {
   },
 
   /**
+   * Get unique fish lenghts
+   */
+  getUniqueLengths(catches: ICatch[]): number[] {
+    return Array.from(new Set(
+      catches
+        .map(c => c.length)
+        .filter((length): length is number => length !== null && length !== undefined && length > 0)
+    )).sort((a, b) => a - b);
+  },
+
+  /**
+   * Get unique fish weights
+   */
+  getUniqueWeights(catches: ICatch[]): number[] {
+    return Array.from(new Set(
+      catches
+        .map(c => c.weight)
+        .filter((weight): weight is number => weight !== null && weight !== undefined && weight > 0)
+    )).sort((a, b) => a - b);
+  },
+
+  /**
    * Get unique bodies of water with their catch counts
    */
   getUniqueBodiesOfWater(catches: ICatch[]): Array<{
@@ -134,6 +156,154 @@ export const CatchUtils = {
   },
 
   /**
+   * Get the total amount of a specific species
+   */
+  getSpeciesTotal(catches: ICatch[], species: string): number {
+    return catches.filter(c => c.species === species)?.length || 0;
+  },
+
+  /**
+   * Get the length of the longest daily fishing streak
+   */
+  getLongestFishingStreak(catches: ICatch[]): number {
+    if (!catches.length) return 0;
+
+    // Extract unique dates and sort them.
+    const uniqueDates = Array.from(new Set(catches.map(c => c.date))).sort();
+
+    let longestStreak = 0;
+    let currentStreak = 1;
+
+    for (let i = 1; i < uniqueDates.length; i++) {
+      // Convert date strings to Date objects.
+      const prevDate = new Date(uniqueDates[i - 1]);
+      const currDate = new Date(uniqueDates[i]);
+
+      // Calculate the difference in days.
+      const diffInDays = (currDate.getTime() - prevDate.getTime()) / (1000 * 60 * 60 * 24);
+
+      if (diffInDays === 1) {
+        currentStreak++;
+      } else {
+        longestStreak = Math.max(longestStreak, currentStreak);
+        currentStreak = 1;
+      }
+    }
+
+    longestStreak = Math.max(longestStreak, currentStreak);
+    return longestStreak;
+  },
+
+  /**
+   * Get the amount of unique seasons in the catch records
+   */
+  getUniqueSeasons(catches: ICatch[]): number {
+    const seasons = Array.from(new Set(
+      catches
+        .map(c => {
+          const month = parseInt(c.date.split('-')[1]);
+          if (month >= 3 && month <= 5) return 'spring';
+          if (month >= 6 && month <= 8) return 'summer';
+          if (month >= 9 && month <= 11) return 'autumn';
+          return 'winter';
+        })
+    ));
+
+    return seasons.length || 0;
+  },
+
+  /**
+   * Resolves the maximum number of catches within any
+   * specified timeframe (in minutes). Returns the count if at least
+   * catchCount catches occur within the timeframe. Otherwise, returns 0.
+   *
+   * Assumes each catch has a `date` property in "YYYY-MM-DD" format and a 
+   * `time` property in "HH:MM" format.
+   */
+  resolveTimeframeCatches(catches: ICatch[], timeframe: number, requiredCatchCount: number): number {
+    if (!catches || catches.length === 0) return 0;
+
+    // Convert catches into Date objects
+    const dateTimeCatches = catches.map(catchItem => {
+      return new Date(`${catchItem.date}T${catchItem.time}:00`);
+    });
+
+    // Sort catches in chronological order
+    dateTimeCatches.sort((a, b) => a.getTime() - b.getTime());
+
+    // Use a sliding window approach to find a window where
+    // at least requiredCatchCount catches occurred within the timeframe
+    for (let i = 0; i < dateTimeCatches.length; i++) {
+      let count = 1;
+      const windowStart = dateTimeCatches[i].getTime();
+      // Look ahead in the sorted array
+      for (let j = i + 1; j < dateTimeCatches.length; j++) {
+        const diffInMinutes = (dateTimeCatches[j].getTime() - windowStart) / (1000 * 60);
+        if (diffInMinutes <= timeframe) {
+          count++;
+          if (count >= requiredCatchCount) {
+            return count;
+          }
+        } else {
+          break;
+        }
+      }
+    }
+
+    return 0;
+  },
+
+  /**
+   * Given an array of catches and a minimum distance (in meters),
+   * returns the maximum count of unique spots within a single body of water.
+   *
+   * Only catches within the same body of water (catch.location.bodyOfWater) 
+   * are grouped together, and unique spots are determined by their GPS 
+   * coordinates (catch.location.coordinates, formatted as "lat,lng").
+   */
+  getUniqueSpotsBasedOnDistanceAndBoW(
+    catches: ICatch[],
+    minDistance: number
+  ): number {
+    // Group catches by body of water.
+    const groups: Record<string, ICatch[]> = {};
+    catches.forEach((catchItem) => {
+      const bodyOfWater = catchItem.location?.bodyOfWater;
+      if (!bodyOfWater) return;
+      if (!groups[bodyOfWater]) groups[bodyOfWater] = [];
+      groups[bodyOfWater].push(catchItem);
+    });
+
+    // For each group, calculate the count of unique spots.
+    const getUniqueCount = (groupCatches: ICatch[]): number => {
+      const uniqueSpots: { lat: number; lng: number }[] = [];
+      groupCatches.forEach((catchItem) => {
+        const coordStr = catchItem.location?.coordinates;
+        if (!coordStr) return;
+        const [latStr, lngStr] = coordStr.split(',');
+        const lat = parseFloat(latStr);
+        const lng = parseFloat(lngStr);
+        if (isNaN(lat) || isNaN(lng)) return;
+
+        const isUnique = uniqueSpots.every(
+          (spot) => getDistanceBetweenPoints(lat, lng, spot.lat, spot.lng) >= minDistance
+        );
+        if (isUnique) uniqueSpots.push({ lat, lng });
+      });
+      return uniqueSpots.length;
+    };
+
+    // Determine the maximum unique spots count across all groups.
+    let maxCount = 0;
+    Object.values(groups).forEach((groupCatches) => {
+      const count = getUniqueCount(groupCatches);
+      if (count > maxCount) maxCount = count;
+    });
+
+    return maxCount;
+  },
+
+  /**
    * Get statistics for each species
    */
   getSpeciesStats(catches: ICatch[]): Array<{
@@ -171,13 +341,13 @@ export const CatchUtils = {
       .map(([species, data]) => ({
         species,
         catchCount: data.count,
-        avgWeight: data.weights.length ? 
+        avgWeight: data.weights.length ?
           data.weights.reduce((a, b) => a + b, 0) / data.weights.length : null,
-        avgLength: data.lengths.length ? 
+        avgLength: data.lengths.length ?
           data.lengths.reduce((a, b) => a + b, 0) / data.lengths.length : null,
-        maxWeight: data.weights.length ? 
+        maxWeight: data.weights.length ?
           Math.max(...data.weights) : null,
-        maxLength: data.lengths.length ? 
+        maxLength: data.lengths.length ?
           Math.max(...data.lengths) : null
       }))
       .sort((a, b) => b.catchCount - a.catchCount);
@@ -211,4 +381,27 @@ export function createCatchAndImagesFormData(catchData: Omit<ICatch, 'id' | 'cre
   });
 
   return catchAndImageData;
+}
+
+/**
+ * Calculates the distance (in meters) between two coordinates using the Haversine formula.
+ */
+function getDistanceBetweenPoints(
+  lat1: number,
+  lng1: number,
+  lat2: number,
+  lng2: number
+): number {
+  const R = 6371e3; // Earth's radius in meters
+  const toRad = (x: number) => (x * Math.PI) / 180;
+  const phi1 = toRad(lat1);
+  const phi2 = toRad(lat2);
+  const deltaPhi = toRad(lat2 - lat1);
+  const deltaLambda = toRad(lng2 - lng1);
+  const a =
+    Math.sin(deltaPhi / 2) * Math.sin(deltaPhi / 2) +
+    Math.cos(phi1) * Math.cos(phi2) *
+    Math.sin(deltaLambda / 2) * Math.sin(deltaLambda / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
 }

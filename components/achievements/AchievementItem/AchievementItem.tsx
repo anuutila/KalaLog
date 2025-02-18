@@ -120,6 +120,7 @@ function ProgressDisplay({achievementConfig, starInfo, userAchievement, t, tA}: 
   // Tiered achievements
   if (!isOneTime) {
     const tieredConfig = achievementConfig as IAchievementConfigTiered;
+    const baseTiersCount = tieredConfig.baseTiers.length;
     if (achievementConfig.progressBar === false && isUnlocked && (userAchievement as IAchievementTiered).currentTier < 5) {
       return (
         <Group gap="sm" wrap="nowrap">
@@ -131,12 +132,12 @@ function ProgressDisplay({achievementConfig, starInfo, userAchievement, t, tA}: 
           </Text>
         </Group>
       );
-    } else if (achievementConfig.progressBar !== false && filledStars < 5) {
+    } else if (achievementConfig.progressBar !== false && filledStars < baseTiersCount) {
       return (
         <Group gap="sm" wrap="nowrap">
           {isUnlocked && (
             <Text fz={12} lh={1} fw="bold" className={classes.nowrap}>
-              {((userAchievement as IAchievementTiered).currentTier < 5 ? t('AchievementsPage.NextTier') : '')}
+              {((userAchievement as IAchievementTiered).currentTier < baseTiersCount ? t('AchievementsPage.NextTier') : '')}
             </Text>
           )}
           <Text fz={12} lh={1} fw="bold" className={classes.nowrap}>
@@ -146,11 +147,11 @@ function ProgressDisplay({achievementConfig, starInfo, userAchievement, t, tA}: 
           </Text>
         </Group>
       );
-    } else if (achievementConfig.progressBar !== false && filledStars >= 5 && !tA.has(`${achievementConfig.key}.Progress`)) {
+    } else if (achievementConfig.progressBar !== false && filledStars >= baseTiersCount && !tA.has(`${achievementConfig.key}.Progress`)) {
       return (
         <Group gap="sm" wrap="nowrap">
           <Text fz={12} lh={1} fw="bold" className={classes.nowrap}>
-            {((userAchievement as IAchievementTiered).currentTier < 5 ? t('AchievementsPage.NextTier') : '')}
+            {((userAchievement as IAchievementTiered).currentTier < baseTiersCount ? t('AchievementsPage.NextTier') : '')}
           </Text>
           <Text fz={12} lh={1} fw="bold" className={classes.nowrap}>
             {`${userAchievement?.progress || 0} / ${tieredConfig.baseTiers[
@@ -159,7 +160,7 @@ function ProgressDisplay({achievementConfig, starInfo, userAchievement, t, tA}: 
           </Text>
         </Group>
       );
-    } else if (isUnlocked && (userAchievement as IAchievementTiered).currentTier >= 5 && tA.has(`${achievementConfig.key}.Progress`)) {
+    } else if (isUnlocked && (userAchievement as IAchievementTiered).currentTier >= baseTiersCount && tA.has(`${achievementConfig.key}.Progress`)) {
       return (
         <Text fz={12} lh={1} fw="bold" className={classes.nowrap}>
           {tA(`${achievementConfig.key}.Progress`, { progress: userAchievement?.progress || 0 })}
@@ -227,11 +228,15 @@ export default function AchievementItem({ achievementConfig, userAchievement }: 
               ) : (
                 <Text
                   fz="sm"
-                >{tA(`${achievementConfig.key}.Description`, {
-                  value: (achievementConfig as IAchievementConfigTiered).baseTiers[
-                    Math.max(0, Math.min(starInfo.filledStars - 1, 4))
-                  ]?.threshold,
-                })}</Text>
+                >{((achievementConfig as IAchievementConfigTiered).baseTiers[0].threshold === 1 && (userAchievement as IAchievementTiered).currentTier === 1)
+                  ? tA(`${achievementConfig.key}.DescSingular`)
+                  : tA(`${achievementConfig.key}.Description`,
+                    {
+                      value: (achievementConfig as IAchievementConfigTiered).baseTiers[
+                        Math.max(0, Math.min(starInfo.filledStars - 1, 4))
+                      ]?.threshold,
+                    }
+                  )}</Text>
               )
             ) : (
               <Text fz="sm">{t('AchievementsPage.Locked')}</Text>

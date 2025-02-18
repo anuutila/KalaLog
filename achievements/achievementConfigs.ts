@@ -132,7 +132,8 @@ export const locationAchievements: IAchievementConfig[] = [
       { tier: 3, threshold: 10, xp: 400 },
       { tier: 4, threshold: 20, xp: 800 },
       { tier: 5, threshold: 50, xp: 1500 }
-    ]
+    ],
+    condition: { distance: 200 }
   },
   {
     key: "bodies_of_water_amount",
@@ -193,7 +194,7 @@ export const timeAchievementsConfig: IAchievementConfig[] = [
     category: ["time_and_date"],
     isOneTime: true,
     xp: 800,
-    condition: { timeWindow: 5, catchCount: 2 },
+    condition: { timeframe: 5, catchCount: 2 },
     progressBar: false,
     rarity: 3,
   },
@@ -202,7 +203,7 @@ export const timeAchievementsConfig: IAchievementConfig[] = [
     category: ["time_and_date"],
     isOneTime: true,
     xp: 2000,
-    condition: { timeWindow: 60, catchCount: 8 },
+    condition: { timeframe: 60, catchCount: 8 },
     progressBar: false,
     rarity: 5,
   },
@@ -235,7 +236,7 @@ export const miscAchievements: IAchievementConfig[] = [
     category: ["size", "species"],
     isOneTime: true,
     xp: 3000,
-    condition: { species: "siika", weight: 1.686 },
+    condition: { species: "Siika", weight: 1.686 },
     progressBar: false,
     rarity: 5,
   }

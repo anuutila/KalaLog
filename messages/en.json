@@ -161,41 +161,49 @@
   "weight_catch": {
     "Name": "Big Game",
     "Description": "Catch a fish weighing more than {value} kg",
+    "DescSingular": "Catch a fish weighing more than {value} kg",
     "Progress": "Heaviest fish:\u00A0\u00A0 {progress} kg"
   },
   "species_amount": {
     "Name": "Ichthyologist",
-    "Description": "Catch {value} different fish species"
+    "Description": "Catch {value} different fish species",
+    "Progress": "Different species:\u00A0\u00A0 {progress}"
   },
   "total_catches": {
     "Name": "Fishunter",
     "Description": "Catch a total of {value} fish",
-    "Progress": "Total amount:\u00A0\u00A0 {progress}"
+    "DescSingular": "Catch one fish",
+    "Progress": "Total count:\u00A0\u00A0 {progress}"
   },
   "pike_amount": {
     "Name": "Pike Master",
     "Description": "Catch {value} pike",
-    "Progress": "Total amount:\u00A0\u00A0 {progress}"
+    "DescSingular": "Catch one pike",
+    "Progress": "Pike count:\u00A0\u00A0 {progress}"
   },
   "perch_amount": {
     "Name": "Perch Master",
     "Description": "Catch {value} perch",
-    "Progress": "Total amount:\u00A0\u00A0 {progress}"
+    "DescSingular": "Catch one perch",
+    "Progress": "Perch count:\u00A0\u00A0 {progress}"
   },
   "zander_amount": {
     "Name": "Zander Master",
     "Description": "Catch {value} zander",
-    "Progress": "Total amount:\u00A0\u00A0 {progress}"
+    "DescSingular": "Catch one zander",
+    "Progress": "Zander count:\u00A0\u00A0 {progress}"
   },
   "bream_amount": {
     "Name": "Bream Master",
     "Description": "Catch {value} bream",
-    "Progress": "Total amount:\u00A0\u00A0 {progress}"
+    "DescSingular": "Catch one bream",
+    "Progress": "Bream count:\u00A0\u00A0 {progress}"
   },
   "roach_amount": {
     "Name": "Roach Master",
     "Description": "Catch {value} roach",
-    "Progress": "Total amount:\u00A0\u00A0 {progress}"
+    "DescSingular": "Catch one roach",
+    "Progress": "Roach count:\u00A0\u00A0 {progress}"
   },
   "kahen_kilon_siika": {
     "Name": "Kahen kilon siika",
@@ -204,15 +212,17 @@
   "lure_amount": {
     "Name": "Lure Arsenal",
     "Description": "Use {value} different lures",
-    "Progress": "Total amount:\u00A0\u00A0 {progress}"
+    "Progress": "Lures used:\u00A0\u00A0 {progress}"
   },
   "spot_amount": {
     "Name": "Fishing Guide",
-    "Description": "Catch fish from {value} different spots within the same body of water (GPS coordinates)"
+    "Description": "Catch fish from {value} different spots within the same body of water (GPS coordinates at least 200 meters apart)",
+    "Progress": "Spot count:\u00A0\u00A0 {progress}"
   },
   "bodies_of_water_amount": {
     "Name": "Traveling Angler",
-    "Description": "Catch fish from {value} different bodies of water"
+    "Description": "Catch fish from {value} different bodies of water",
+    "Progress": "Body of water count:\u00A0\u00A0 {progress}"
   },
   "four_seasons": {
     "Name": "Seasoned Angler",

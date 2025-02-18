@@ -67,6 +67,7 @@ export const AchievementConfigTieredSchema = AchievementConfigBaseSchema.extend(
   dynamicBonus: z.boolean(),
   bonusTierXP: z.number().min(0).optional(),
   bonusThreshold: z.number().min(0).optional(),
+  condition: ConditionSchema.optional(),
 });
 
 export const AchievementConfigOneTimeSchema = AchievementConfigBaseSchema.extend({

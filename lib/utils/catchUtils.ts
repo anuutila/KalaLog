@@ -213,44 +213,47 @@ export const CatchUtils = {
   },
 
   /**
-   * Resolves the maximum number of catches within any
-   * specified timeframe (in minutes). Returns the count if at least
-   * catchCount catches occur within the timeframe. Otherwise, returns 0.
+   * Calculates the maximum number of catches occurring within any given timeframe (in minutes).
+   * If requiredCatchCount is provided and a window meets or exceeds that count,
+   * the function immediately returns that count.
    *
-   * Assumes each catch has a `date` property in "YYYY-MM-DD" format and a 
-   * `time` property in "HH:MM" format.
+   * Assumes each catch has a date string ("YYYY-MM-DD") and a time string ("HH:MM").
    */
-  resolveTimeframeCatches(catches: ICatch[], timeframe: number, requiredCatchCount: number): number {
+  resolveTimeframeCatches(
+    catches: ICatch[],
+    timeframe: number,
+    requiredCatchCount?: number
+  ): number {
     if (!catches || catches.length === 0) return 0;
 
-    // Convert catches into Date objects
-    const dateTimeCatches = catches.map(catchItem => {
-      return new Date(`${catchItem.date}T${catchItem.time}:00`);
-    });
+    // Convert catches into Date objects and sort them chronologically.
+    const dateTimeCatches = catches
+      .map(c => new Date(`${c.date}T${c.time}:00`))
+      .sort((a, b) => a.getTime() - b.getTime());
 
-    // Sort catches in chronological order
-    dateTimeCatches.sort((a, b) => a.getTime() - b.getTime());
+    let maxCount = 0;
 
-    // Use a sliding window approach to find a window where
-    // at least requiredCatchCount catches occurred within the timeframe
     for (let i = 0; i < dateTimeCatches.length; i++) {
       let count = 1;
       const windowStart = dateTimeCatches[i].getTime();
-      // Look ahead in the sorted array
       for (let j = i + 1; j < dateTimeCatches.length; j++) {
         const diffInMinutes = (dateTimeCatches[j].getTime() - windowStart) / (1000 * 60);
         if (diffInMinutes <= timeframe) {
           count++;
-          if (count >= requiredCatchCount) {
+          // If a required catch count is provided and the condition is met, return immediately.
+          if (requiredCatchCount && count >= requiredCatchCount) {
             return count;
           }
         } else {
           break;
         }
       }
+      if (count > maxCount) {
+        maxCount = count;
+      }
     }
 
-    return 0;
+    return maxCount;
   },
 
   /**

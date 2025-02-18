@@ -222,8 +222,9 @@ export const rapidCatchesEvaluator: AchievementEvaluator<IAchievementConfigOneTi
 export const hourCatchesEvaluator: AchievementEvaluator<IAchievementConfigOneTime, IAchievementOneTime> = {
   key: 'hour_catches',
   evaluate: (userCatches, config, userId, currentAchievement) => {
-    const progress = CatchUtils.resolveTimeframeCatches(userCatches, config.condition.timeframe, config.condition.catchCount);
-    return buildOneTimeAchievement(userId, config, progress, progress > 0, currentAchievement);
+    const progress = CatchUtils.resolveTimeframeCatches(userCatches, config.condition.timeframe);
+    const isUnlocked = progress >= config.condition.catchCount;
+    return buildOneTimeAchievement(userId, config, progress, isUnlocked, currentAchievement);
   }
 };
 

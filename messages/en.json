@@ -162,7 +162,7 @@
   "weight_catch": {
     "Name": "Big Game",
     "Description": "Catch a fish weighing more than {value} kg",
-    "DescSingular": "Catch a fish weighing more than {value} kg",
+    "DescSingular": "Catch a fish weighing more than 1 kg",
     "Progress": "Heaviest fish:\u00A0\u00A0 {progress} kg"
   },
   "species_amount": {

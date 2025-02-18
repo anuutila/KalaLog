@@ -7,9 +7,17 @@ import { requireRole } from '@/lib/utils/authorization';
 import { handleError } from '@/lib/utils/handleError';
 import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET(request: NextRequest, { params }: { params: { userId: string } }): Promise<NextResponse<UserAchievementsResponse | ErrorResponse>> {
-  const { userId } = await params;
+export async function GET(req: NextRequest): Promise<NextResponse<UserAchievementsResponse | ErrorResponse>> {
   try {
+    // Get the catch ID from the query string
+    const { searchParams } = new URL(req.url);
+    const userId = searchParams.get('userId');
+    console.log(searchParams);
+
+    if (!userId) {
+      throw new Error('User ID is missing.');
+    }
+
     await requireRole([UserRole.ADMIN, UserRole.EDITOR, UserRole.VIEWER]);
     await dbConnect();
 
@@ -41,9 +49,16 @@ export async function GET(request: NextRequest, { params }: { params: { userId: 
   }
 }
 
-export async function PUT(request: NextRequest, { params }: { params: { userId: string } }): Promise<NextResponse<AchievementsUpdatedResponse | ErrorResponse>> {
-  const { userId } = await params;
+export async function PUT(request: NextRequest): Promise<NextResponse<AchievementsUpdatedResponse | ErrorResponse>> {
   try {
+    // Get the catch ID from the query string
+    const { searchParams } = new URL(request.url);
+    const userId = searchParams.get('userId');
+
+    if (!userId) {
+      throw new Error('User ID is missing.');
+    }
+
     await requireRole([UserRole.ADMIN, UserRole.EDITOR, UserRole.VIEWER]);
     await dbConnect();
     

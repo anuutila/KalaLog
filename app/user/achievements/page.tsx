@@ -35,12 +35,17 @@ export default function Page() {
       </Link>
     );
 
-    // Fetch the achievements
-    getAchievements();
-    
     // Cleanup when leaving the page
     return () => setActions(null);
   }, []);
+
+  useEffect(() => {
+    // Make sure we have a user to fetch achievements for (in case of refreshin the page)
+    if (jwtUserInfo?.userId) {
+      // Fetch the achievements
+      getAchievements();
+    }
+  }, [jwtUserInfo]);
 
   useEffect(() => {
     // When achievements update, compute derived states

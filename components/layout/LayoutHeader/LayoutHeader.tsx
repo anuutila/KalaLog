@@ -35,7 +35,7 @@ export default function LayoutHeader({ pages, tabs, pathname }: { pages: Page[];
               </Group>
               <Group justify="center">
                 <Text inherit fw={600}>
-                  {t(pages.find((page) => page.path === pathname)?.label)}
+                  {t(pages.find((page) => page.path === pathname)?.label ?? "Pages.KalaLog")}
                 </Text>
               </Group>
               <Group justify="end">

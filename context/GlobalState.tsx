@@ -4,6 +4,7 @@ import { showNotification } from '@/lib/notifications/notifications';
 import { ICatch } from '@/lib/types/catch';
 import { JwtUserInfo } from '@/lib/types/jwtUserInfo';
 import { CatchesResponse, UserInfoResponse } from '@/lib/types/responses';
+import { recalculateUserAchievements } from '@/lib/utils/achievementUtils';
 import { handleApiError } from '@/lib/utils/handleApiError';
 import { getCatches } from '@/services/api/catchService';
 import { getUserInfo } from '@/services/api/userService';
@@ -77,45 +78,51 @@ export const GlobalStateProvider = ({ children }: { children: React.ReactNode })
 
   useEffect(() => {
     if (catches.length > 0) {
-      const nameOccurrences: { [firstName: string]: Set<string | null> } = {};
-      const idToDisplayNameMap: { [userId: string]: string } = {};
-  
-      // Collect names and their associated user IDs (null for unregistered users)
-      catches.forEach((catchItem) => {
-        // Extract the first word from the name to ensure only the first name is stored
-        const firstName = catchItem.caughtBy.name.split(' ')[0];
-        const userId = catchItem.caughtBy.userId ?? null;
-        
-        if (!nameOccurrences[firstName]) {
-          nameOccurrences[firstName] = new Set();
-        }
-        nameOccurrences[firstName].add(userId);
-      });
-  
-      // Build display names based on conditions
-      catches.forEach((catchItem) => {
-        const { userId, name, username, lastName } = catchItem.caughtBy;
-        const userIdsForName = nameOccurrences[name];
-  
-        // Only modify registered users
-        if (userId) {
-          const hasDuplicateRegisteredUsers = [...userIdsForName].filter(id => id).length > 1;
-          const hasUnregisteredDuplicate = userIdsForName.has(null);
-  
-          if (hasDuplicateRegisteredUsers || hasUnregisteredDuplicate) {
-            // Add the display name for registered users with duplicates
-            const displayName = lastName
-              ? `${name} ${lastName.charAt(0)}.`
-              : `${name} (${username})`;
-  
-            idToDisplayNameMap[userId] = displayName;
-          }
-        }
-      });
-  
-      setDisplayNameMap(idToDisplayNameMap);
+      resolveDisplayNames();
+      // Recalculate achievements when catches change (catch added, removed or edited)
+      recalculateUserAchievements(jwtUserInfo?.userId ?? '', catches);
     }
   }, [catches]);
+
+  function resolveDisplayNames(): void {
+    const nameOccurrences: { [firstName: string]: Set<string | null> } = {};
+    const idToDisplayNameMap: { [userId: string]: string } = {};
+
+    // Collect names and their associated user IDs (null for unregistered users)
+    catches.forEach((catchItem) => {
+      // Extract the first word from the name to ensure only the first name is stored
+      const firstName = catchItem.caughtBy.name.split(' ')[0];
+      const userId = catchItem.caughtBy.userId ?? null;
+      
+      if (!nameOccurrences[firstName]) {
+        nameOccurrences[firstName] = new Set();
+      }
+      nameOccurrences[firstName].add(userId);
+    });
+
+    // Build display names based on conditions
+    catches.forEach((catchItem) => {
+      const { userId, name, username, lastName } = catchItem.caughtBy;
+      const userIdsForName = nameOccurrences[name];
+
+      // Only modify registered users
+      if (userId) {
+        const hasDuplicateRegisteredUsers = [...userIdsForName].filter(id => id).length > 1;
+        const hasUnregisteredDuplicate = userIdsForName.has(null);
+
+        if (hasDuplicateRegisteredUsers || hasUnregisteredDuplicate) {
+          // Add the display name for registered users with duplicates
+          const displayName = lastName
+            ? `${name} ${lastName.charAt(0)}.`
+            : `${name} (${username})`;
+
+          idToDisplayNameMap[userId] = displayName;
+        }
+      }
+    });
+
+    setDisplayNameMap(idToDisplayNameMap);
+  }
 
   return (
     <GlobalContext.Provider

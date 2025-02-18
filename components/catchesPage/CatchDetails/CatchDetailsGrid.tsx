@@ -1,6 +1,7 @@
 import { ActionIcon, Blockquote, Box, Fieldset, Grid, Group, Stack, Text } from '@mantine/core';
 import { IconCalendar, IconClock, IconFish, IconFishHook, IconMapPin, IconMapPin2, IconMessage, IconRipple, IconRuler2, IconUser, IconWeight } from '@tabler/icons-react';
 import { CatchDetails } from './CatchDetails';
+import classes from './CatchDetails.module.css';
 
 interface CatchDetailsGridProps {
   details: CatchDetails;
@@ -26,12 +27,9 @@ const formatDate = (date: string): string => {
 export default function CatchDetailsGrid({ details, coordinates }: CatchDetailsGridProps) {
 
   return (
-    // <Grid gutter="sm">
-    //   {Object.entries(details).map(([label, value]) => renderField(label, value))}
-    // </Grid>
     <Stack gap="lg">
 
-      <Fieldset variant='default' m={0}>
+      <Fieldset variant='default' m={0} p={'sm'} className={classes.catch_details_fieldset}>
         <Grid>
           <Grid.Col span={6}>
             <Group gap={'xs'} align='center'>
@@ -63,7 +61,7 @@ export default function CatchDetailsGrid({ details, coordinates }: CatchDetailsG
         </Grid>
       </Fieldset>
 
-      <Fieldset variant='default' m={0}>
+      <Fieldset variant='default' m={0} className={classes.catch_details_fieldset}>
         <Grid>
           <Grid.Col span={6}>
             <Group gap={'xs'} align='center'>
@@ -86,7 +84,7 @@ export default function CatchDetailsGrid({ details, coordinates }: CatchDetailsG
         </Grid>
       </Fieldset>
 
-      <Fieldset variant='default' m={0}>
+      <Fieldset variant='default' m={0} className={classes.catch_details_fieldset}>
         <Grid>
           <Grid.Col span={6}>
             <Group gap={'xs'} align='center'>
@@ -126,7 +124,7 @@ export default function CatchDetailsGrid({ details, coordinates }: CatchDetailsG
       </Fieldset>
 
       {details.lure.data && 
-      <Fieldset variant='default' m={0}>
+      <Fieldset variant='default' m={0} className={classes.catch_details_fieldset}>
         <Grid>
           <Grid.Col span={6}>
             <Group gap={'xs'} align='center'>
@@ -140,7 +138,7 @@ export default function CatchDetailsGrid({ details, coordinates }: CatchDetailsG
         </Grid>
       </Fieldset>}
 
-      <Fieldset variant='default' m={0}>
+      <Fieldset variant='default' m={0} className={classes.catch_details_fieldset}>
         <Grid>
           <Grid.Col span={6}>
             <Group gap={'xs'} align='center'>
@@ -155,7 +153,7 @@ export default function CatchDetailsGrid({ details, coordinates }: CatchDetailsG
       </Fieldset>
 
       {details.comment.data && 
-      <Fieldset variant='default' m={0}>
+      <Fieldset variant='default' m={0} className={classes.catch_details_fieldset}>
         <Group gap={'xs'} wrap='nowrap' align='top'>
           <Box h={20} w={20} pt={2}>
             <IconMessage size={20} color='var(--mantine-primary-color-5)'/>

@@ -21,6 +21,10 @@
   overflow: hidden !important;
 }
 
+.catch_details_fieldset {
+  padding: var(--mantine-spacing-md) !important;
+}
+
 @media (max-width: $mantine-breakpoint-md) {
   .controls {
     height: 80%;

@@ -14,7 +14,12 @@ export const linkCatchesToUser = async (user: Omit<IUser, 'password' | 'email'>)
       ]
     });
 
+    const catchesAlreadyLinkedToUser = await Catch.find({
+      'caughtBy.userId': user.id
+    });
+
     console.log(`Found ${unlinkedCatches.length} unlinked catches`);
+    console.log(`Found ${catchesAlreadyLinkedToUser.length} catches already linked to user ${user.firstName} (${user.username})`);
   
     const parsedUnlinkedCatches: ICatch[] = unlinkedCatches.map(catchItem => (
       ICatchSchema.parse({

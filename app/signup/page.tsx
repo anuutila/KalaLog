@@ -119,8 +119,8 @@ export default function Page() {
                 <TextInput
                   size="md"
                   label={t('LastName')}
-                  name={t('LastName')}
-                  placeholder='Sukunimi'
+                  placeholder={t('LastName')}
+                  name='lastName'
                   value={formData.lastName}
                   onChange={handleChange}
                   required

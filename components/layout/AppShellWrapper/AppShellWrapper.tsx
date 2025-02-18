@@ -27,6 +27,7 @@ const pages: Page[] = [
   {path: '/user', label: 'Pages.Account'},
   {path: '/login', label: 'Pages.Account'},
   {path: '/signup', label: 'Pages.Account'},
+  {path: '/user/achievements', label: 'Pages.Achievements'},
 ];
 
 export interface Tab {
@@ -60,7 +61,7 @@ export default function AppShellWrapper({ children }: { children: any }) {
                 <AppShell.Footer hiddenFrom="md" withBorder={false} className={classes.footer}>
                   <Group className={classes.tabs_group_footer}>
                     {tabs.map((tab) => {
-                      const isActive = pathname === tab.path || ((pathname.startsWith('/login') || pathname.startsWith('/signup')) && tab.path === '/user');
+                      const isActive = pathname === tab.path || ((pathname.startsWith('/login') || pathname.startsWith('/signup') || pathname.startsWith('/user')) && tab.path === '/user');
                       return (
                         <CustomTab
                           key={tab.value}

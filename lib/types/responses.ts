@@ -1,3 +1,4 @@
+import { IAchievement } from "./achievement";
 import { ICatch } from "./catch";
 import { JwtUserInfo } from "./jwtUserInfo";
 
@@ -68,6 +69,12 @@ export interface UsersByFirstNameResponseData {
 }
 
 export type UsersByFirstNameResponse = Required<BaseResponse<UsersByFirstNameResponseData>>;
+
+export type AllAchievementsResponse = Required<BaseResponse<IAchievement[]>>;
+
+export type UserAchievementsResponse = Required<BaseResponse<IAchievement[]>>;
+
+export type AchievementsUpdatedResponse = BaseResponse;
 
 // Common error response type
 export interface ErrorResponse {

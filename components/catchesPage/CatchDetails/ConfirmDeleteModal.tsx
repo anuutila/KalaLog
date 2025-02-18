@@ -17,8 +17,7 @@ export default function ConfirmDeleteModal({ onConfirm, t }: ConfirmDeleteModalP
   const placeholder = t('Modals.DeleteCatch.Placeholder');
   let confirmationText = '';
 
-  modals.open({
-    id: 'confirm-delete-modal',
+  const modalId = modals.open({
     title: title,
     centered: true,
     withCloseButton: true,
@@ -37,7 +36,7 @@ export default function ConfirmDeleteModal({ onConfirm, t }: ConfirmDeleteModalP
             // Dynamically update modal when input changes
             if (confirmationText === confirmationtext) {
               modals.updateModal({
-                modalId: 'confirm-delete-modal',
+                modalId,
                 children: (
                   <>
                     <Text size="md" mb="md">
@@ -45,7 +44,7 @@ export default function ConfirmDeleteModal({ onConfirm, t }: ConfirmDeleteModalP
                     </Text>
                     <TextInput mb={'lg'} value={confirmationText} onChange={() => {}} disabled />
                     <Group justify='end' mt="md">
-                      <Button variant="default" onClick={() => modals.close('confirm-delete-modal')}>
+                      <Button variant="default" onClick={() => modals.close(modalId)}>
                         {cancelLabel}
                       </Button>
                       <Button
@@ -54,7 +53,7 @@ export default function ConfirmDeleteModal({ onConfirm, t }: ConfirmDeleteModalP
                         leftSection={<IconTrash size={20}/>}
                         onClick={() => {
                           onConfirm();
-                          modals.close('confirm-delete-modal');
+                          modals.close(modalId);
                         }}
                       >
                         {confirmLabel}
@@ -67,7 +66,7 @@ export default function ConfirmDeleteModal({ onConfirm, t }: ConfirmDeleteModalP
           }}
         />
         <Group justify='end' mt="md">
-          <Button variant="default" onClick={() => modals.close('confirm-delete-modal')}>
+          <Button variant="default" onClick={() => modals.close(modalId)}>
             {cancelLabel}
           </Button>
           <Button disabled leftSection={<IconTrash size={20}/>}>{confirmLabel}</Button>

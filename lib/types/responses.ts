@@ -74,7 +74,9 @@ export type AllAchievementsResponse = Required<BaseResponse<IAchievement[]>>;
 
 export type UserAchievementsResponse = Required<BaseResponse<IAchievement[]>>;
 
-export type AchievementsUpdatedResponse = BaseResponse;
+export type AchievementsUpdatedResponse = Required<BaseResponse<{ count: number }>>;
+
+export type UserCatchesLinkedResponse = Required<BaseResponse<{ count: number; linkedName: string }>>;
 
 // Common error response type
 export interface ErrorResponse {

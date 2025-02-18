@@ -23,6 +23,8 @@ function buildTieredAchievement(
     : config.baseTiers.findIndex((tier) => validProgress < tier.threshold);
   const isUnlocked = currentTier > 0;
 
+  if (!currentAchievement && progress === 0) return null;
+
   const totalXP = config.baseTiers.reduce(
     (acc, tier, index) => (index < currentTier ? acc + tier.xp : acc),
     0
@@ -60,6 +62,8 @@ function buildOneTimeAchievement(
   isUnlocked: boolean,
   currentAchievement?: IAchievementOneTime
 ): IAchievementOneTime | null {
+
+  if (!currentAchievement && progress === 0) return null;
   
   const dateUnlocked =
     !currentAchievement || !currentAchievement.dateUnlocked
@@ -101,7 +105,7 @@ export const weightCatchEvaluator: AchievementEvaluator<IAchievementConfigTiered
   key: 'weight_catch',
   evaluate: (userCatches, config, userId, currentAchievement) => {
     const weights = CatchUtils.getUniqueWeights(userCatches);
-    const progress = Math.max(...weights) || 0;
+    const progress = Math.max(0, ...weights) || 0;
     return buildTieredAchievement(progress, config, userId, currentAchievement);
   },
 };

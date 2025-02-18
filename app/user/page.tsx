@@ -8,13 +8,14 @@ import { UserRole } from "@/lib/types/user";
 import { handleApiError } from "@/lib/utils/handleApiError";
 import { logout } from "@/services/api/authservice";
 import { Button, Center, Container, Group, LoadingOverlay, Modal, Stack, Text, Title } from "@mantine/core";
-import { IconLogout, IconUser, IconUserCog } from "@tabler/icons-react";
+import { IconLogout, IconTrophy, IconUser, IconUserCog } from "@tabler/icons-react";
 import { useTranslations } from "next-intl";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function Page() {
-  const { isLoggedIn, jwtUserInfo, setIsLoggedIn, setJwtUserInfo } = useGlobalState();
+  const { isLoggedIn, jwtUserInfo, catches, setIsLoggedIn, setJwtUserInfo } = useGlobalState();
   const [adminPanelOpen, setAdminPanelOpen] = useState(false);
   const router = useRouter();
   const t = useTranslations();
@@ -59,8 +60,17 @@ export default function Page() {
             <IconUser />
             <Text>{t('UserPage.WIP')}</Text>
           </Group>
+          {isLoggedIn && 
+            <Link href={'/user/achievements'} passHref prefetch>
+            <Button
+              size="md"
+              leftSection={<IconTrophy />}
+            >
+              {t('UserPage.Achievements')}
+            </Button>
+          </Link>
+          }
           {isLoggedIn && <Button size="md" onClick={handleLogout} leftSection={<IconLogout />}>{t('UserPage.Logout')}</Button>}
-
           {isLoggedIn && jwtUserInfo?.role === UserRole.ADMIN && <Button leftSection={<IconUserCog />} size="md" onClick={() => setAdminPanelOpen(true)}>{t('UserPage.AdminPanel')}</Button>}
           <Modal
             opened={adminPanelOpen}

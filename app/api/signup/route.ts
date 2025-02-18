@@ -6,7 +6,7 @@ import bcrypt from 'bcryptjs';
 import { handleError } from '@/lib/utils/handleError';
 import { ErrorResponse, SignUpResponse } from '@/lib/types/responses';
 import { CustomError } from '@/lib/utils/customError';
-import { linkCatchesToNewUser } from '@/lib/utils/apiUtils';
+import { linkCatchesToUser } from '@/lib/utils/apiUtils';
 
 export async function POST(req: NextRequest): Promise<NextResponse<SignUpResponse | ErrorResponse>> {
   try {
@@ -40,7 +40,7 @@ export async function POST(req: NextRequest): Promise<NextResponse<SignUpRespons
       id: newUser._id.toString(),
     });
 
-    const linkingResult = await linkCatchesToNewUser(parsedUser);
+    const linkingResult = await linkCatchesToUser(parsedUser);
 
     return NextResponse.json<SignUpResponse>(
       { 

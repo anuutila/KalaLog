@@ -1,7 +1,7 @@
 import dbConnect from '@/lib/mongo/dbConnect';
 import Achievement from '@/lib/mongo/models/achievement';
 import { AchievementSchema, IAchievement } from '@/lib/types/achievement';
-import { ErrorResponse, UserAchievementsResponse } from '@/lib/types/responses';
+import { AchievementsUpdatedResponse, ErrorResponse, UserAchievementsResponse } from '@/lib/types/responses';
 import { UserRole } from '@/lib/types/user';
 import { requireRole } from '@/lib/utils/authorization';
 import { handleError } from '@/lib/utils/handleError';
@@ -41,7 +41,7 @@ export async function GET(request: NextRequest, { params }: { params: { userId: 
   }
 }
 
-export async function PUT(request: NextRequest, { params }: { params: { userId: string } }) {
+export async function PUT(request: NextRequest, { params }: { params: { userId: string } }): Promise<NextResponse<AchievementsUpdatedResponse | ErrorResponse>> {
   const { userId } = await params;
   try {
     await requireRole([UserRole.ADMIN, UserRole.EDITOR, UserRole.VIEWER]);
@@ -68,10 +68,10 @@ export async function PUT(request: NextRequest, { params }: { params: { userId: 
       );
     }
 
-    return NextResponse.json<UserAchievementsResponse>(
+    return NextResponse.json<AchievementsUpdatedResponse>(
       {
         message: 'User achievements updated successfully.',
-        data: validatedAchievements,
+        data: { count: validatedAchievements.length },
       },
       { status: 200 }
     );

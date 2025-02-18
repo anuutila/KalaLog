@@ -14,15 +14,18 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
 
     // Fetch all users except admin users
     const users = await User.find({ role: { $ne: UserRole.ADMIN } })
-      .select('id firstName username role') // Only fetch necessary fields
+      .select('id firstName lastName username role') // Only fetch necessary fields
       .lean();
 
     const formattedUsers = users.map((user) => ({
       id: user._id?.toString(),
       username: user.username,
       firstName: user.firstName,
+      lastName: user.lastName,
       role: user.role,
     }));
+
+    console.log('Admin panel user data:', formattedUsers);
 
     return NextResponse.json(
       { message: 'Users retrieved successfully', users: formattedUsers },

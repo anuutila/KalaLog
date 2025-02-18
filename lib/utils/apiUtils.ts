@@ -3,7 +3,7 @@ import Catch from '@lib/mongo/models/catch';
 import { IUser } from '@/lib/types/user';
 import { ICatch, ICatchSchema } from '@/lib/types/catch';
 
-export const linkCatchesToNewUser = async (newUser: IUser): Promise<{ count: number; linkedName: string }> => {
+export const linkCatchesToUser = async (user: Omit<IUser, 'password' | 'email'>): Promise<{ count: number; linkedName: string }> => {
   await dbConnect();
 
   try {
@@ -29,8 +29,8 @@ export const linkCatchesToNewUser = async (newUser: IUser): Promise<{ count: num
     ));
   
   
-    const firstName = newUser.firstName;
-    const lastNameInitial = newUser.lastName.charAt(0).toUpperCase();
+    const firstName = user.firstName;
+    const lastNameInitial = user.lastName.charAt(0).toUpperCase();
   
     const catchesWithExactName: (string | undefined)[] = [];
     const catchesWithInitial: (string | undefined)[] = [];
@@ -77,16 +77,17 @@ export const linkCatchesToNewUser = async (newUser: IUser): Promise<{ count: num
     if (catchesToLink.length > 0) {
       const updateResult = await Catch.updateMany(
         { _id: { $in: catchesToLink } },
-        { $set: { 'caughtBy.name': newUser.firstName, 'caughtBy.userId': newUser.id, 'caughtBy.username': newUser.username, 'caughtBy.lastName': newUser.lastName } }
+        { $set: { 'caughtBy.name': user.firstName, 'caughtBy.userId': user.id, 'caughtBy.username': user.username, 'caughtBy.lastName': user.lastName } }
       );
   
-      console.log(`Linked ${updateResult.modifiedCount} catches to user ${newUser.firstName} (${newUser.username})`);
+      console.log(`Linked ${updateResult.modifiedCount} catches to user ${user.firstName} (${user.username})`);
       return { count: updateResult.modifiedCount, linkedName };  // Return the number of linked catches
     } else {
       console.log('No catches were linked to this user.');
       return { count: 0, linkedName };
     }
   } catch (error) {
+    console.error(`An error occurred while linking catches to the new user: ${error}`);
     throw new Error(`An error occurred while linking catches to the new user`);
   }
 };

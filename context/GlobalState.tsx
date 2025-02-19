@@ -1,13 +1,16 @@
 'use client';
 
 import { showNotification } from '@/lib/notifications/notifications';
+import { IAchievement } from '@/lib/types/achievement';
 import { ICatch } from '@/lib/types/catch';
 import { JwtUserInfo } from '@/lib/types/jwtUserInfo';
-import { CatchesResponse, UserInfoResponse } from '@/lib/types/responses';
+import { CatchesResponse, UserAchievementsResponse, UserInfoResponse } from '@/lib/types/responses';
 import { recalculateUserAchievements } from '@/lib/utils/achievementUtils';
 import { handleApiError } from '@/lib/utils/handleApiError';
+import { getUserAchievements } from '@/services/api/achievementService';
 import { getCatches } from '@/services/api/catchService';
 import { getUserInfo } from '@/services/api/userService';
+import { set } from 'mongoose';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
 interface GlobalState {
@@ -21,6 +24,7 @@ interface GlobalState {
   setJwtUserInfo: React.Dispatch<React.SetStateAction<JwtUserInfo | null>>;
   fetchCatches: () => Promise<void>;
   displayNameMap: { [userId: string]: string };
+  achievements: IAchievement[];
 }
 
 const GlobalContext = createContext<GlobalState | undefined>(undefined);
@@ -33,6 +37,7 @@ export const GlobalStateProvider = ({ children }: { children: React.ReactNode })
   const [loadingCatches, setLoadingCatches] = useState(false);
   // Map of user IDs to display names that are used if there are duplicae names
   const [displayNameMap, setDisplayNameMap] = useState<{ [userId: string]: string }>({}); 
+  const [achievements, setAchievements] = useState<IAchievement[]>([]);
 
   // Fetch login status
   useEffect(() => {
@@ -71,18 +76,42 @@ export const GlobalStateProvider = ({ children }: { children: React.ReactNode })
     }
   };
 
+  async function fetchAchievements() {
+    let currentAchievements: IAchievement[] = [];
+    try {
+      const UserAchievementsResponse: UserAchievementsResponse = await getUserAchievements(jwtUserInfo?.userId ?? '');
+      currentAchievements = UserAchievementsResponse.data;
+    } catch (error) {
+      handleApiError(error, 'achievement fetching');
+    }
+    setAchievements(currentAchievements);
+  }
+
   // Load catches once on initial load
   useEffect(() => {
     fetchCatches();
   }, []);
 
+  // Load achievements when user is logged in
   useEffect(() => {
-    if (catches.length > 0) {
-      resolveDisplayNames();
-      // Recalculate achievements when catches change (catch added, removed or edited)
-      recalculateUserAchievements(jwtUserInfo?.userId ?? '', catches);
+    if (jwtUserInfo?.userId) {
+      fetchAchievements();
     }
-  }, [catches]);
+  }, [jwtUserInfo]);
+
+  useEffect(() => {
+    resolveDisplayNames();
+    if (catches.length > 0 && isLoggedIn) {
+      // Recalculate achievements when catches change (catch added, removed or edited)
+      resolveUserAchievements();
+    }
+  }, [catches, isLoggedIn]);
+
+  async function resolveUserAchievements() {
+    const { updates, count } = await recalculateUserAchievements(jwtUserInfo?.userId ?? '', catches);
+    setAchievements(updates);
+  }
+
 
   function resolveDisplayNames(): void {
     const nameOccurrences: { [firstName: string]: Set<string | null> } = {};
@@ -137,6 +166,7 @@ export const GlobalStateProvider = ({ children }: { children: React.ReactNode })
         setJwtUserInfo,
         fetchCatches,
         displayNameMap,
+        achievements
       }}
     >
       {children}

@@ -53,6 +53,7 @@ export async function POST(req: NextRequest): Promise<NextResponse<LoginResponse
     const jwtUserInfo: JwtUserInfo = {
       username: validatedUser.username,
       firstname: validatedUser.firstName,
+      lastname: validatedUser.lastName,
       userId: validatedUser.id || '',
       role: validatedUser.role || UserRole.VIEWER,
     };
@@ -67,7 +68,7 @@ export async function POST(req: NextRequest): Promise<NextResponse<LoginResponse
     const response = NextResponse.json<LoginResponse>({ message: `Login successful. Hi ${validatedUser.firstName}! 👋`, data: jwtUserInfo }, { status: 200 });
 
     const cookieStore = await cookies();
-    cookieStore.set('KALALOG_TOKEN', token, { httpOnly: true, secure: true });
+    cookieStore.set('KALALOG_TOKEN', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production' });
 
     return response;
   } catch (error: unknown) {

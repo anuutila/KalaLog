@@ -6,7 +6,7 @@ import { getUserAchievements, updateAchievements } from "@/services/api/achievem
 import { handleApiError } from "./handleApiError";
 import { AchievementsUpdatedResponse, UserAchievementsResponse } from "../types/responses";
 
-export async function recalculateUserAchievements(userId: string, catches: ICatch[]): Promise<{count: number}> {
+export async function recalculateUserAchievements(userId: string, catches: ICatch[]): Promise<{updates: IAchievement[], count: number}> {
   const userCatches = catches.filter(c => c.caughtBy.userId === userId);
 
   try {
@@ -27,10 +27,10 @@ export async function recalculateUserAchievements(userId: string, catches: ICatc
     const updateResponse: AchievementsUpdatedResponse = await updateAchievements(updates, userId);
     console.log(updateResponse.message);
 
-    return { count: updateResponse.data.count };
+    return { updates, count: updateResponse.data.count };
   } catch (error) {
     handleApiError(error, 'achievement updating');
   }
 
-  return { count: 0 };
+  return { updates: [], count: 0 };
 }

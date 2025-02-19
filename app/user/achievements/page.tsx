@@ -3,29 +3,25 @@
 import { useEffect, useState } from 'react';
 import { useHeaderActions } from "@/context/HeaderActionsContext";
 import { IAchievement, IAchievementConfig, IAchievementConfigTiered, IAchievementTiered } from "@/lib/types/achievement";
-import { useTranslations } from "next-intl";
-import { ActionIcon, Center, Container, Group, Stack, Title } from '@mantine/core';
+import { ActionIcon, Center, Container, Group, Skeleton, Stack, Title } from '@mantine/core';
 import { IconChevronLeft, IconStarFilled } from '@tabler/icons-react';
 import Link from 'next/link';
 import AchievementItem from '@/components/achievements/AchievementItem/AchievementItem';
 import { allAchievements } from '@/achievements/achievementConfigs';
-import { UserAchievementsResponse } from '@/lib/types/responses';
-import { handleApiError } from '@/lib/utils/handleApiError';
-import { getUserAchievements } from '@/services/api/achievementService';
 import { useGlobalState } from '@/context/GlobalState';
 
 export default function Page() {
-  const tAP = useTranslations("AchievementsPage");
   const { setActions } = useHeaderActions();
-  const { jwtUserInfo } = useGlobalState();
-  const [achievements, setAchievements] = useState<IAchievement[]>([]);
+  const { achievements } = useGlobalState();
   const [userAchDict, setUserAchDict] = useState<Record<string, IAchievement>>({});
   const [sortedAchievements, setSortedAchievements] = useState<IAchievementConfig[]>([]);
   const [userStars, setUserStars] = useState<number>(0);
   const [totalStars, setTotalStars] = useState<number>(0);
   const [xp, setXP] = useState<number>(0);
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
+    setLoading(true);
     // Set the header actions for this page
     setActions(
       <Link href="/user" passHref prefetch style={{ height: 'fit-content', display: 'flex', alignItems: 'center' }}>
@@ -38,15 +34,7 @@ export default function Page() {
     // Cleanup when leaving the page
     return () => setActions(null);
   }, []);
-
-  useEffect(() => {
-    // Make sure we have a user to fetch achievements for (in case of refreshin the page)
-    if (jwtUserInfo?.userId) {
-      // Fetch the achievements
-      getAchievements();
-    }
-  }, [jwtUserInfo]);
-
+  
   useEffect(() => {
     // When achievements update, compute derived states
     const newUserAchDict = achievements.reduce((acc, ach) => {
@@ -59,18 +47,8 @@ export default function Page() {
     sortAchievements(achievements, newUserAchDict);
     calculateStars(achievements);
     calculateXP(achievements);
+    setLoading(false);
   }, [achievements]);
-
-  async function getAchievements() {
-    let currentAchievements: IAchievement[] = [];
-    try {
-      const UserAchievementsResponse: UserAchievementsResponse = await getUserAchievements(jwtUserInfo?.userId ?? '');
-      currentAchievements = UserAchievementsResponse.data;
-    } catch (error) {
-      handleApiError(error, 'achievement fetching');
-    }
-    setAchievements(currentAchievements);
-  }
 
   function sortAchievements(achievementsData: IAchievement[], userAchDictData: Record<string, IAchievement>) {
     if (!achievementsData.length) return;
@@ -110,7 +88,7 @@ export default function Page() {
 
   return (
     <Container py={'md'} px={'xs'} size={'sm'}>
-      <Center>
+      <Center p={'md'}>
         <Group gap={0} mb={'md'}>
           <Title order={2} style={{ color: 'white' }} lh={1}>
             {`${userStars} / ${totalStars}`}
@@ -122,13 +100,17 @@ export default function Page() {
         </Group>
       </Center>
       <Stack gap={'md'}>
-        {sortedAchievements.map((config: IAchievementConfig) => (
-          <AchievementItem
-            key={config.key}
-            achievementConfig={config}
-            userAchievement={userAchDict[config.key]}
-          />
-        ))}
+        {loading ? Array.from({ length: 6 }).map((_, index) => (
+          <Skeleton key={index} height={100} radius="lg" />))
+          :
+          sortedAchievements.map((config: IAchievementConfig) => (
+            <AchievementItem
+              key={config.key}
+              achievementConfig={config}
+              userAchievement={userAchDict[config.key]}
+            />
+          ))
+        }
       </Stack>
     </Container>
   );

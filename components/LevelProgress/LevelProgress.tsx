@@ -28,9 +28,9 @@ export default function LevelProgress({ totalXP }: LevelProgressProps) {
   const progressPercent = progressToNextLevel(totalXP, currentLevel) * 100;
 
   return (
-    <Group align="center" gap={0} pr={30}>
+    <Group align="center" gap={0} justify="center" pos={'relative'}>
       <LevelIcon level={calculateLevel(totalXP)} />
-      <Group gap={'sm'} wrap="nowrap" w={120} align="center">
+      <Group gap={'sm'} wrap="nowrap" ml={35} w={120} align="center">
         <Box h={'1.5rem'} w={'100%'}>
           <Progress.Root h={'100%'}  bg={'var(--mantine-color-dark-5)'} bd={'4px solid var(--mantine-color-body)'} transitionDuration={700}>
             <Progress.Section value={progressPercent} />

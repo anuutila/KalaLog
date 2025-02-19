@@ -85,16 +85,16 @@ export default function LevelIcon({
   const IconComponent = levelIcons[clampedLevel];
 
   return (
-    <Box pos={'relative'} h={70} w={70}>
-      <Box pos={'absolute'} top={0} left={20} style={{ zIndex: 1 }} h={70} w={70}>
+    <Box pos={'absolute'} h={70} w={70}>
+      <Box pos={'absolute'} top={0} left={-60} style={{ zIndex: 1 }} h={70} w={70}>
         <Center w={'100%'} h={'100%'}>
           <IconRosetteFilled color="var(--mantine-primary-color-filled)" size={60} stroke={1} />
         </Center>
       </Box>
-      <Box pos={'absolute'} top={0} left={20} style={{ zIndex: 2 }}>
+      <Box pos={'absolute'} top={0} left={-60} style={{ zIndex: 2 }}>
         <IconRosette size={70} color="var(--mantine-color-body)" stroke={1} />
       </Box>
-      <Box pos={'absolute'} top={0} left={20} style={{ zIndex: 2 }} h={70} w={70}>
+      <Box pos={'absolute'} top={0} left={-60} style={{ zIndex: 2 }} h={70} w={70}>
         <Center w={'100%'} h={'100%'}>
           <IconComponent size={size} color={color} stroke={stroke} />
         </Center>

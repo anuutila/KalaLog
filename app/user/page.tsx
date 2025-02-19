@@ -62,11 +62,11 @@ export default function Page() {
         <Stack align="center" gap={'xl'} justify="space-between" h={'100%'}>
           <Stack align="center" gap={'xl'}>
 
-            <Stack align="center" gap={0}>
+            <Stack align="center" gap={0} mb={50}>
               <Avatar radius="100%" size={150} name={`${jwtUserInfo?.firstname} ${jwtUserInfo?.lastname ?? ''}`} color="initials" />
-              <Box style={{ transform: 'translateY(-41%) translateX(-0%)' }}>
-                <LevelProgress totalXP={totalXP}/>
-                <Center>
+              <Box style={{ transform: 'translateY(-25%) translateX(-0%)' }}>
+                <LevelProgress totalXP={totalXP ?? 0}/>
+                <Center mt={'lg'}>
                   <Title order={1} c={'white'}>{jwtUserInfo?.firstname} {jwtUserInfo?.lastname}</Title>
                 </Center>
               </Box>

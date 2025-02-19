@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@lib/mongo/dbConnect';
 import User from '@lib/mongo/models/user'; // Mongoose model
-import { IUser, IUserSchema } from '@lib/types/user'; // Zod schema
+import { IUser, IUserSchema, UserRole } from '@lib/types/user'; // Zod schema
 import bcrypt from 'bcryptjs';
 import { handleError } from '@/lib/utils/handleError';
 import { ErrorResponse, SignUpResponse } from '@/lib/types/responses';
@@ -28,6 +28,7 @@ export async function POST(req: NextRequest): Promise<NextResponse<SignUpRespons
     // Create the user
     const newUser = await User.create({
       ...userData,
+      role: UserRole.CREATOR, // Default role
       password: hashedPassword, // Store hashed password
     });
 

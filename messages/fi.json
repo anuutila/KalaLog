@@ -189,7 +189,7 @@
       "Progress": "Ahvenia yhteensä:\u00A0\u00A0 {progress}"
     },
     "zander_amount": {
-      "Name": "Kuhamestari",
+      "Name": "Kuhaneuvos",
       "Description": "Nappaa {value} kuhaa",
       "DescSingular": "Nappaa yksi kuha",
       "Progress": "Kuhia yhteensä:\u00A0\u00A0 {progress}"
@@ -239,7 +239,7 @@
       "Description": "Nappaa kaksi kalaa 5 minuutin sisällä"
     },
     "hour_catches": {
-      "Name": "Syöntiaika",
+      "Name": "Nyt syö!",
       "Description": "Nappaa 8 kalaa tunnin sisällä",
       "Progress": "Eniten kaloja tunnissa:\u00A0\u00A0 {progress}"
     },

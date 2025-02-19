@@ -2,14 +2,14 @@ import dbConnect from "@/lib/mongo/dbConnect";
 import Achievement from "@/lib/mongo/models/achievement";
 import { AchievementSchema, IAchievement } from "@/lib/types/achievement";
 import { AllAchievementsResponse, ErrorResponse } from "@/lib/types/responses";
-import { UserRole } from "@/lib/types/user";
+import { allRoles } from "@/lib/types/user";
 import { requireRole } from "@/lib/utils/authorization";
 import { handleError } from "@/lib/utils/handleError";
 import { NextResponse } from "next/server";
 
 export async function GET(): Promise<NextResponse<AllAchievementsResponse | ErrorResponse>> {
   try {
-    await requireRole([UserRole.ADMIN, UserRole.EDITOR, UserRole.VIEWER]);
+    await requireRole(allRoles);
     await dbConnect();
 
     console.log('Fetching all user achievements...');

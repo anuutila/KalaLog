@@ -215,7 +215,8 @@ export const rapidCatchesEvaluator: AchievementEvaluator<IAchievementConfigOneTi
   key: 'rapid_catches',
   evaluate: (userCatches, config, userId, currentAchievement) => {
     const progress = CatchUtils.resolveTimeframeCatches(userCatches, config.condition.timeframe, config.condition.catchCount);
-    return buildOneTimeAchievement(userId, config, progress, progress > 0, currentAchievement);
+    const isUnlocked = progress >= config.condition.catchCount;
+    return buildOneTimeAchievement(userId, config, progress, isUnlocked, currentAchievement);
   }
 };
 

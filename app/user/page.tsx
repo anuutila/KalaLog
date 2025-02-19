@@ -92,7 +92,7 @@ export default function Page() {
             >
               <AdminPanel />
             </Modal>
-            {isLoggedIn && jwtUserInfo?.role === UserRole.ADMIN && <Button variant="subtle" leftSection={<IconUserCog />} size="md" onClick={() => setAdminPanelOpen(true)}>{t('UserPage.AdminPanel')}</Button>}
+            {isLoggedIn && (jwtUserInfo?.role === UserRole.ADMIN || jwtUserInfo?.role === UserRole.SUPERADMIN) && <Button variant="subtle" leftSection={<IconUserCog />} size="md" onClick={() => setAdminPanelOpen(true)}>{t('UserPage.AdminPanel')}</Button>}
             {isLoggedIn && <Button variant="subtle" size="md" onClick={handleLogout} leftSection={<IconLogout />}>{t('UserPage.Logout')}</Button>}
           </Stack>
 

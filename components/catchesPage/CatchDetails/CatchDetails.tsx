@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { ICatch } from "@/lib/types/catch";
 import { ActionIcon, Box, Container, Group, Stack, Title } from '@mantine/core';
 import { IconPencil, IconTrash, IconX } from '@tabler/icons-react';
@@ -18,7 +18,7 @@ import CancelEditModal from './CancelEditModal';
 import { deleteCatch } from '@/services/api/catchService';
 import { handleApiError } from '@/lib/utils/handleApiError';
 import { getSignedImageURLs } from '@/services/api/imageService';
-import { UserRole } from '@/lib/types/user';
+import { creatorRoles, editorRoles, UserRole } from '@/lib/types/user';
 import { useTranslations } from 'next-intl';
 
 export interface CatchDetails {
@@ -65,10 +65,15 @@ export default function CatchDetails({
   const [isInEditView, setIsInEditView] = useState(false);
   const [imagesToShow, setImagesToShow] = useState<string[]>([]);
 
+  const canViewImages = useMemo(() => {
+    if (!isLoggedIn || !jwtUserInfo) return false;
+    return editorRoles.includes(jwtUserInfo.role) || jwtUserInfo?.role === UserRole.TRUSTED_CREATOR || selectedCatch.caughtBy.userId === jwtUserInfo?.userId
+  }, [isLoggedIn, jwtUserInfo, selectedCatch]);
+
   useEffect(() => {
     const fetchSignedImageURLs = async () => {
       if (selectedCatch.images && selectedCatch.images.length > 0) {
-        if (jwtUserInfo?.role === UserRole.EDITOR || jwtUserInfo?.role === UserRole.ADMIN) {
+        if (canViewImages) {
           try {
             const publicIds = selectedCatch.images.map(img => img.publicId);
             const signedImageURLsResponse: SignedImageURLsResponse = await getSignedImageURLs(publicIds);
@@ -152,6 +157,15 @@ export default function CatchDetails({
     }
   };
 
+  const canEdit = useMemo(() => {
+    if (!isLoggedIn || !jwtUserInfo) return false;
+    if (editorRoles.includes(jwtUserInfo.role)) return true;
+    if (creatorRoles.includes(jwtUserInfo.role)) {
+      return jwtUserInfo.userId === selectedCatch.caughtBy.userId;
+    }
+    return false;
+  }, [isLoggedIn, jwtUserInfo, selectedCatch]);
+
   // Determine if fullscreen should be available
   const isFallbackImage = imagesToShow.length === 1 && imagesToShow[0] === defaultPlaceholder;
 
@@ -201,14 +215,14 @@ export default function CatchDetails({
                   variant="light"
                   color="blue"
                   onClick={openConfirmEditModal}
-                  disabled={!isLoggedIn || jwtUserInfo?.role === UserRole.VIEWER}
+                  disabled={!canEdit}
                 >
                   <IconPencil size={20} />
                 </ActionIcon>
               )}
               {/* Delete Button */}
               {!isInEditView && (
-                <ActionIcon size="lg" variant="light" color="red" disabled={!isLoggedIn || jwtUserInfo?.role === UserRole.VIEWER} onClick={() => openConfirmDeleteModal()}>
+                <ActionIcon size="lg" variant="light" color="red" disabled={!canEdit} onClick={() => openConfirmDeleteModal()}>
                   <IconTrash size={20} />
                 </ActionIcon>
               )}

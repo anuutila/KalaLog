@@ -8,7 +8,7 @@ import { useLoadingOverlay } from '@/context/LoadingOverlayContext';
 import { showNotification } from '@/lib/notifications/notifications';
 import { ICatch } from '@/lib/types/catch';
 import { CatchCreaetedResponse, UsersByFirstNameResponse } from '@/lib/types/responses';
-import { UserRole } from '@/lib/types/user';
+import { editorRoles, UserRole } from '@/lib/types/user';
 import { CatchUtils } from '@/lib/utils/catchUtils';
 import { defaultSort, optimizeImage } from '@/lib/utils/utils';
 import { Alert, Autocomplete, Button, Checkbox, Combobox, Container, Fieldset, Group, Input, InputBase, NumberInput, rem, Stack, Textarea, TextInput, Title, useCombobox } from '@mantine/core';
@@ -83,6 +83,7 @@ export default function Page() {
   const [userLinkingDone, setUserLinkingDone] = useState(false);
   const [showUserLinkingDropdown, setShowUserLinkingDropdown] = useState(false);
   const [isLinkingUser, setIsLinkingUser] = useState(false);
+  const [userAutomaticallyLinked, setUserAutomaticallyLinked] = useState(false);
 
   const imageUploadFormRef = useRef<ImageUploadFormRef>(null);
   const scrollPositionRef = useRef(0);
@@ -91,6 +92,17 @@ export default function Page() {
     onDropdownClose: () => userCombobox.resetSelectedOption(),
     onDropdownOpen: () => userCombobox.updateSelectedOptionIndex('active'),
   });
+
+  // The angler name is automatically filled in for users who do not have editor rights
+  useEffect(() => {
+    if (jwtUserInfo?.role && !editorRoles.includes(jwtUserInfo?.role)) {
+      setUserAutomaticallyLinked(true);
+      setUserLinkingDone(true);
+      setAnglerName(jwtUserInfo.firstname);
+      setLinkedUser({ id: jwtUserInfo.userId, username: jwtUserInfo.username, firstName: jwtUserInfo.firstname, lastName: jwtUserInfo.lastname });
+    }
+  }, [jwtUserInfo]);
+
 
   useEffect(() => {
     setDisableScroll(fullscreenImage !== null);
@@ -634,6 +646,7 @@ export default function Page() {
               defaultDropdownOpened={false}
               leftSection={<IconUser size={20} />}
               leftSectionPointerEvents='none'
+              disabled={userAutomaticallyLinked}
             />
 
             {showUserLinkingDropdown && (

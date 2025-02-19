@@ -15,6 +15,7 @@ import { optimizeImage } from '@/lib/utils/utils';
 import { getUsersByFirstName } from '@/services/api/userService';
 import classes from './CatchEditForm.module.css';
 import { useTranslations } from 'next-intl';
+import { editorRoles } from '@/lib/types/user';
 
 interface CatchEditFormProps {
   catchData: ICatch;
@@ -25,7 +26,7 @@ interface CatchEditFormProps {
 }
 
 export default function CatchEditForm({ catchData, setIsInEditView, setSelectedCatch, openCancelEditModal, setDisableScroll }: CatchEditFormProps) {
-  const { catches, setCatches } = useGlobalState();
+  const { catches, setCatches, jwtUserInfo } = useGlobalState();
   const { showLoading, hideLoading } = useLoadingOverlay();
   const t = useTranslations();
   const tNewCatch = useTranslations('NewCatchPage');
@@ -69,11 +70,22 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
   const [showUserLinkingDropdown, setShowUserLinkingDropdown] = useState(false);
   const [isLinkingUser, setIsLinkingUser] = useState(false);
   const [nameEdited, setNameEdited] = useState(false);
+  const [userAutomaticallyLinked, setUserAutomaticallyLinked] = useState(false);
 
   const userCombobox = useCombobox({
     onDropdownClose: () => userCombobox.resetSelectedOption(),
     onDropdownOpen: () => userCombobox.updateSelectedOptionIndex('active'),
   });
+
+  // The angler name is automatically filled in for users who do not have editor rights
+  useEffect(() => {
+    if (jwtUserInfo?.role && !editorRoles.includes(jwtUserInfo?.role)) {
+      setUserAutomaticallyLinked(true);
+      setUserLinkingDone(true);
+      setAnglerName(jwtUserInfo.firstname);
+      setLinkedUser({ id: jwtUserInfo.userId, username: jwtUserInfo.username, firstName: jwtUserInfo.firstname, lastName: jwtUserInfo.lastname });
+    }
+  }, [jwtUserInfo]);
 
   useEffect(() => {
     setDisableScroll(fullscreenImage !== null);
@@ -472,6 +484,7 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
               defaultDropdownOpened={false}
               leftSection={<IconUser size={20} />}
               leftSectionPointerEvents='none'
+              disabled={userAutomaticallyLinked}
             />
 
             {showUserLinkingDropdown && (

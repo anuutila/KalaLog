@@ -1,6 +1,7 @@
 import dbConnect from '@/lib/mongo/dbConnect';
 import User from '@/lib/mongo/models/user';
-import { UserRole } from '@/lib/types/user';
+import { AuthorizationResponse } from '@/lib/types/responses';
+import { adminRoles, UserRole } from '@/lib/types/user';
 import { requireRole } from '@/lib/utils/authorization';
 import { handleError } from '@/lib/utils/handleError';
 import { NextRequest, NextResponse } from 'next/server';
@@ -9,15 +10,24 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
   try {
     await dbConnect();
 
-    // Check if the user is an admin
-    await requireRole([UserRole.ADMIN]);
+    // Check if the user has the required role
+    const response: AuthorizationResponse = await requireRole(adminRoles);
+    const { role, username } = response.data;
 
-    // Fetch all users except admin users
-    const users = await User.find({ role: { $ne: UserRole.ADMIN } })
-      .select('id firstName lastName username role') // Only fetch necessary fields
-      .lean();
+    let users: any[] = [];
+    if (role === UserRole.SUPERADMIN) {
+      // Fetch all users except superadmin users
+      users = await User.find({ role: { $ne: UserRole.SUPERADMIN } })
+        .select('id firstName lastName username role') // Only fetch necessary fields
+        .lean();
+    } else if (role === UserRole.ADMIN) {
+      // Fetch all users except superadmin and admin users
+      users = await User.find({ role: { $nin: [UserRole.SUPERADMIN, UserRole.ADMIN] } })
+        .select('id firstName lastName username role')
+        .lean();
+    }
 
-    const formattedUsers = users.map((user) => ({
+      const formattedUsers = users.map((user) => ({
       id: user._id?.toString(),
       username: user.username,
       firstName: user.firstName,

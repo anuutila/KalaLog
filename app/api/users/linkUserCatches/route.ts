@@ -1,5 +1,5 @@
 import { ErrorResponse, UserCatchesLinkedResponse } from "@/lib/types/responses";
-import { IUser, IUserSchema, UserRole } from "@/lib/types/user";
+import { adminRoles, IUser, IUserSchema, UserRole } from "@/lib/types/user";
 import { linkCatchesToUser } from "@/lib/utils/apiUtils";
 import { requireRole } from "@/lib/utils/authorization";
 import { handleError } from "@/lib/utils/handleError";
@@ -7,7 +7,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest): Promise<NextResponse<UserCatchesLinkedResponse | ErrorResponse>> {
   try {
-    await requireRole([UserRole.ADMIN, UserRole.EDITOR]);
+    await requireRole(adminRoles);
 
     const user: Omit<IUser, 'password' | 'email'> = await req.json();
 

@@ -1,7 +1,7 @@
 import dbConnect from '@/lib/mongo/dbConnect';
 import User from '@/lib/mongo/models/user';
 import { ErrorResponse, UsersByFirstNameResponse } from '@/lib/types/responses';
-import { UserRole } from '@/lib/types/user';
+import { editorRoles, UserRole } from '@/lib/types/user';
 import { requireRole } from '@/lib/utils/authorization';
 import { handleError } from '@/lib/utils/handleError';
 import { NextRequest, NextResponse } from 'next/server';
@@ -11,7 +11,7 @@ export async function GET(req: NextRequest): Promise<NextResponse<UsersByFirstNa
     await dbConnect();
 
     // Check if the user is authorized 
-    await requireRole([UserRole.ADMIN, UserRole.EDITOR]);
+    await requireRole(editorRoles);
 
     // Extract the firstName query parameter
     const { searchParams } = new URL(req.url);

@@ -1,6 +1,7 @@
 import { IAchievement } from "./achievement";
 import { ICatch } from "./catch";
 import { JwtUserInfo } from "./jwtUserInfo";
+import { UserRole } from "./user";
 
 // Common response type
 export interface BaseResponse<T = undefined> {
@@ -55,7 +56,7 @@ export type ImageDeletionResponse = Required<BaseResponse<ImageDeletionResponseD
 
 export type SignedImageURLsResponse = Required<BaseResponse<string[]>>;
 
-export type AuthorizationResponse = BaseResponse;
+export type AuthorizationResponse = Required<BaseResponse<{ role: UserRole, username: string }>>;;
 
 export type LogoutResponse = BaseResponse;
 

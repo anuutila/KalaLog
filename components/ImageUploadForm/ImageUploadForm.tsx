@@ -103,7 +103,7 @@ export default function ImageUploadForm({
         maxSize={10 * 1024 ** 2}
         maxFiles={10}
         classNames={{ 
-          root: !isLoggedIn || jwtUserInfo?.role === UserRole.VIEWER ? classes.dropzoneDisabled : classes.dropzoneActive, 
+          root: (!isLoggedIn || jwtUserInfo?.role === UserRole.VIEWER) ? classes.dropzoneDisabled : classes.dropzoneActive, 
           inner: classes.dropzone_inner 
         }}
         h={100}

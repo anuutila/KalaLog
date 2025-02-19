@@ -1,19 +1,22 @@
 import { useEffect, useState } from 'react';
-import { Container, Stack, Group, Text, Switch, Button, Divider, Box } from '@mantine/core';
+import { Container, Stack, Group, Text, Switch, Button, Divider, Box, FloatingIndicator, UnstyledButton } from '@mantine/core';
 import { showNotification } from '@/lib/notifications/notifications';
-import { IUser, UserRole } from '@/lib/types/user';
+import { allRoles, IUser, UserRole } from '@/lib/types/user';
 import { useLoadingOverlay } from '@/context/LoadingOverlayContext';
 import { ApiEndpoints } from '@/lib/constants/constants';
 import { IconFish, IconTrophy } from '@tabler/icons-react';
-import { linkCatchesToUser } from '@/lib/utils/apiUtils';
 import { linkUserCatches } from '@/services/api/userService';
 import { UserCatchesLinkedResponse } from '@/lib/types/responses';
 import { handleApiError } from '@/lib/utils/handleApiError';
 import { recalculateUserAchievements } from '@/lib/utils/achievementUtils';
 import { useGlobalState } from '@/context/GlobalState';
+import RoleIndicator from './RoleIndicator';
+
+const rolesWithoutAdmins = Object.values(allRoles.filter((role) => role !== UserRole.ADMIN && role !== UserRole.SUPERADMIN)).reverse();
+const rolesWithoutSuperAdmin = Object.values(allRoles.filter((role) => role !== UserRole.SUPERADMIN)).reverse();
 
 export default function AdminPanel() {
-  const { catches } = useGlobalState();
+  const { catches, jwtUserInfo } = useGlobalState();
   const [users, setUsers] = useState<IUser[]>([]);
   const { showLoading, hideLoading } = useLoadingOverlay();
 
@@ -39,11 +42,11 @@ export default function AdminPanel() {
     fetchUsers();
   }, []);
 
-  const handleToggle = async (userId: string, currentRole: UserRole) => {
+  const handleToggle = async (userId: string, newRole: UserRole) => {
     try {
       showLoading();
 
-      const newRole = currentRole === UserRole.EDITOR ? UserRole.VIEWER : UserRole.EDITOR;
+      // const newRole = currentRole === UserRole.EDITOR ? UserRole.VIEWER : UserRole.EDITOR;
       const response = await fetch('/api/users/roles', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -101,11 +104,10 @@ export default function AdminPanel() {
             <Stack >
               <Group justify='space-between'>
                 <Text>{`${user.firstName} (${user.username})`}</Text>
-                <Switch
-                  size='sm'
-                  checked={user.role === UserRole.EDITOR}
-                  onChange={() => handleToggle(user.id ?? '', user.role ?? UserRole.VIEWER)}
-                  label={user.role === UserRole.EDITOR ? 'Editor' : 'Viewer'}
+                <RoleIndicator
+                  options={jwtUserInfo?.role === UserRole.SUPERADMIN ? rolesWithoutSuperAdmin : rolesWithoutAdmins}
+                  user={user}
+                  handleToggle={handleToggle}
                 />
               </Group>
               <Group justify='end'>

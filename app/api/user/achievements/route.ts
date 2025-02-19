@@ -2,7 +2,7 @@ import dbConnect from '@/lib/mongo/dbConnect';
 import Achievement from '@/lib/mongo/models/achievement';
 import { AchievementSchema, IAchievement } from '@/lib/types/achievement';
 import { AchievementsUpdatedResponse, ErrorResponse, UserAchievementsResponse } from '@/lib/types/responses';
-import { UserRole } from '@/lib/types/user';
+import { allRoles } from '@/lib/types/user';
 import { requireRole } from '@/lib/utils/authorization';
 import { handleError } from '@/lib/utils/handleError';
 import { NextRequest, NextResponse } from 'next/server';
@@ -18,7 +18,7 @@ export async function GET(req: NextRequest): Promise<NextResponse<UserAchievemen
       throw new Error('User ID is missing.');
     }
 
-    await requireRole([UserRole.ADMIN, UserRole.EDITOR, UserRole.VIEWER]);
+    await requireRole(allRoles);
     await dbConnect();
 
     console.log('Fetching user achievements for user:', userId);
@@ -59,7 +59,7 @@ export async function PUT(request: NextRequest): Promise<NextResponse<Achievemen
       throw new Error('User ID is missing.');
     }
 
-    await requireRole([UserRole.ADMIN, UserRole.EDITOR, UserRole.VIEWER]);
+    await requireRole(allRoles);
     await dbConnect();
     
     const achievements = await request.json();

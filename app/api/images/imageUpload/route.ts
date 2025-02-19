@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import cloudinary from '@/lib/cloudinary/cloudinary';
 import { Writable } from 'stream';
 import { ErrorResponse, ImageUploadResponse } from '@/lib/types/responses';
-import { UserRole } from '@/lib/types/user';
+import { creatorRoles, editorRoles, UserRole } from '@/lib/types/user';
 import { CustomError } from '@/lib/utils/customError';
 import { handleError } from '@/lib/utils/handleError';
 import { requireRole } from '@/lib/utils/authorization';
@@ -10,7 +10,7 @@ import { requireRole } from '@/lib/utils/authorization';
 export async function POST(req: NextRequest): Promise<NextResponse<ImageUploadResponse | ErrorResponse>> {
   try {
     // Check if the user is authorized
-    await requireRole([UserRole.ADMIN, UserRole.EDITOR]);
+    await requireRole([...editorRoles, ...creatorRoles]);
 
     const formData = await req.formData();
     const file = formData.get('file') as Blob | null;

@@ -99,11 +99,11 @@ export default function LevelIcon({
           <IconComponent size={size} color={color} stroke={stroke} />
         </Center>
       </Box>
-      <Box pos={'absolute'} top={0} left={-60} style={{ zIndex: 2 }} h={70} w={70}>
+      {/* <Box pos={'absolute'} top={0} left={-60} style={{ zIndex: 2 }} h={70} w={70}>
         <Center w={'100%'} h={'100%'}>
           <IconComponent size={size} color={'black'} stroke={4} />
         </Center>
-      </Box>
+      </Box> */}
     </Box>
   );
 }

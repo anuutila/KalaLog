@@ -2,13 +2,14 @@ import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongo/dbConnect';
 import Catch from '@/lib/mongo/models/catch';
 import { ICatch, ICatchSchema } from '@/lib/types/catch';
-import { UserRole } from '@/lib/types/user';
-import { CatchCreaetedResponse, CatchDeletedResponse, CatchEditedResponse, CatchesResponse, ErrorResponse, ImageDeletionResponse, ImageUploadResponse } from '@/lib/types/responses';
+import { creatorRoles, editorRoles } from '@/lib/types/user';
+import { AuthorizationResponse, CatchCreaetedResponse, CatchDeletedResponse, CatchEditedResponse, CatchesResponse, ErrorResponse, ImageDeletionResponse, ImageUploadResponse } from '@/lib/types/responses';
 import { handleError } from '@/lib/utils/handleError';
 import { extractNextImageIndex, generateFolderName, generatePublicId } from '@/lib/utils/utils';
 import { ApiEndpoints } from '@/lib/constants/constants';
 import { cookies } from 'next/headers';
 import { requireRole } from '@/lib/utils/authorization';
+import { create } from 'domain';
 
 export async function GET(): Promise<NextResponse<CatchesResponse | ErrorResponse>> {
   await dbConnect();
@@ -66,7 +67,7 @@ export async function POST(req: NextRequest): Promise<NextResponse<CatchCreaeted
   const token = cookieStore.get('KALALOG_TOKEN')?.value;
   try {
     // Check if the user is authorized
-    await requireRole([UserRole.ADMIN, UserRole.EDITOR]);
+    await requireRole([...creatorRoles, ...editorRoles]);
 
     await dbConnect();
 
@@ -213,7 +214,8 @@ export async function DELETE(req: NextRequest): Promise<NextResponse<CatchDelete
 
   try {
     // Check if the user is authorized
-    await requireRole([UserRole.ADMIN, UserRole.EDITOR]);
+    const response: AuthorizationResponse = await requireRole([...editorRoles, ...creatorRoles]);
+    const { role, username } = response.data;
 
     await dbConnect();
 
@@ -228,6 +230,10 @@ export async function DELETE(req: NextRequest): Promise<NextResponse<CatchDelete
     const existingCatch = await Catch.findById(catchId);
     if (!existingCatch) {
       throw new Error(`No catch found with ID: ${catchId}`);
+    }
+
+    if (!editorRoles.includes(role) && existingCatch?.caughtBy?.username !== username) {
+      throw new Error('Unauthorized. You only have permission to delete your own catches.');
     }
 
     // Handle image deletions
@@ -304,7 +310,8 @@ export async function PUT(req: NextRequest): Promise<NextResponse<CatchEditedRes
   const token = cookieStore.get('KALALOG_TOKEN')?.value;
   try {
     // Check if the user is authorized
-    await requireRole([UserRole.ADMIN, UserRole.EDITOR]);
+    const response: AuthorizationResponse = await requireRole([...editorRoles, ...creatorRoles]);
+    const { role, username } = response.data;
 
     await dbConnect();
 
@@ -347,13 +354,17 @@ export async function PUT(req: NextRequest): Promise<NextResponse<CatchEditedRes
         catchData[key] = value;
       }
     }
-
+    
     // Validate using Zod schema
     const validatedFormData: ICatch = ICatchSchema.parse({
       ...catchData,
       length: catchData.length ? parseFloat(catchData.length) : null,
       weight: catchData.weight ? parseFloat(catchData.weight) : null,
     });
+    
+    if (!editorRoles.includes(role) && validatedFormData.caughtBy.username !== username) {
+      throw new Error('Unauthorized. You only have permission to edit your own catches.');
+    }
 
     existingImages.push(...(validatedFormData.images ?? []));
 

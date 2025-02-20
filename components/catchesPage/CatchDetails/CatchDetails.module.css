@@ -3,7 +3,7 @@
 }
 
 .modalHeader {
-  background-color: var(--mantine-color-dark-8);
+  background-color: var(--mantine-color-dark-8) !important;
   --mb-padding: var(--mantine-spacing-lg);
 }
 

@@ -1,42 +1,42 @@
 .root {
-  align-items: stretch;
+  align-items: stretch !important;
 }
 
 .icon1 {
-  height: unset;
-  border-radius: var(--mantine-radius-md);
-  background-color: rgb(59, 59, 59);
-  width: 40px;
+  height: unset !important;
+  border-radius: var(--mantine-radius-md) !important;
+  background-color: rgb(59, 59, 59) !important;
+  width: 40px !important;
 }
 
 .icon2 {
-  height: unset;
-  border-radius: var(--mantine-radius-md);
-  background-color: rgb(28, 63, 33);
-  width: 40px;
+  height: unset !important;
+  border-radius: var(--mantine-radius-md) !important;
+  background-color: rgb(28, 63, 33) !important;
+  width: 40px !important;
 }
 
 .icon3 {
-  height: unset;
-  border-radius: var(--mantine-radius-md);
-  background-color: rgb(19, 48, 72);
-  width: 40px;
+  height: unset !important;
+  border-radius: var(--mantine-radius-md) !important;
+  background-color: rgb(19, 48, 72) !important;
+  width: 40px !important;
 }
 
 .icon4 {
-  height: unset;
-  border-radius: var(--mantine-radius-md);
-  background-color: rgb(61, 30, 70);
-  width: 40px;
+  height: unset !important;
+  border-radius: var(--mantine-radius-md) !important;
+  background-color: rgb(61, 30, 70) !important;
+  width: 40px !important;
 }
 
 .icon5 {
-  height: unset;
-  border-radius: var(--mantine-radius-md);
-  background-color: rgb(80, 45, 15);
-  width: 40px;
+  height: unset !important;
+  border-radius: var(--mantine-radius-md) !important;
+  background-color: rgb(80, 45, 15) !important;
+  width: 40px !important;
 }
 
 .description {
-  color: var(--mantine-color-text);
+  color: var(--mantine-color-text) !important;
 }

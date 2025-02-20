@@ -7,7 +7,7 @@ import { handleApiError } from "./handleApiError";
 import { AchievementsUpdatedResponse, UserAchievementsResponse } from "../types/responses";
 import { showAchievementNotification } from "../notifications/notifications";
 
-export async function recalculateUserAchievements(userId: string, catches: ICatch[], t: any, showNotifications: boolean = false): Promise<{updates: IAchievement[], count: number}> {
+export async function recalculateUserAchievements(userId: string, catches: ICatch[], t?: any, showNotifications: boolean = false): Promise<{updates: IAchievement[], count: number}> {
   const userCatches = catches.filter(c => c.caughtBy.userId === userId);
 
   try {
@@ -31,7 +31,7 @@ export async function recalculateUserAchievements(userId: string, catches: ICatc
     const newAchievements = getNewUnlocks(currentAchievements, updates);
     console.log(`${newAchievements.length} new achievements unlocked: `, newAchievements);
 
-    if (newAchievements.length > 0 && showNotifications) {
+    if (newAchievements.length > 0 && showNotifications && t) {
       showAchievementNotifications(newAchievements, t);
     }
 

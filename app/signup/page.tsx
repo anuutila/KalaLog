@@ -10,6 +10,7 @@ import { signup } from '@/services/api/authservice';
 import { HttpClientError } from '@/services/httpClient';
 import { handleApiError } from '@/lib/utils/handleApiError';
 import { IconAt, IconLock, IconUser, IconUserPlus } from '@tabler/icons-react';
+import { UserRole } from "@/lib/types/user";
 import { useTranslations } from 'next-intl';
 
 export default function Page() {
@@ -21,6 +22,7 @@ export default function Page() {
     email: '',
     password: '',
     confirmPassword: '',
+    role: UserRole.CREATOR
   });
 
   const [isFormValid, setIsFormValid] = useState(false);

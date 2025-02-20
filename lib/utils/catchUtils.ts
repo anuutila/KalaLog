@@ -156,6 +156,30 @@ export const CatchUtils = {
   },
 
   /**
+   * Get unique years with their catch counts, but only for a specific body of water
+   */
+  getUniqueYearsForBodyOfWater(catches: ICatch[], bodyOfWater: string): Array<{
+    year: string;
+    catchCount: number;
+  }> {
+    const yearMap = new Map<string, number>();
+
+    catches
+      .filter(c => c.location.bodyOfWater === bodyOfWater)
+      .forEach(c => {
+        const year = c.date.split('-')[0];
+        yearMap.set(year, (yearMap.get(year) || 0) + 1);
+      });
+
+    return Array.from(yearMap.entries())
+      .map(([year, catchCount]) => ({
+        year,
+        catchCount
+      }))
+      .sort((a, b) => b.year.localeCompare(a.year));
+  },
+
+  /**
    * Get the total amount of a specific species
    */
   getSpeciesTotal(catches: ICatch[], species: string): number {

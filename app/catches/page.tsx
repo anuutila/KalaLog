@@ -5,7 +5,7 @@ import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-quartz.css';
 
-import { use, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ColDef,
   GridReadyEvent,
@@ -131,7 +131,7 @@ export default function CatchesPage() {
 
   useEffect(() => {
     if (catches.length > 0) {
-      const uniqueYears = CatchUtils.getUniqueYears(catches).map((item) => item.year);
+      const uniqueYears = CatchUtils.getUniqueYearsForBodyOfWater(catches, DEFAULT_BODY_OF_WATER).map((item) => item.year);
       if (uniqueYears.length > 0) {
         setUniqueYears(uniqueYears);
         if (!selectedYear) {

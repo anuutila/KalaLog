@@ -10,7 +10,7 @@ import { handleApiError } from '@/lib/utils/handleApiError';
 import { getUserAchievements } from '@/services/api/achievementService';
 import { getCatches } from '@/services/api/catchService';
 import { getUserInfo } from '@/services/api/userService';
-import { set } from 'mongoose';
+import { useTranslations } from 'next-intl';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
 interface GlobalState {
@@ -38,6 +38,7 @@ export const GlobalStateProvider = ({ children }: { children: React.ReactNode })
   // Map of user IDs to display names that are used if there are duplicae names
   const [displayNameMap, setDisplayNameMap] = useState<{ [userId: string]: string }>({}); 
   const [achievements, setAchievements] = useState<IAchievement[]>([]);
+  const t = useTranslations();
 
   // Fetch login status
   useEffect(() => {
@@ -108,7 +109,7 @@ export const GlobalStateProvider = ({ children }: { children: React.ReactNode })
   }, [catches, isLoggedIn]);
 
   async function resolveUserAchievements() {
-    const { updates, count } = await recalculateUserAchievements(jwtUserInfo?.userId ?? '', catches);
+    const { updates, count } = await recalculateUserAchievements(jwtUserInfo?.userId ?? '', catches, t, true);
     setAchievements(updates);
   }
 

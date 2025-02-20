@@ -154,104 +154,107 @@
     "Locked": "Locked"
   },
   "Achievements": {
-  "tiny_catch": {
-    "Name": "Every Catch Counts",
-    "Description": "Catch a fish shorter than 10 cm",
-    "Progress": "Smallest fish:\u00A0\u00A0 {progress} cm"
+    "tiny_catch": {
+      "Name": "Every Catch Counts",
+      "Description": "Catch a fish shorter than 10 cm",
+      "Progress": "Smallest fish:\u00A0\u00A0 {progress} cm"
+    },
+    "weight_catch": {
+      "Name": "Big Game",
+      "Description": "Catch a fish weighing more than {value} kg",
+      "DescSingular": "Catch a fish weighing more than 1 kg",
+      "Progress": "Heaviest fish:\u00A0\u00A0 {progress} kg"
+    },
+    "species_amount": {
+      "Name": "Ichthyologist",
+      "Description": "Catch {value} different fish species",
+      "Progress": "Different species:\u00A0\u00A0 {progress}"
+    },
+    "total_catches": {
+      "Name": "Fishunter",
+      "Description": "Catch a total of {value} fish",
+      "DescSingular": "Catch one fish",
+      "Progress": "Total count:\u00A0\u00A0 {progress}"
+    },
+    "pike_amount": {
+      "Name": "Pike Master",
+      "Description": "Catch {value} pike",
+      "DescSingular": "Catch one pike",
+      "Progress": "Pike count:\u00A0\u00A0 {progress}"
+    },
+    "perch_amount": {
+      "Name": "Perch Master",
+      "Description": "Catch {value} perch",
+      "DescSingular": "Catch one perch",
+      "Progress": "Perch count:\u00A0\u00A0 {progress}"
+    },
+    "zander_amount": {
+      "Name": "Zander Master",
+      "Description": "Catch {value} zander",
+      "DescSingular": "Catch one zander",
+      "Progress": "Zander count:\u00A0\u00A0 {progress}"
+    },
+    "bream_amount": {
+      "Name": "Bream Master",
+      "Description": "Catch {value} bream",
+      "DescSingular": "Catch one bream",
+      "Progress": "Bream count:\u00A0\u00A0 {progress}"
+    },
+    "roach_amount": {
+      "Name": "Roach Master",
+      "Description": "Catch {value} roach",
+      "DescSingular": "Catch one roach",
+      "Progress": "Roach count:\u00A0\u00A0 {progress}"
+    },
+    "kahen_kilon_siika": {
+      "Name": "Kahen kilon siika",
+      "Description": "Catch a whitefish weighing over 1.686 kg"
+    },
+    "lure_amount": {
+      "Name": "Lure Arsenal",
+      "Description": "Use {value} different lures",
+      "Progress": "Lures used:\u00A0\u00A0 {progress}"
+    },
+    "spot_amount": {
+      "Name": "Fishing Guide",
+      "Description": "Catch fish from {value} different spots within the same body of water (GPS coordinates at least 200 meters apart)",
+      "Progress": "Spot count:\u00A0\u00A0 {progress}"
+    },
+    "bodies_of_water_amount": {
+      "Name": "Traveling Angler",
+      "Description": "Catch fish from {value} different bodies of water",
+      "Progress": "Body of water count:\u00A0\u00A0 {progress}"
+    },
+    "four_seasons": {
+      "Name": "Seasoned Angler",
+      "Description": "Catch a fish in each of the four seasons"
+    },
+    "fishing_streak": {
+      "Name": "Catch Streak",
+      "Description": "Catch fish on {value} consecutive days",
+      "Progress": "Longest streak:\u00A0\u00A0 {progress} days"
+    },
+    "rapid_catches": {
+      "Name": "Douple Tap",
+      "Description": "Catch two fish within 5 minutes"
+    },
+    "hour_catches": {
+      "Name": "Happy Hour",
+      "Description": "Catch 8 fish within one hour",
+      "Progress": "Most fish in an hour:\u00A0\u00A0 {progress}"
+    },
+    "add_image": {
+      "Name": "Photographic Evidence",
+      "Description": "Add a photo of your catch"
+    },
+    "add_comment": {
+      "Name": "Fish Tale",
+      "Description": "Write a comment for your catch"
+    }
   },
-  "weight_catch": {
-    "Name": "Big Game",
-    "Description": "Catch a fish weighing more than {value} kg",
-    "DescSingular": "Catch a fish weighing more than 1 kg",
-    "Progress": "Heaviest fish:\u00A0\u00A0 {progress} kg"
+  "Notifications": {
+    "NewAchievement": "New achievement unlocked!"
   },
-  "species_amount": {
-    "Name": "Ichthyologist",
-    "Description": "Catch {value} different fish species",
-    "Progress": "Different species:\u00A0\u00A0 {progress}"
-  },
-  "total_catches": {
-    "Name": "Fishunter",
-    "Description": "Catch a total of {value} fish",
-    "DescSingular": "Catch one fish",
-    "Progress": "Total count:\u00A0\u00A0 {progress}"
-  },
-  "pike_amount": {
-    "Name": "Pike Master",
-    "Description": "Catch {value} pike",
-    "DescSingular": "Catch one pike",
-    "Progress": "Pike count:\u00A0\u00A0 {progress}"
-  },
-  "perch_amount": {
-    "Name": "Perch Master",
-    "Description": "Catch {value} perch",
-    "DescSingular": "Catch one perch",
-    "Progress": "Perch count:\u00A0\u00A0 {progress}"
-  },
-  "zander_amount": {
-    "Name": "Zander Master",
-    "Description": "Catch {value} zander",
-    "DescSingular": "Catch one zander",
-    "Progress": "Zander count:\u00A0\u00A0 {progress}"
-  },
-  "bream_amount": {
-    "Name": "Bream Master",
-    "Description": "Catch {value} bream",
-    "DescSingular": "Catch one bream",
-    "Progress": "Bream count:\u00A0\u00A0 {progress}"
-  },
-  "roach_amount": {
-    "Name": "Roach Master",
-    "Description": "Catch {value} roach",
-    "DescSingular": "Catch one roach",
-    "Progress": "Roach count:\u00A0\u00A0 {progress}"
-  },
-  "kahen_kilon_siika": {
-    "Name": "Kahen kilon siika",
-    "Description": "Catch a whitefish weighing over 1.686 kg"
-  },
-  "lure_amount": {
-    "Name": "Lure Arsenal",
-    "Description": "Use {value} different lures",
-    "Progress": "Lures used:\u00A0\u00A0 {progress}"
-  },
-  "spot_amount": {
-    "Name": "Fishing Guide",
-    "Description": "Catch fish from {value} different spots within the same body of water (GPS coordinates at least 200 meters apart)",
-    "Progress": "Spot count:\u00A0\u00A0 {progress}"
-  },
-  "bodies_of_water_amount": {
-    "Name": "Traveling Angler",
-    "Description": "Catch fish from {value} different bodies of water",
-    "Progress": "Body of water count:\u00A0\u00A0 {progress}"
-  },
-  "four_seasons": {
-    "Name": "Seasoned Angler",
-    "Description": "Catch a fish in each of the four seasons"
-  },
-  "fishing_streak": {
-    "Name": "Catch Streak",
-    "Description": "Catch fish on {value} consecutive days",
-    "Progress": "Longest streak:\u00A0\u00A0 {progress} days"
-  },
-  "rapid_catches": {
-    "Name": "Douple Tap",
-    "Description": "Catch two fish within 5 minutes"
-  },
-  "hour_catches": {
-    "Name": "Happy Hour",
-    "Description": "Catch 8 fish within one hour",
-    "Progress": "Most fish in an hour:\u00A0\u00A0 {progress}"
-  },
-  "add_image": {
-    "Name": "Photographic Evidence",
-    "Description": "Add a photo of your catch"
-  },
-  "add_comment": {
-    "Name": "Fish Tale",
-    "Description": "Write a comment for your catch"
-  }
-},
   "Locales": {
     "en": "English 🇬🇧",
     "fi": "Finnish 🇫🇮"

@@ -1,0 +1,42 @@
+.root {
+  align-items: stretch;
+}
+
+.icon1 {
+  height: unset;
+  border-radius: var(--mantine-radius-md);
+  background-color: rgb(59, 59, 59);
+  width: 40px;
+}
+
+.icon2 {
+  height: unset;
+  border-radius: var(--mantine-radius-md);
+  background-color: rgb(28, 63, 33);
+  width: 40px;
+}
+
+.icon3 {
+  height: unset;
+  border-radius: var(--mantine-radius-md);
+  background-color: rgb(19, 48, 72);
+  width: 40px;
+}
+
+.icon4 {
+  height: unset;
+  border-radius: var(--mantine-radius-md);
+  background-color: rgb(61, 30, 70);
+  width: 40px;
+}
+
+.icon5 {
+  height: unset;
+  border-radius: var(--mantine-radius-md);
+  background-color: rgb(80, 45, 15);
+  width: 40px;
+}
+
+.description {
+  color: var(--mantine-color-text);
+}

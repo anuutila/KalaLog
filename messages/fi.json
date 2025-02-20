@@ -252,6 +252,9 @@
       "Description": "Kirjoita saaliiseen kommentti"
     }
   },
+  "Notifications": {
+    "NewAchievement": "Uusi saavutus avattu!"
+  },
   "Locales": {
     "en": "Englanti 🇬🇧",
     "fi": "Suomi 🇫🇮"

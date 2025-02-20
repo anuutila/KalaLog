@@ -64,7 +64,7 @@ export async function PUT(request: NextRequest): Promise<NextResponse<Achievemen
     
     const achievements = await request.json();
     console.log(`Updating ${achievements.length} achievements for user:`, userId);
-    console.log(achievements);
+    //console.log(achievements);
 
     const validatedAchievements: IAchievement[] = [];
 

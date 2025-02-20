@@ -5,7 +5,7 @@ import { IAchievement, IAchievementConfig, IAchievementConfigOneTime, IAchieveme
 import classes from './AchievementItem.module.css';
 import { useTranslations } from 'next-intl';
 
-enum AchievementColors {
+export enum AchievementColors {
   white,
   green,
   blue,

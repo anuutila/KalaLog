@@ -67,7 +67,7 @@ export const IUserSchema = z.object({
     .string()
     .min(6, "Password must be at least 6 characters long")
     .max(100, "Password cannot exceed 100 characters"),
-  role: UserRoleSchema.optional(),
+  role: UserRoleSchema,
   profilePictureUrl: z
     .string()
     .url("Invalid URL")

@@ -27,20 +27,20 @@
 
 @media (max-width: $mantine-breakpoint-md) {
   .controls {
-    height: 80%;
-    top: 0;
+    height: 80% !important;
+    top: 0 !important;
   }
   
   .control {
-    --carousel-control-size: rem(50);
-    min-width: 0;
-    width: rem(45);
-    height: 100%;
-    border-radius: 0;
-    background-color: transparent;
-    border: none;
-    opacity: 1;
-    box-shadow: none;
+    --carousel-control-size: rem(50) !important;
+    min-width: 0 !important;
+    width: rem(45) !important;
+    height: 100% !important;
+    border-radius: 0 !important;
+    background-color: transparent !important;
+    border: none !important;
+    opacity: 1 !important;
+    box-shadow: none !important;
   
     & svg {
       display: none !important;

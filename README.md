@@ -20,7 +20,7 @@
 - **Language**: [TypeScript](https://www.typescriptlang.org/) for type-safe development
 - **UI Library**: [Mantine UI](https://mantine.dev/) for component styling and design
 - **Data Table**: [AG Grid](https://www.ag-grid.com/) for interactive and customizable tables
-- **Backend**: Next.js API Routes for server-side logic (powered by Noje.js serverless functions)
+- **Backend**: Next.js API Routes for server-side logic (powered by Node.js serverless functions)
 - **Authentication**: [JSON Web Tokens](https://jwt.io/) (JWT) for authentication and role-based permissions
 - **Database**: [MongoDB Atlas](https://www.mongodb.com/atlas) (cloud-hosted NoSQL database) with [Mongoose](https://mongoosejs.com/) for schema-based data modeling
 - **Validation**: [Zod](https://github.com/colinhacks/zod) for runtime schema validation

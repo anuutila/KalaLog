@@ -321,7 +321,7 @@ export default function CatchesPage() {
 
   const handleValueSelect = (val: string) => {
     setVisibleColumns((current) => {
-      if (val === 'Valitse kaikki') {
+      if (val === t('Common.SelectAll')) {
         // Toggle select all
         return current.length === colDefs.length ? [] : [...allColumnLabels];
       } else {

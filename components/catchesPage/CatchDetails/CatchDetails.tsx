@@ -170,7 +170,7 @@ export default function CatchDetails({
   const isFallbackImage = imagesToShow.length === 1 && imagesToShow[0] === defaultPlaceholder;
 
   const details: CatchDetails = {
-    species: { label: t('Common.FishSpecies'), data: selectedCatch.species },
+    species: { label: t('Common.FishSpecies'), data: t.has(`Fish.${selectedCatch.species}`) ? t(`Fish.${selectedCatch.species}`) : selectedCatch.species },
     length: { label: t('Common.Length'), data: selectedCatch.length },
     weight: { label: t('Common.Weight'), data: selectedCatch.weight },
     lure: { label: t('Common.Lure'), data: selectedCatch.lure },

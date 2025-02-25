@@ -1,15 +1,22 @@
+import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
+import { ApiEndpoints } from '@/lib/constants/constants';
 import dbConnect from '@/lib/mongo/dbConnect';
 import Catch from '@/lib/mongo/models/catch';
 import { ICatch, ICatchSchema } from '@/lib/types/catch';
+import {
+  AuthorizationResponse,
+  CatchCreaetedResponse,
+  CatchDeletedResponse,
+  CatchEditedResponse,
+  CatchesResponse,
+  ErrorResponse,
+  ImageDeletionResponse,
+} from '@/lib/types/responses';
 import { creatorRoles, editorRoles } from '@/lib/types/user';
-import { AuthorizationResponse, CatchCreaetedResponse, CatchDeletedResponse, CatchEditedResponse, CatchesResponse, ErrorResponse, ImageDeletionResponse, ImageUploadResponse } from '@/lib/types/responses';
+import { requireRole } from '@/lib/utils/authorization';
 import { handleError } from '@/lib/utils/handleError';
 import { extractNextImageIndex, generateFolderName, generatePublicId } from '@/lib/utils/utils';
-import { ApiEndpoints } from '@/lib/constants/constants';
-import { cookies } from 'next/headers';
-import { requireRole } from '@/lib/utils/authorization';
-import { create } from 'domain';
 
 export async function GET(): Promise<NextResponse<CatchesResponse | ErrorResponse>> {
   await dbConnect();
@@ -127,7 +134,7 @@ export async function POST(req: NextRequest): Promise<NextResponse<CatchCreaeted
         const response = await fetch(`${apiBase}${ApiEndpoints.UploadImage}`, {
           method: 'POST',
           headers: {
-            'Cookie': `KALALOG_TOKEN=${token}`, // Include the JWT token
+            Cookie: `KALALOG_TOKEN=${token}`, // Include the JWT token
           },
           body: formData,
         });
@@ -135,12 +142,11 @@ export async function POST(req: NextRequest): Promise<NextResponse<CatchCreaeted
         if (response.ok) {
           // const uploadResponse: ImageUploadResponse = await response.json();
           uploadedImages.push({
-            publicId: `${folderName}/${publicId}`
+            publicId: `${folderName}/${publicId}`,
           });
         } else {
           throw new Error();
         }
-        
       } catch (error) {
         console.error(`Failed to upload image: ${generatePublicId(nextCatchNumber, index)}`, error);
         failedImageUploads.push(image);
@@ -182,13 +188,19 @@ export async function POST(req: NextRequest): Promise<NextResponse<CatchCreaeted
           data: {
             catch: parsedNewCatch,
             failedImageUploads: true,
-          }
+          },
         },
         { status: 207 }
       );
     }
 
-    return NextResponse.json<CatchCreaetedResponse>({ message: 'New catch entry created successfully 🎣', data: { catch: parsedNewCatch, failedImageUploads: false } }, { status: 201 });
+    return NextResponse.json<CatchCreaetedResponse>(
+      {
+        message: 'New catch entry created successfully 🎣',
+        data: { catch: parsedNewCatch, failedImageUploads: false },
+      },
+      { status: 201 }
+    );
   } catch (error: unknown) {
     console.error('Error during catch creation:', error);
 
@@ -199,10 +211,11 @@ export async function POST(req: NextRequest): Promise<NextResponse<CatchCreaeted
     const response = await fetch(`${apiBase}${ApiEndpoints.DeleteImages}`, {
       method: 'POST',
       headers: {
-        'Cookie': `KALALOG_TOKEN=${token}`, // Include the JWT token
+        Cookie: `KALALOG_TOKEN=${token}`, // Include the JWT token
       },
       body: JSON.stringify({ publicIds, deleteFolder }),
     });
+    console.log('Rollback response:', response);
 
     return handleError(error, 'Unable to create catch entry. Please try again later.');
   }
@@ -245,11 +258,10 @@ export async function DELETE(req: NextRequest): Promise<NextResponse<CatchDelete
       const publicIds = existingImages?.map((image) => image?.publicId) ?? [];
       const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000';
 
-      const response = await fetch(
-        `${apiBase}${ApiEndpoints.DeleteImages}`, {
+      const response = await fetch(`${apiBase}${ApiEndpoints.DeleteImages}`, {
         method: 'POST',
         headers: {
-          'Cookie': `KALALOG_TOKEN=${token}`, // Include the JWT token
+          Cookie: `KALALOG_TOKEN=${token}`, // Include the JWT token
         },
         body: JSON.stringify({ publicIds, deleteFolder }),
       });
@@ -257,16 +269,16 @@ export async function DELETE(req: NextRequest): Promise<NextResponse<CatchDelete
       if (response.ok) {
         const imageDeletionResponse: ImageDeletionResponse = await response.json();
         const { successfulDeletions, failedDeletions } = imageDeletionResponse.data;
-        successfulDeletions.forEach(id => {
+        successfulDeletions.forEach((id) => {
           deletedImages.push({ publicId: id });
         });
-  
+
         failedImgDeletions.push(...failedDeletions);
       } else {
         throw new Error();
       }
 
-      console.log(`Deleted images: ${deletedImages.map(img => img.publicId).join(', ')}`);
+      console.log(`Deleted images: ${deletedImages.map((img) => img.publicId).join(', ')}`);
     }
 
     if (failedImgDeletions.length > 0) {
@@ -293,18 +305,21 @@ export async function DELETE(req: NextRequest): Promise<NextResponse<CatchDelete
       createdBy: deletedCatch.createdBy?.toString(),
     });
 
-    return NextResponse.json<CatchDeletedResponse>({ message: 'Catch deleted successfully', data: parsedDeletedCatch }, { status: 200 });
+    return NextResponse.json<CatchDeletedResponse>(
+      { message: 'Catch deleted successfully', data: parsedDeletedCatch },
+      { status: 200 }
+    );
   } catch (error: unknown) {
     return handleError(error, 'An unexpected error occurred while deleting the catch. Please try again later.');
   }
 }
 
 export async function PUT(req: NextRequest): Promise<NextResponse<CatchEditedResponse | ErrorResponse>> {
-  const existingImages: { publicId: string, description?: string | null | undefined}[] = [];
-  const uploadedImages: { publicId: string, description?: string | null | undefined}[] = [];
-  const toBeDeletedImages: { publicId: string, description?: string | null | undefined}[] = [];
-  const deletedImages: { publicId: string, description?: string | null | undefined}[] = [];
-  const allImages: { publicId: string, description?: string | null | undefined}[] = [];
+  const existingImages: { publicId: string; description?: string | null | undefined }[] = [];
+  const uploadedImages: { publicId: string; description?: string | null | undefined }[] = [];
+  const toBeDeletedImages: { publicId: string; description?: string | null | undefined }[] = [];
+  const deletedImages: { publicId: string; description?: string | null | undefined }[] = [];
+  const allImages: { publicId: string; description?: string | null | undefined }[] = [];
 
   const cookieStore = await cookies();
   const token = cookieStore.get('KALALOG_TOKEN')?.value;
@@ -349,19 +364,19 @@ export async function PUT(req: NextRequest): Promise<NextResponse<CatchEditedRes
       } else if (key === 'createdAt' && typeof value === 'string') {
         catchData.createdAt = new Date(value);
       } else if (key === 'catchNumber' && typeof value === 'string') {
-        catchData.catchNumber = parseInt(value);
+        catchData.catchNumber = parseInt(value, 10);
       } else {
         catchData[key] = value;
       }
     }
-    
+
     // Validate using Zod schema
     const validatedFormData: ICatch = ICatchSchema.parse({
       ...catchData,
       length: catchData.length ? parseFloat(catchData.length) : null,
       weight: catchData.weight ? parseFloat(catchData.weight) : null,
     });
-    
+
     if (!editorRoles.includes(role) && validatedFormData.caughtBy.username !== username) {
       throw new Error('Unauthorized. You only have permission to edit your own catches.');
     }
@@ -383,11 +398,10 @@ export async function PUT(req: NextRequest): Promise<NextResponse<CatchEditedRes
       const publicIds = toBeDeletedImages?.map((image) => image?.publicId) ?? [];
       const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000';
 
-      const response = await fetch(
-        `${apiBase}${ApiEndpoints.DeleteImages}`, {
+      const response = await fetch(`${apiBase}${ApiEndpoints.DeleteImages}`, {
         method: 'POST',
         headers: {
-          'Cookie': `KALALOG_TOKEN=${token}`, // Include the JWT token
+          Cookie: `KALALOG_TOKEN=${token}`, // Include the JWT token
         },
         body: JSON.stringify({ publicIds, deleteFolder }),
       });
@@ -395,10 +409,10 @@ export async function PUT(req: NextRequest): Promise<NextResponse<CatchEditedRes
       if (response.ok) {
         const imageDeletionResponse: ImageDeletionResponse = await response.json();
         const { successfulDeletions, failedDeletions } = imageDeletionResponse.data;
-        successfulDeletions.forEach(id => {
+        successfulDeletions.forEach((id) => {
           deletedImages.push({ publicId: id });
         });
-  
+
         failedImgDeletions.push(...failedDeletions);
       } else {
         throw new Error();
@@ -411,7 +425,10 @@ export async function PUT(req: NextRequest): Promise<NextResponse<CatchEditedRes
       try {
         // Generate folder and public_id based on catchNumber and index
         const folderName = generateFolderName(catchData.catchNumber);
-        const publicId = generatePublicId(catchData.catchNumber, extractNextImageIndex(existingImages.map(img => img.publicId) || []) + index);
+        const publicId = generatePublicId(
+          catchData.catchNumber,
+          extractNextImageIndex(existingImages.map((img) => img.publicId) || []) + index
+        );
 
         const formData = new FormData();
         formData.append('file', image);
@@ -423,7 +440,7 @@ export async function PUT(req: NextRequest): Promise<NextResponse<CatchEditedRes
         const response = await fetch(`${apiBase}${ApiEndpoints.UploadImage}`, {
           method: 'POST',
           headers: {
-            'Cookie': `KALALOG_TOKEN=${token}`, // Include the JWT token
+            Cookie: `KALALOG_TOKEN=${token}`, // Include the JWT token
           },
           body: formData,
         });
@@ -431,7 +448,7 @@ export async function PUT(req: NextRequest): Promise<NextResponse<CatchEditedRes
         if (response.ok) {
           // const uploadResponse: ImageUploadResponse = await response.json();
           uploadedImages.push({
-            publicId: `${folderName}/${publicId}`
+            publicId: `${folderName}/${publicId}`,
           });
         } else {
           throw new Error();
@@ -445,7 +462,11 @@ export async function PUT(req: NextRequest): Promise<NextResponse<CatchEditedRes
     // Combine existing and uploaded images
     allImages.push(...existingImages, ...uploadedImages);
     // Remove deleted images from the list
-    allImages.splice(0, allImages.length, ...allImages.filter(img => !deletedImages.some(deleted => deleted.publicId === img.publicId)));
+    allImages.splice(
+      0,
+      allImages.length,
+      ...allImages.filter((img) => !deletedImages.some((deleted) => deleted.publicId === img.publicId))
+    );
 
     const CatchDataWithImageIds: ICatch = { ...validatedFormData, images: allImages };
 
@@ -493,13 +514,16 @@ export async function PUT(req: NextRequest): Promise<NextResponse<CatchEditedRes
           data: {
             catch: parsedUpdatedCatch,
             failedImageOperations: true,
-          }
+          },
         },
         { status: 207 }
       );
     }
 
-    return NextResponse.json<CatchEditedResponse>({ message: 'Catch updated successfully', data: { catch: parsedUpdatedCatch, failedImageOperations: false }}, { status: 200 });
+    return NextResponse.json<CatchEditedResponse>(
+      { message: 'Catch updated successfully', data: { catch: parsedUpdatedCatch, failedImageOperations: false } },
+      { status: 200 }
+    );
   } catch (error: unknown) {
     console.error('Error during catch editing:', error);
 
@@ -511,10 +535,11 @@ export async function PUT(req: NextRequest): Promise<NextResponse<CatchEditedRes
       const response = await fetch(`${apiBase}${ApiEndpoints.DeleteImages}`, {
         method: 'POST',
         headers: {
-          'Cookie': `KALALOG_TOKEN=${token}`, // Include the JWT token
+          Cookie: `KALALOG_TOKEN=${token}`, // Include the JWT token
         },
         body: JSON.stringify({ imageIds, deleteFolder }),
       });
+      console.log('Rollback response:', response);
     }
 
     return handleError(error, 'Unable to update catch. Please try again later.');

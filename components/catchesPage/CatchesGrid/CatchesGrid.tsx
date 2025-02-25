@@ -1,10 +1,12 @@
-import { AgGridReact } from "ag-grid-react";
-import { AG_GRID_LOCALE_FI, AG_GRID_LOCALE_EN } from '@ag-grid-community/locale'
-import { ICatch } from "@/lib/types/catch";
-import { use, useMemo } from "react";
-import CustomNoRowsOverlay from "./CustomNoRowsOverlay/CustomNoRowsOverlay";
-import "./CatchesGrid.css";
-import { useTranslations } from "next-intl";
+import { useMemo } from 'react';
+import { AG_GRID_LOCALE_EN, AG_GRID_LOCALE_FI } from '@ag-grid-community/locale';
+import { AgGridReact } from 'ag-grid-react';
+import { ICatch } from '@/lib/types/catch';
+import CustomNoRowsOverlay from './CustomNoRowsOverlay/CustomNoRowsOverlay';
+
+import './CatchesGrid.css';
+
+import { useTranslations } from 'next-intl';
 
 interface CatchesGridProps {
   gridRef: React.RefObject<AgGridReact<ICatch>>;
@@ -29,21 +31,20 @@ export default function CatchesGrid({
   catchesError,
   loadingCatches,
   onRowClicked,
-  locale
+  locale,
 }: CatchesGridProps) {
   const t = useTranslations('CatchesPage.Table');
 
   const noRowsOverlayComponentParams = useMemo(() => {
     return {
-      noRowsMessageFunc: () =>
-        catchesError ? catchesError : t('NoData'), 
+      noRowsMessageFunc: () => (catchesError ? catchesError : t('NoData')),
     };
   }, [catchesError]);
 
   const localeText = useMemo(() => {
     return locale === 'fi' ? AG_GRID_LOCALE_FI : AG_GRID_LOCALE_EN;
   }, [locale]);
-  
+
   return (
     <div key={locale} className="ag-theme-quartz-dark grid-wrapper">
       <AgGridReact<ICatch>
@@ -62,5 +63,5 @@ export default function CatchesGrid({
         localeText={localeText}
       />
     </div>
-  )
-};
+  );
+}

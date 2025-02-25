@@ -1,18 +1,20 @@
 import { useEffect, useState } from 'react';
-import { Container, Stack, Group, Text, Switch, Button, Divider, Box, FloatingIndicator, UnstyledButton } from '@mantine/core';
-import { showNotification } from '@/lib/notifications/notifications';
-import { allRoles, IUser, UserRole } from '@/lib/types/user';
+import { IconFish, IconTrophy } from '@tabler/icons-react';
+import { Box, Button, Container, Divider, Group, Stack, Text } from '@mantine/core';
+import { useGlobalState } from '@/context/GlobalState';
 import { useLoadingOverlay } from '@/context/LoadingOverlayContext';
 import { ApiEndpoints } from '@/lib/constants/constants';
-import { IconFish, IconTrophy } from '@tabler/icons-react';
-import { linkUserCatches } from '@/services/api/userService';
+import { showNotification } from '@/lib/notifications/notifications';
 import { UserCatchesLinkedResponse } from '@/lib/types/responses';
-import { handleApiError } from '@/lib/utils/handleApiError';
+import { allRoles, IUser, UserRole } from '@/lib/types/user';
 import { recalculateUserAchievements } from '@/lib/utils/achievementUtils';
-import { useGlobalState } from '@/context/GlobalState';
+import { handleApiError } from '@/lib/utils/handleApiError';
+import { linkUserCatches } from '@/services/api/userService';
 import RoleIndicator from './RoleIndicator';
 
-const rolesWithoutAdmins = Object.values(allRoles.filter((role) => role !== UserRole.ADMIN && role !== UserRole.SUPERADMIN)).reverse();
+const rolesWithoutAdmins = Object.values(
+  allRoles.filter((role) => role !== UserRole.ADMIN && role !== UserRole.SUPERADMIN)
+).reverse();
 const rolesWithoutSuperAdmin = Object.values(allRoles.filter((role) => role !== UserRole.SUPERADMIN)).reverse();
 
 export default function AdminPanel() {
@@ -55,9 +57,7 @@ export default function AdminPanel() {
 
       if (response.ok) {
         const updatedUser = await response.json();
-        setUsers((prev) =>
-          prev.map((user) => (user.id === updatedUser.data.id ? updatedUser.data : user))
-        );
+        setUsers((prev) => prev.map((user) => (user.id === updatedUser.data.id ? updatedUser.data : user)));
         showNotification('success', 'User role updated successfully', { withTitle: false });
       } else {
         showNotification('error', 'Failed to update user role', { withTitle: true });
@@ -77,7 +77,11 @@ export default function AdminPanel() {
         const linkingResult: UserCatchesLinkedResponse = await linkUserCatches(user);
         console.log(linkingResult.message);
         if (linkingResult.data.count > 0) {
-          showNotification('success', `Linked ${linkingResult.data.count} catches to user named ${linkingResult.data.linkedName}.`, { withTitle: false, duration: linkingResult.data.count > 0 ? 10000 : 4000 });
+          showNotification(
+            'success',
+            `Linked ${linkingResult.data.count} catches to user named ${linkingResult.data.linkedName}.`,
+            { withTitle: false, duration: linkingResult.data.count > 0 ? 10000 : 4000 }
+          );
         } else {
           showNotification('warning', 'No catches to link.', { withTitle: false });
         }
@@ -101,8 +105,8 @@ export default function AdminPanel() {
         {users.map((user) => (
           <Box key={user.id}>
             <Divider my="md" />
-            <Stack >
-              <Group justify='space-between'>
+            <Stack>
+              <Group justify="space-between">
                 <Text>{`${user.firstName} (${user.username})`}</Text>
                 <RoleIndicator
                   options={jwtUserInfo?.role === UserRole.SUPERADMIN ? rolesWithoutSuperAdmin : rolesWithoutAdmins}
@@ -110,11 +114,16 @@ export default function AdminPanel() {
                   handleToggle={handleToggle}
                 />
               </Group>
-              <Group justify='end'>
-                <Button variant='default' size='sm' rightSection={<IconFish />} onClick={() => linkCatches(user)}>
+              <Group justify="end">
+                <Button variant="default" size="sm" rightSection={<IconFish />} onClick={() => linkCatches(user)}>
                   Link
                 </Button>
-                <Button variant='default' size='sm' rightSection={<IconTrophy />} onClick={() => syncUserAchievements(user)}>
+                <Button
+                  variant="default"
+                  size="sm"
+                  rightSection={<IconTrophy />}
+                  onClick={() => syncUserAchievements(user)}
+                >
                   Sync
                 </Button>
               </Group>

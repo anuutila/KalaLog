@@ -1,7 +1,7 @@
-import { IUser, UserRole } from "@/lib/types/user";
-import { FloatingIndicator, UnstyledButton } from "@mantine/core";
-import { useState } from "react";
-import classes from "./FloatingIndicator.module.css";
+import { useState } from 'react';
+import { FloatingIndicator, UnstyledButton } from '@mantine/core';
+import { IUser, UserRole } from '@/lib/types/user';
+import classes from './FloatingIndicator.module.css';
 
 interface RoleIndicatorProps {
   options: UserRole[];
@@ -24,7 +24,10 @@ export default function RoleIndicator({ options, user, handleToggle }: RoleIndic
       key={item}
       className={classes.control}
       ref={setControlRef(index)}
-      onClick={() => {setActive(index); handleToggle(user.id ?? '', item)}}
+      onClick={() => {
+        setActive(index);
+        handleToggle(user.id ?? '', item);
+      }}
       mod={{ active: active === index }}
     >
       <span className={classes.controlLabel}>{item}</span>
@@ -35,11 +38,7 @@ export default function RoleIndicator({ options, user, handleToggle }: RoleIndic
     <div className={classes.root} ref={setRootRef}>
       {controls}
 
-      <FloatingIndicator
-        target={controlsRefs[active]}
-        parent={rootRef}
-        className={classes.indicator}
-      />
+      <FloatingIndicator target={controlsRefs[active]} parent={rootRef} className={classes.indicator} />
     </div>
   );
 }

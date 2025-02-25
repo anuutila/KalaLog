@@ -15,7 +15,7 @@ if (!URI) {
   throw new Error('Please define the MONGODB_URI environment variable inside .env.local');
 }
 
-let client = new MongoClient(URI, options);
+const client = new MongoClient(URI, options);
 let clientPromise: Promise<MongoClient>;
 
 if (process.env.NODE_ENV !== 'production') {

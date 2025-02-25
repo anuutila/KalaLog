@@ -1,6 +1,5 @@
-import { HttpClientError } from "@services/httpClient";
-import { showNotification } from "../notifications/notifications";
-
+import { HttpClientError } from '@services/httpClient';
+import { showNotification } from '../notifications/notifications';
 
 export function handleApiError(error: unknown, context?: string): void {
   if (error instanceof HttpClientError) {
@@ -14,7 +13,7 @@ export function handleApiError(error: unknown, context?: string): void {
       error.details.forEach((detail) => {
         console.error(`Validation Error [${detail.path}]: ${detail.message}`);
       });
-    } 
+    }
   } else {
     console.error(`[${context || 'Unexpected Error'}]: `, error);
 

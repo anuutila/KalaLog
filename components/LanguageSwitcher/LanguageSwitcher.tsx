@@ -1,8 +1,9 @@
-import { useRouter } from "next/navigation";
-import { use, useEffect, useState } from "react";
-import { useLocale, useTranslations } from "next-intl";
-import {  ActionIcon, Button, CheckIcon, Combobox, Group, Text, useCombobox } from "@mantine/core";
-import { IconLanguage } from "@tabler/icons-react";
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { IconLanguage } from '@tabler/icons-react';
+import { useLocale, useTranslations } from 'next-intl';
+import { ActionIcon, CheckIcon, Combobox, Group, Text, useCombobox } from '@mantine/core';
+
 import './LanguageSwitcher.css';
 
 enum locales {
@@ -16,9 +17,9 @@ export default function LanguageSwitcher() {
   const router = useRouter();
 
   useEffect(() => {
-    const localeCookie = document.cookie.
-      split('; ').
-      find(row => row.startsWith('KALALOG_LOCALE='))
+    const localeCookie = document.cookie
+      .split('; ')
+      .find((row) => row.startsWith('KALALOG_LOCALE='))
       ?.split('=')[1];
     if (localeCookie) {
       setLocale(localeCookie);
@@ -36,8 +37,8 @@ export default function LanguageSwitcher() {
     setLocale(locale);
     document.cookie = `KALALOG_LOCALE=${locale};`;
     router.refresh();
-  }
-  
+  };
+
   useEffect(() => {
     changeLocale(locale);
   }, [locale]);
@@ -48,7 +49,7 @@ export default function LanguageSwitcher() {
 
   const options = Object.values(locales).map((item) => (
     <Combobox.Option value={item} key={item}>
-      <Group gap={'sm'}>
+      <Group gap="sm">
         {locale === item ? <CheckIcon size={12} /> : null}
         <Text fw={500}>{t(item)}</Text>
       </Group>
@@ -67,11 +68,11 @@ export default function LanguageSwitcher() {
           setLocale(val);
           combobox.closeDropdown();
         }}
-        styles={{ dropdown: { background: 'var(--mantine-color-dark-8)' }}}
+        styles={{ dropdown: { background: 'var(--mantine-color-dark-8)' } }}
       >
         <Combobox.Target>
-          <ActionIcon bg={'var(--mantine-color-dark-8)'} variant="default" onClick={() => combobox.toggleDropdown()}>
-            <IconLanguage size={20}/>
+          <ActionIcon bg="var(--mantine-color-dark-8)" variant="default" onClick={() => combobox.toggleDropdown()}>
+            <IconLanguage size={20} />
           </ActionIcon>
         </Combobox.Target>
 

@@ -1,6 +1,6 @@
-import { ImageDeletionResponse, ImageUploadResponse, SignedImageURLsResponse } from "@/lib/types/responses";
-import { httpClient } from "../httpClient";
-import { ApiEndpoints } from "@/lib/constants/constants";
+import { ApiEndpoints } from '@/lib/constants/constants';
+import { ImageDeletionResponse, ImageUploadResponse, SignedImageURLsResponse } from '@/lib/types/responses';
+import { httpClient } from '../httpClient';
 
 export async function uploadImage(imageFormData: FormData): Promise<ImageUploadResponse> {
   return httpClient<ImageUploadResponse>(ApiEndpoints.UploadImage, {

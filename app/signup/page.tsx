@@ -1,17 +1,17 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { ErrorResponse, SignUpResponse } from '@/lib/types/responses';
-import { showNotification } from '@/lib/notifications/notifications';
-import { Button, Center, Container, Fieldset, PasswordInput, Stack, Text, TextInput, Title } from '@mantine/core';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { IconAt, IconLock, IconUser, IconUserPlus } from '@tabler/icons-react';
+import { useTranslations } from 'next-intl';
+import { Button, Center, Container, Fieldset, PasswordInput, Stack, Text, TextInput, Title } from '@mantine/core';
+import { showNotification } from '@/lib/notifications/notifications';
+import { SignUpResponse } from '@/lib/types/responses';
+import { UserRole } from '@/lib/types/user';
+import { handleApiError } from '@/lib/utils/handleApiError';
 import { signup } from '@/services/api/authservice';
 import { HttpClientError } from '@/services/httpClient';
-import { handleApiError } from '@/lib/utils/handleApiError';
-import { IconAt, IconLock, IconUser, IconUserPlus } from '@tabler/icons-react';
-import { UserRole } from "@/lib/types/user";
-import { useTranslations } from 'next-intl';
 
 export default function Page() {
   const t = useTranslations('SignupPage');
@@ -22,12 +22,11 @@ export default function Page() {
     email: '',
     password: '',
     confirmPassword: '',
-    role: UserRole.CREATOR
+    role: UserRole.CREATOR,
   });
 
   const [isFormValid, setIsFormValid] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
-  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const formRef = useRef<HTMLFormElement>(null);
@@ -47,7 +46,6 @@ export default function Page() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError(null);
 
     try {
       const signupResponse: SignUpResponse = await signup(formData);
@@ -55,9 +53,10 @@ export default function Page() {
       const linkedName = signupResponse.data.linkedName;
       console.log(signupResponse.message, 'linkedCatchesCount:', linkedCatchesCount);
 
-      const message = linkedCatchesCount > 0 
-        ? `${signupResponse.message}. Linked ${linkedCatchesCount} catches caught by ${linkedName} to the new account.` 
-        : signupResponse.message;
+      const message =
+        linkedCatchesCount > 0
+          ? `${signupResponse.message}. Linked ${linkedCatchesCount} catches caught by ${linkedName} to the new account.`
+          : signupResponse.message;
 
       showNotification('success', message, { withTitle: false, duration: linkedCatchesCount > 0 ? 10000 : 4000 });
 
@@ -81,17 +80,19 @@ export default function Page() {
   };
 
   const handleFormChange = () => {
-    setIsFormValid(formRef.current?.checkValidity() ?? false)
+    setIsFormValid(formRef.current?.checkValidity() ?? false);
   };
 
   return (
-    <Container size={'xs'} px="md" py="xl">
+    <Container size="xs" px="md" py="xl">
       <Stack align="stretch">
         <Center mb="md">
-          <Title order={2} c={'white'}>{t('Title')}</Title>
+          <Title order={2} c="white">
+            {t('Title')}
+          </Title>
         </Center>
         <Stack>
-          <Fieldset variant="default" radius={'md'} pt={'md'} disabled={loading}>
+          <Fieldset variant="default" radius="md" pt="md" disabled={loading}>
             <form onSubmit={handleSubmit} onChange={handleFormChange} ref={formRef}>
               <Stack gap="md">
                 <TextInput
@@ -103,8 +104,8 @@ export default function Page() {
                   onChange={handleChange}
                   required
                   error={fieldErrors.username} // Display validation error
-                  leftSection={<IconUser size={20}/>}
-                  leftSectionPointerEvents='none'
+                  leftSection={<IconUser size={20} />}
+                  leftSectionPointerEvents="none"
                 />
                 <TextInput
                   size="md"
@@ -115,20 +116,20 @@ export default function Page() {
                   onChange={handleChange}
                   required
                   error={fieldErrors.firstName}
-                  leftSection={<IconUser size={20}/>}
-                  leftSectionPointerEvents='none'
+                  leftSection={<IconUser size={20} />}
+                  leftSectionPointerEvents="none"
                 />
                 <TextInput
                   size="md"
                   label={t('LastName')}
                   placeholder={t('LastName')}
-                  name='lastName'
+                  name="lastName"
                   value={formData.lastName}
                   onChange={handleChange}
                   required
                   error={fieldErrors.lastName}
-                  leftSection={<IconUser size={20}/>}
-                  leftSectionPointerEvents='none'
+                  leftSection={<IconUser size={20} />}
+                  leftSectionPointerEvents="none"
                 />
                 <TextInput
                   size="md"
@@ -140,8 +141,8 @@ export default function Page() {
                   onChange={handleChange}
                   required
                   error={fieldErrors.email}
-                  leftSection={<IconAt size={20}/>}
-                  leftSectionPointerEvents='none'
+                  leftSection={<IconAt size={20} />}
+                  leftSectionPointerEvents="none"
                 />
                 <PasswordInput
                   size="md"
@@ -152,8 +153,8 @@ export default function Page() {
                   onChange={handleChange}
                   required
                   error={fieldErrors.password}
-                  leftSection={<IconLock size={20}/>}
-                  leftSectionPointerEvents='none'
+                  leftSection={<IconLock size={20} />}
+                  leftSectionPointerEvents="none"
                 />
                 <PasswordInput
                   size="md"
@@ -163,12 +164,24 @@ export default function Page() {
                   value={formData.confirmPassword}
                   onChange={handleChange}
                   required
-                  leftSection={<IconLock size={20}/>}
+                  leftSection={<IconLock size={20} />}
                   leftSectionPointerEvents="none"
-                  error={formData.confirmPassword && formData.password !== formData.confirmPassword ? t('PasswordMismatch') : null}
+                  error={
+                    formData.confirmPassword && formData.password !== formData.confirmPassword
+                      ? t('PasswordMismatch')
+                      : null
+                  }
                 />
-                {/* {error && <Text color="red" size="sm">{error}</Text>} */}
-                <Button leftSection={<IconUserPlus />} my={'xs'} radius={'md'} type="submit" size="md" loading={loading} loaderProps={{ type: 'dots' }} disabled={!isFormValid || formData.password !== formData.confirmPassword}>
+                <Button
+                  leftSection={<IconUserPlus />}
+                  my="xs"
+                  radius="md"
+                  type="submit"
+                  size="md"
+                  loading={loading}
+                  loaderProps={{ type: 'dots' }}
+                  disabled={!isFormValid || formData.password !== formData.confirmPassword}
+                >
                   {t('Signup')}
                 </Button>
               </Stack>
@@ -176,7 +189,8 @@ export default function Page() {
           </Fieldset>
           <Stack align="center" lh="xs" ta="center" mt="lg">
             <Text size="md">
-              {t('AlreadyHaveAccount')}<br />
+              {t('AlreadyHaveAccount')}
+              <br />
               <Link href="/login">
                 <span style={{ color: '#0070f3', textDecoration: 'underline' }}>{t('Login')}</span>
               </Link>

@@ -1,10 +1,10 @@
-import mongoose, { Schema, Document } from 'mongoose';
 import { IUser, UserRole } from '@lib/types/user';
+import mongoose, { Document, Schema } from 'mongoose';
 import { capitalizeFirstLetter } from '@/lib/utils/utils';
 
 interface IUserModel extends Document, Omit<IUser, 'id'> {}
 
-const UserSchema: Schema<IUserModel> = new Schema({
+const UserSchema = new Schema<IUserModel>({
   username: { type: String, required: true, unique: true, trim: true },
   firstName: { type: String, required: true, set: (value: string) => capitalizeFirstLetter(value), trim: true },
   lastName: { type: String, required: true, set: (value: string) => capitalizeFirstLetter(value), trim: true },

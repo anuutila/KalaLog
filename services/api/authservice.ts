@@ -1,6 +1,6 @@
-import { LoginResponse, LogoutResponse, SignUpResponse } from "@/lib/types/responses";
-import { httpClient } from "../httpClient";
-import { ApiEndpoints } from "@/lib/constants/constants";
+import { ApiEndpoints } from '@/lib/constants/constants';
+import { LoginResponse, LogoutResponse, SignUpResponse } from '@/lib/types/responses';
+import { httpClient } from '../httpClient';
 
 export async function signup(formData: {
   username: string;

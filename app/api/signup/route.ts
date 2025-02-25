@@ -3,10 +3,10 @@ import dbConnect from '@lib/mongo/dbConnect';
 import User from '@lib/mongo/models/user'; // Mongoose model
 import { IUser, IUserSchema } from '@lib/types/user'; // Zod schema
 import bcrypt from 'bcryptjs';
-import { handleError } from '@/lib/utils/handleError';
 import { ErrorResponse, SignUpResponse } from '@/lib/types/responses';
-import { CustomError } from '@/lib/utils/customError';
 import { linkCatchesToUser } from '@/lib/utils/apiUtils';
+import { CustomError } from '@/lib/utils/customError';
+import { handleError } from '@/lib/utils/handleError';
 
 export async function POST(req: NextRequest): Promise<NextResponse<SignUpResponse | ErrorResponse>> {
   try {
@@ -21,7 +21,7 @@ export async function POST(req: NextRequest): Promise<NextResponse<SignUpRespons
     if (existingUser) {
       throw new CustomError('Signup failed. Email or username already in use.', 400);
     }
-    
+
     // Hash the password
     const hashedPassword = await bcrypt.hash(userData.password, 10);
 
@@ -43,17 +43,17 @@ export async function POST(req: NextRequest): Promise<NextResponse<SignUpRespons
     const linkingResult = await linkCatchesToUser(parsedUser);
 
     return NextResponse.json<SignUpResponse>(
-      { 
-        message: 'New user account created successfully', 
+      {
+        message: 'New user account created successfully',
         data: {
-          firstName: parsedUser.firstName, 
-          lastName: parsedUser.lastName, 
-          username: parsedUser.username, 
+          firstName: parsedUser.firstName,
+          lastName: parsedUser.lastName,
+          username: parsedUser.username,
           id: parsedUser.id,
           linkedCatchesCount: linkingResult.count,
           linkedName: linkingResult.linkedName,
-        } 
-      }, 
+        },
+      },
       { status: 201 }
     );
   } catch (error) {

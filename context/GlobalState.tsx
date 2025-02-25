@@ -1,5 +1,7 @@
 'use client';
 
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { showNotification } from '@/lib/notifications/notifications';
 import { IAchievement } from '@/lib/types/achievement';
 import { ICatch } from '@/lib/types/catch';
@@ -10,8 +12,6 @@ import { handleApiError } from '@/lib/utils/handleApiError';
 import { getUserAchievements } from '@/services/api/achievementService';
 import { getCatches } from '@/services/api/catchService';
 import { getUserInfo } from '@/services/api/userService';
-import { useTranslations } from 'next-intl';
-import React, { createContext, useContext, useEffect, useState } from 'react';
 
 interface GlobalState {
   isLoggedIn: boolean | null;
@@ -36,7 +36,7 @@ export const GlobalStateProvider = ({ children }: { children: React.ReactNode })
   const [catchesError, setCatchesError] = useState<string | null>(null);
   const [loadingCatches, setLoadingCatches] = useState(false);
   // Map of user IDs to display names that are used if there are duplicae names
-  const [displayNameMap, setDisplayNameMap] = useState<{ [userId: string]: string }>({}); 
+  const [displayNameMap, setDisplayNameMap] = useState<{ [userId: string]: string }>({});
   const [achievements, setAchievements] = useState<IAchievement[]>([]);
   const t = useTranslations();
 
@@ -113,7 +113,6 @@ export const GlobalStateProvider = ({ children }: { children: React.ReactNode })
     setAchievements(updates);
   }
 
-
   function resolveDisplayNames(): void {
     const nameOccurrences: { [firstName: string]: Set<string | null> } = {};
     const idToDisplayNameMap: { [userId: string]: string } = {};
@@ -123,7 +122,7 @@ export const GlobalStateProvider = ({ children }: { children: React.ReactNode })
       // Extract the first word from the name to ensure only the first name is stored
       const firstName = catchItem.caughtBy.name.split(' ')[0];
       const userId = catchItem.caughtBy.userId ?? null;
-      
+
       if (!nameOccurrences[firstName]) {
         nameOccurrences[firstName] = new Set();
       }
@@ -137,14 +136,12 @@ export const GlobalStateProvider = ({ children }: { children: React.ReactNode })
 
       // Only modify registered users
       if (userId) {
-        const hasDuplicateRegisteredUsers = [...userIdsForName].filter(id => id).length > 1;
+        const hasDuplicateRegisteredUsers = [...userIdsForName].filter((id) => id).length > 1;
         const hasUnregisteredDuplicate = userIdsForName.has(null);
 
         if (hasDuplicateRegisteredUsers || hasUnregisteredDuplicate) {
           // Add the display name for registered users with duplicates
-          const displayName = lastName
-            ? `${name} ${lastName.charAt(0)}.`
-            : `${name} (${username})`;
+          const displayName = lastName ? `${name} ${lastName.charAt(0)}.` : `${name} (${username})`;
 
           idToDisplayNameMap[userId] = displayName;
         }
@@ -167,7 +164,7 @@ export const GlobalStateProvider = ({ children }: { children: React.ReactNode })
         setJwtUserInfo,
         fetchCatches,
         displayNameMap,
-        achievements
+        achievements,
       }}
     >
       {children}

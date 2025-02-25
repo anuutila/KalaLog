@@ -1,10 +1,25 @@
-import { IAchievement, IAchievementConfig, IAchievementConfigOneTime, IAchievementConfigTiered, IAchievementOneTime, IAchievementTiered } from "@/lib/types/achievement";
-import { ICatch } from "@/lib/types/catch";
-import { CatchUtils } from "@/lib/utils/catchUtils";
+import {
+  IAchievement,
+  IAchievementConfig,
+  IAchievementConfigOneTime,
+  IAchievementConfigTiered,
+  IAchievementOneTime,
+  IAchievementTiered,
+} from '@/lib/types/achievement';
+import { ICatch } from '@/lib/types/catch';
+import { CatchUtils } from '@/lib/utils/catchUtils';
 
-export interface AchievementEvaluator<TConfig extends IAchievementConfig = IAchievementConfig, TRecord extends IAchievement = IAchievement> {
+export interface AchievementEvaluator<
+  TConfig extends IAchievementConfig = IAchievementConfig,
+  TRecord extends IAchievement = IAchievement,
+> {
   key: string;
-  evaluate: (userCatches: ICatch[], config: TConfig, userId: string, currentAchievement?: TRecord) => IAchievement | null;
+  evaluate: (
+    userCatches: ICatch[],
+    config: TConfig,
+    userId: string,
+    currentAchievement?: TRecord
+  ) => IAchievement | null;
 }
 
 /**
@@ -17,18 +32,15 @@ function buildTieredAchievement(
   currentAchievement?: IAchievementTiered
 ): IAchievementTiered | null {
   const validProgress = progress || 0;
-  const currentTier = 
+  const currentTier =
     config.baseTiers.findIndex((tier) => validProgress < tier.threshold) === -1
-    ? config.baseTiers.length
-    : config.baseTiers.findIndex((tier) => validProgress < tier.threshold);
+      ? config.baseTiers.length
+      : config.baseTiers.findIndex((tier) => validProgress < tier.threshold);
   const isUnlocked = currentTier > 0;
 
   if (!currentAchievement && progress === 0) return null;
 
-  const totalXP = config.baseTiers.reduce(
-    (acc, tier, index) => (index < currentTier ? acc + tier.xp : acc),
-    0
-  );
+  const totalXP = config.baseTiers.reduce((acc, tier, index) => (index < currentTier ? acc + tier.xp : acc), 0);
 
   const tiers = config.baseTiers.map((tier, index) => ({
     tier: index + 1,
@@ -62,14 +74,11 @@ function buildOneTimeAchievement(
   isUnlocked: boolean,
   currentAchievement?: IAchievementOneTime
 ): IAchievementOneTime | null {
-
   if (!currentAchievement && progress === 0) return null;
-  
+
   const dateUnlocked =
-    !currentAchievement || !currentAchievement.dateUnlocked
-      ? new Date()
-      : currentAchievement.dateUnlocked;
-  
+    !currentAchievement || !currentAchievement.dateUnlocked ? new Date() : currentAchievement.dateUnlocked;
+
   return {
     key: config.key,
     userId,
@@ -80,7 +89,6 @@ function buildOneTimeAchievement(
     dateUnlocked,
   };
 }
-
 
 // ******** Tiered achievement evaluators *********
 
@@ -156,7 +164,7 @@ export const spotAmountEvaluator: AchievementEvaluator<IAchievementConfigTiered,
     const spots = CatchUtils.getUniqueSpotsBasedOnDistanceAndBoW(userCatches, config.condition?.distance || 200);
     const progress = spots || 0;
     return buildTieredAchievement(progress, config, userId, currentAchievement);
-  }
+  },
 };
 
 export const bodiesOfWaterAmountEvaluator: AchievementEvaluator<IAchievementConfigTiered, IAchievementTiered> = {
@@ -165,7 +173,7 @@ export const bodiesOfWaterAmountEvaluator: AchievementEvaluator<IAchievementConf
     const bodyOfWaters = CatchUtils.getUniqueBodiesOfWater(userCatches);
     const progress = bodyOfWaters.length || 0;
     return buildTieredAchievement(progress, config, userId, currentAchievement);
-  }
+  },
 };
 
 export const lureAmountEvaluator: AchievementEvaluator<IAchievementConfigTiered, IAchievementTiered> = {
@@ -174,7 +182,7 @@ export const lureAmountEvaluator: AchievementEvaluator<IAchievementConfigTiered,
     const lures = CatchUtils.getUniqueLures(userCatches);
     const progress = lures.length || 0;
     return buildTieredAchievement(progress, config, userId, currentAchievement);
-  }
+  },
 };
 
 export const fishingStreakEvaluator: AchievementEvaluator<IAchievementConfigTiered, IAchievementTiered> = {
@@ -182,9 +190,8 @@ export const fishingStreakEvaluator: AchievementEvaluator<IAchievementConfigTier
   evaluate: (userCatches, config, userId, currentAchievement) => {
     const progress = CatchUtils.getLongestFishingStreak(userCatches);
     return buildTieredAchievement(progress, config, userId, currentAchievement);
-  }
+  },
 };
-
 
 // ******** One-time achievement evaluators *********
 
@@ -193,10 +200,10 @@ export const tinyCatchEvaluator: AchievementEvaluator<IAchievementConfigOneTime,
   evaluate: (userCatches, config, userId, currentAchievement) => {
     const lengths = CatchUtils.getUniqueLengths(userCatches);
     if (lengths.length === 0) return null;
-    
+
     const smallest = Math.min(...lengths);
     const isUnlocked = smallest <= config.condition.length;
-    
+
     return buildOneTimeAchievement(userId, config, smallest, isUnlocked, currentAchievement);
   },
 };
@@ -206,7 +213,7 @@ export const fourSeasonsEvaluator: AchievementEvaluator<IAchievementConfigOneTim
   evaluate: (userCatches, config, userId, currentAchievement) => {
     const seasonsAmount = CatchUtils.getUniqueSeasons(userCatches);
     const isUnlocked = seasonsAmount === config.condition.seasons.length;
-    
+
     return buildOneTimeAchievement(userId, config, seasonsAmount, isUnlocked, currentAchievement);
   },
 };
@@ -214,10 +221,14 @@ export const fourSeasonsEvaluator: AchievementEvaluator<IAchievementConfigOneTim
 export const rapidCatchesEvaluator: AchievementEvaluator<IAchievementConfigOneTime, IAchievementOneTime> = {
   key: 'rapid_catches',
   evaluate: (userCatches, config, userId, currentAchievement) => {
-    const progress = CatchUtils.resolveTimeframeCatches(userCatches, config.condition.timeframe, config.condition.catchCount);
+    const progress = CatchUtils.resolveTimeframeCatches(
+      userCatches,
+      config.condition.timeframe,
+      config.condition.catchCount
+    );
     const isUnlocked = progress >= config.condition.catchCount;
     return buildOneTimeAchievement(userId, config, progress, isUnlocked, currentAchievement);
-  }
+  },
 };
 
 export const hourCatchesEvaluator: AchievementEvaluator<IAchievementConfigOneTime, IAchievementOneTime> = {
@@ -226,35 +237,34 @@ export const hourCatchesEvaluator: AchievementEvaluator<IAchievementConfigOneTim
     const progress = CatchUtils.resolveTimeframeCatches(userCatches, config.condition.timeframe);
     const isUnlocked = progress >= config.condition.catchCount;
     return buildOneTimeAchievement(userId, config, progress, isUnlocked, currentAchievement);
-  }
+  },
 };
 
 export const addImageEvaluator: AchievementEvaluator<IAchievementConfigOneTime, IAchievementOneTime> = {
   key: 'add_image',
   evaluate: (userCatches, config, userId, currentAchievement) => {
-    const progress = userCatches.filter(c => (c.images ?? []).length > 0).length;
+    const progress = userCatches.filter((c) => (c.images ?? []).length > 0).length;
     return buildOneTimeAchievement(userId, config, progress, progress > 0, currentAchievement);
-  }
+  },
 };
 
 export const addCommentEvaluator: AchievementEvaluator<IAchievementConfigOneTime, IAchievementOneTime> = {
   key: 'add_comment',
   evaluate: (userCatches, config, userId, currentAchievement) => {
-    const progress = userCatches.filter(c => (c.comment ?? '').length > 0).length;
+    const progress = userCatches.filter((c) => (c.comment ?? '').length > 0).length;
     return buildOneTimeAchievement(userId, config, progress, progress > 0, currentAchievement);
-  }
+  },
 };
 
 export const kahenKilonSiikaEvaluator: AchievementEvaluator<IAchievementConfigOneTime, IAchievementOneTime> = {
   key: 'kahen_kilon_siika',
   evaluate: (userCatches, config, userId, currentAchievement) => {
-    const siikaCatches = userCatches.filter(c => c.species === config.condition.species);
-    const heaviestCatch = Math.max(0, ...siikaCatches.map(c => (c.weight ?? 0)));
+    const siikaCatches = userCatches.filter((c) => c.species === config.condition.species);
+    const heaviestCatch = Math.max(0, ...siikaCatches.map((c) => c.weight ?? 0));
     const isUnlocked = heaviestCatch >= config.condition.weight;
     return buildOneTimeAchievement(userId, config, heaviestCatch, isUnlocked, currentAchievement);
-  }
+  },
 };
-
 
 export const achievementEvaluators: AchievementEvaluator[] = [
   totalCatchesEvaluator as AchievementEvaluator<IAchievementConfig, IAchievement>,

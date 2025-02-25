@@ -1,7 +1,7 @@
-import { authorize } from "../middleware/authorize";
-import { AuthorizationResponse, ErrorResponse } from "../types/responses";
-import { UserRole } from "../types/user";
-import { CustomError } from "./customError";
+import { authorize } from '../middleware/authorize';
+import { AuthorizationResponse, ErrorResponse } from '../types/responses';
+import { UserRole } from '../types/user';
+import { CustomError } from './customError';
 
 export const requireRole = async (roles: UserRole[]): Promise<AuthorizationResponse> => {
   const response = await authorize(roles);

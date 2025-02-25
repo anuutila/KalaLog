@@ -1,8 +1,8 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 export const AchievementBaseSchema = z.object({
   id: z.string().optional(),
-  userId: z.string().regex(/^[a-f\d]{24}$/i, "Invalid user ID"),
+  userId: z.string().regex(/^[a-f\d]{24}$/i, 'Invalid user ID'),
   key: z.string(),
   progress: z.number().min(0),
   totalXP: z.number().min(0),
@@ -11,13 +11,12 @@ export const AchievementBaseSchema = z.object({
 
 export const AchievementTierSchema = z.object({
   tier: z.number().min(1),
-  dateUnlocked: z.preprocess(
-    (arg) => {
-      if (typeof arg === 'string' || arg instanceof Date) return new Date(arg);
-      return arg;
-    },
-    z.date().optional().nullable()
-  ),
+  dateUnlocked: z.preprocess((arg) => {
+    if (typeof arg === 'string' || arg instanceof Date) {
+      return new Date(arg);
+    }
+    return arg;
+  }, z.date().optional().nullable()),
   bonus: z.boolean().optional(),
 });
 
@@ -29,20 +28,16 @@ export const AchievementTieredSchema = AchievementBaseSchema.extend({
 
 export const AchievementOneTimeSchema = AchievementBaseSchema.extend({
   isOneTime: z.literal(true),
-  dateUnlocked: z.preprocess(
-    (arg) => {
-      if (typeof arg === 'string' || arg instanceof Date) return new Date(arg);
-      return arg;
-    },
-    z.date().optional().nullable()
-  ),
+  dateUnlocked: z.preprocess((arg) => {
+    if (typeof arg === 'string' || arg instanceof Date) {
+      return new Date(arg);
+    }
+    return arg;
+  }, z.date().optional().nullable()),
 });
 
 // Union Type for Achievements
-export const AchievementSchema = z.discriminatedUnion("isOneTime", [
-  AchievementTieredSchema,
-  AchievementOneTimeSchema,
-]);
+export const AchievementSchema = z.discriminatedUnion('isOneTime', [AchievementTieredSchema, AchievementOneTimeSchema]);
 
 export const ConditionSchema = z.record(z.any());
 
@@ -79,7 +74,7 @@ export const AchievementConfigOneTimeSchema = AchievementConfigBaseSchema.extend
 });
 
 // Union Type for Achievement Configurations
-export const AchievementConfigSchema = z.discriminatedUnion("isOneTime", [
+export const AchievementConfigSchema = z.discriminatedUnion('isOneTime', [
   AchievementConfigTieredSchema,
   AchievementConfigOneTimeSchema,
 ]);

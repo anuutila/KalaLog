@@ -1,12 +1,7 @@
-import React from "react";
+import React from 'react';
+import type { CustomNoRowsOverlayProps } from 'ag-grid-react';
 
-import type { CustomNoRowsOverlayProps } from "ag-grid-react";
-
-export default (
-  props: CustomNoRowsOverlayProps & { noRowsMessageFunc: () => string },
-) => {
+export default (props: CustomNoRowsOverlayProps & { noRowsMessageFunc: () => string }) => {
   const message = props.noRowsMessageFunc();
-  return (
-    <span className="ag-overlay-no-rows-center">{message}</span>
-  );
+  return <span className="ag-overlay-no-rows-center">{message}</span>;
 };

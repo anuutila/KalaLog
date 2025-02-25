@@ -4,20 +4,20 @@ import '@mantine/carousel/styles.css';
 import '../styles.css';
 
 import React from 'react';
+import { Metadata, Viewport } from 'next';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
+import { NextIntlClientProvider } from 'next-intl';
+import { getLocale, getMessages } from 'next-intl/server';
 import { ColorSchemeScript } from '@mantine/core';
 import AppShellWrapper from '@/components/layout/AppShellWrapper/AppShellWrapper';
-import { Metadata, Viewport } from 'next';
-import { getLocale, getMessages } from 'next-intl/server';
-import { NextIntlClientProvider } from 'next-intl';
 
 export const metadata: Metadata = {
-  title: "KalaLog",
-  description: "KalaLog is a fishing diary web application for logging, viewing and analyzing your fishing catches.",
-  generator: "Next.js",
-  keywords: ["kala", "kalalog", "fishing"],
-  creator: "Akseli Nuutila",
+  title: 'KalaLog',
+  description: 'KalaLog is a fishing diary web application for logging, viewing and analyzing your fishing catches.',
+  generator: 'Next.js',
+  keywords: ['kala', 'kalalog', 'fishing'],
+  creator: 'Akseli Nuutila',
   icons: {
     icon: [
       { url: '/kalalog_icon_round-16.ico', sizes: '16x16', type: 'image/x-icon' },
@@ -25,9 +25,7 @@ export const metadata: Metadata = {
       { url: '/kalalog_icon_gradient-192.png', sizes: '192x192', type: 'image/png' },
       { url: '/kalalog_icon_gradient-512.png', sizes: '512x512', type: 'image/png' },
     ],
-    apple: [
-      { url: '/apple-icon.png', sizes: '180x180', type: 'image/png' },
-    ],
+    apple: [{ url: '/apple-icon.png', sizes: '180x180', type: 'image/png' }],
   },
 };
 
@@ -38,7 +36,7 @@ export const viewport: Viewport = {
   userScalable: false,
   viewportFit: 'cover',
   themeColor: '#141414',
-}
+};
 
 export default async function RootLayout({ children }: { children: any }) {
   const locale = await getLocale();
@@ -51,9 +49,7 @@ export default async function RootLayout({ children }: { children: any }) {
       </head>
       <body>
         <NextIntlClientProvider messages={messages} locale={locale}>
-          <AppShellWrapper>
-            {children}
-          </AppShellWrapper>
+          <AppShellWrapper>{children}</AppShellWrapper>
           <SpeedInsights />
           <Analytics />
         </NextIntlClientProvider>

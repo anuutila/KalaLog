@@ -1,5 +1,5 @@
-import imageCompression, { Options } from "browser-image-compression";
-import { ICatch } from "../types/catch"
+import imageCompression, { Options } from 'browser-image-compression';
+import { ICatch } from '../types/catch';
 
 export function sortByDate(catches: ICatch[]): ICatch[] {
   return catches.sort((a, b) => {
@@ -11,10 +11,10 @@ export function sortByDate(catches: ICatch[]): ICatch[] {
 
 export function sortByTime(catches: ICatch[]): ICatch[] {
   return catches.sort((a, b) => {
-    const timeA = a.time ? a.time.split(':').join(''): '';
-    const timeB = b.time ? b.time.split(':').join(''): '';
+    const timeA = a.time ? a.time.split(':').join('') : '';
+    const timeB = b.time ? b.time.split(':').join('') : '';
     return timeA.localeCompare(timeB);
-  })
+  });
 }
 
 /**
@@ -23,11 +23,13 @@ export function sortByTime(catches: ICatch[]): ICatch[] {
  * @returns {ICatch[]} - Array of catches sorted by date in reverse chronological order
  */
 export function defaultSort(catches: ICatch[]): ICatch[] {
-  return sortByDate(sortByTime(catches)).reverse()
+  return sortByDate(sortByTime(catches)).reverse();
 }
 
 export function capitalizeFirstLetter(value: string | null | undefined): string | null {
-  if (!value || typeof value !== 'string') return null; // Return null for invalid or empty input
+  if (!value || typeof value !== 'string') {
+    return null;
+  } // Return null for invalid or empty input
   const updated = value.charAt(0).toUpperCase() + value.slice(1);
   return updated;
 }
@@ -56,7 +58,7 @@ export async function optimizeImage(file: File): Promise<File> {
     console.error('Image optimization failed:', error);
     throw error;
   }
-};
+}
 
 // Extract the publicId from the Cloudinary URL
 export function extractPublicId(url: string): string {
@@ -65,7 +67,7 @@ export function extractPublicId(url: string): string {
     throw new Error('Unexpected URL structure');
   }
   return url.substring(startIndex, url.lastIndexOf('.')); // Extract up to the file extension
-};
+}
 
 // Extract the folder name from the Cloudinary URL
 export function extractFolderName(url: string): string {
@@ -74,7 +76,7 @@ export function extractFolderName(url: string): string {
     throw new Error('Unexpected URL structure');
   }
   return url.substring(startIndex, url.lastIndexOf('/')); // Extract up to the file name
-};
+}
 
 // Extract the publicId from the Cloudinary URL
 export function extractNextImageIndex(urls: string[]): number {
@@ -85,7 +87,7 @@ export function extractNextImageIndex(urls: string[]): number {
       throw new Error('Unexpected URL structure');
     }
     const index: string = url.substring(startIndex).split('_')[1];
-    indexes.push(parseInt(index));
+    indexes.push(parseInt(index, 10));
   });
   return Math.max(...indexes) + 1;
-};
+}

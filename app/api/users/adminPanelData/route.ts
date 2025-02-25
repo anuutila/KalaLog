@@ -1,18 +1,18 @@
+import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongo/dbConnect';
 import User from '@/lib/mongo/models/user';
 import { AuthorizationResponse } from '@/lib/types/responses';
 import { adminRoles, UserRole } from '@/lib/types/user';
 import { requireRole } from '@/lib/utils/authorization';
 import { handleError } from '@/lib/utils/handleError';
-import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET(req: NextRequest): Promise<NextResponse> {
+export async function GET(): Promise<NextResponse> {
   try {
     await dbConnect();
 
     // Check if the user has the required role
     const response: AuthorizationResponse = await requireRole(adminRoles);
-    const { role, username } = response.data;
+    const { role } = response.data;
 
     let users: any[] = [];
     if (role === UserRole.SUPERADMIN) {
@@ -27,7 +27,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
         .lean();
     }
 
-      const formattedUsers = users.map((user) => ({
+    const formattedUsers = users.map((user) => ({
       id: user._id?.toString(),
       username: user.username,
       firstName: user.firstName,
@@ -37,10 +37,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
 
     console.log('Admin panel user data:', formattedUsers);
 
-    return NextResponse.json(
-      { message: 'Users retrieved successfully', users: formattedUsers },
-      { status: 200 }
-    );
+    return NextResponse.json({ message: 'Users retrieved successfully', users: formattedUsers }, { status: 200 });
   } catch (error: unknown) {
     return handleError(error, 'Unable to fetch users');
   }

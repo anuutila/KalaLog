@@ -1,9 +1,9 @@
-import { ErrorResponse, SignedImageURLsResponse } from '@/lib/types/responses';
-import { creatorRoles, editorRoles, UserRole } from '@/lib/types/user';
-import { handleError } from '@/lib/utils/handleError';
 import { NextRequest, NextResponse } from 'next/server';
 import cloudinary from '@/lib/cloudinary/cloudinary';
+import { ErrorResponse, SignedImageURLsResponse } from '@/lib/types/responses';
+import { creatorRoles, editorRoles } from '@/lib/types/user';
 import { requireRole } from '@/lib/utils/authorization';
+import { handleError } from '@/lib/utils/handleError';
 
 export async function POST(req: NextRequest): Promise<NextResponse<SignedImageURLsResponse | ErrorResponse>> {
   try {
@@ -15,7 +15,10 @@ export async function POST(req: NextRequest): Promise<NextResponse<SignedImageUR
 
     const signedUrls: string[] = publicIds.map((publicId: string) => generateSignedUrl(publicId));
 
-    return NextResponse.json<SignedImageURLsResponse>({ message: 'Signed URLs generated successfully.', data: signedUrls }, { status: 200 });
+    return NextResponse.json<SignedImageURLsResponse>(
+      { message: 'Signed URLs generated successfully.', data: signedUrls },
+      { status: 200 }
+    );
   } catch (error: unknown) {
     return handleError(error, 'An unexpected error occurred while fetching the images. Please try again later.');
   }
@@ -26,9 +29,6 @@ function generateSignedUrl(publicId: string): string {
     type: 'upload',
     sign_url: true,
     secure: true,
-    transformation: [
-      { quality: 'auto' },
-      { fetch_format: 'auto' },
-    ],
+    transformation: [{ quality: 'auto' }, { fetch_format: 'auto' }],
   });
 }

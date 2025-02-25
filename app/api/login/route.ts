@@ -1,14 +1,14 @@
+import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@lib/mongo/dbConnect';
 import User from '@lib/mongo/models/user';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { cookies } from 'next/headers';
-import { CustomError } from '@/lib/utils/customError';
-import { handleError } from '@/lib/utils/handleError';
+import { JwtUserInfo } from '@/lib/types/jwtUserInfo';
 import { ErrorResponse, LoginResponse } from '@/lib/types/responses';
 import { IUser, IUserSchema, UserRole } from '@/lib/types/user';
-import { JwtUserInfo } from '@/lib/types/jwtUserInfo';
+import { CustomError } from '@/lib/utils/customError';
+import { handleError } from '@/lib/utils/handleError';
 
 const JWT_SECRET = process.env.JWT_SECRET as string;
 
@@ -25,8 +25,8 @@ export async function POST(req: NextRequest): Promise<NextResponse<LoginResponse
       $or: [{ email: emailOrUsername }, { username: emailOrUsername }],
     };
 
-    const user = await User.findOne(query).lean<{_id: unknown } & IUser>();
-    
+    const user = await User.findOne(query).lean<{ _id: unknown } & IUser>();
+
     if (!user) {
       throw new CustomError('Login failed. Invalid username/email or password.', 401);
     }
@@ -41,7 +41,7 @@ export async function POST(req: NextRequest): Promise<NextResponse<LoginResponse
       console.error('Invalid user:', user, error);
       throw new Error('Login failed. Invalid user data.');
     }
-    
+
     console.log('Validated user: ', validatedUser);
 
     // Compare passwords
@@ -57,15 +57,14 @@ export async function POST(req: NextRequest): Promise<NextResponse<LoginResponse
       userId: validatedUser.id || '',
       role: validatedUser.role || UserRole.VIEWER,
     };
-    
-    // Generate JWT
-    const token = jwt.sign(
-      jwtUserInfo,
-      JWT_SECRET, 
-      { expiresIn: '7d' }
-    );
 
-    const response = NextResponse.json<LoginResponse>({ message: `Login successful. Hi ${validatedUser.firstName}! 👋`, data: jwtUserInfo }, { status: 200 });
+    // Generate JWT
+    const token = jwt.sign(jwtUserInfo, JWT_SECRET, { expiresIn: '7d' });
+
+    const response = NextResponse.json<LoginResponse>(
+      { message: `Login successful. Hi ${validatedUser.firstName}! 👋`, data: jwtUserInfo },
+      { status: 200 }
+    );
 
     const cookieStore = await cookies();
     cookieStore.set('KALALOG_TOKEN', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production' });

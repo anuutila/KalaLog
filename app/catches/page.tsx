@@ -6,39 +6,37 @@ import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-quartz.css';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import {
-  ColDef,
-  GridReadyEvent,
-} from 'ag-grid-community';
+import { ColDef, GridReadyEvent } from 'ag-grid-community';
 
 import './page.css';
-import classes from './page.module.css';
 
-import { ICatch } from '@lib/types/catch';
-import {
-  ActionIcon,
-  Box,
-  Button,
-  Container,
-  Stack,
-  Text,
-  useCombobox,
-} from '@mantine/core';
-import { IconAdjustments } from '@tabler/icons-react';
-import { useDisclosure } from '@mantine/hooks';
-import { getColumnDefs } from '@/components/catchesPage/CatchesGrid/columnDefinitions';
-import { defaultVisibleColumns, displayLabelToFieldMap, FieldIdentifier, fieldToDisplayLabelMap } from '@/components/catchesPage/constants';
-import { getBodyOfWaterOptions, getColumnOptions, getSelectAllOption, getYearOptions } from '@/components/catchesPage/optionGenerators';
-import TableSettingsDrawer from '@/components/catchesPage/TableSettingsDrawer/TableSettingsDrawer';
-import CatchesOverview from '@/components/catchesPage/CatchesOverview/CatchesOverview';
-import CatchesGrid from '@/components/catchesPage/CatchesGrid/CatchesGrid';
-import { useHeaderActions } from '@/context/HeaderActionsContext';
-import { useGlobalState } from '@/context/GlobalState';
-import CatchDetails from '@/components/catchesPage/CatchDetails/CatchDetails';
 import { useRouter } from 'next/navigation';
+import { ICatch } from '@lib/types/catch';
+import { IconAdjustments } from '@tabler/icons-react';
+import { useLocale, useTranslations } from 'next-intl';
+import { ActionIcon, Box, Button, Container, Stack, useCombobox } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
+import CatchDetails from '@/components/catchesPage/CatchDetails/CatchDetails';
+import CatchesGrid from '@/components/catchesPage/CatchesGrid/CatchesGrid';
+import { getColumnDefs } from '@/components/catchesPage/CatchesGrid/columnDefinitions';
+import CatchesOverview from '@/components/catchesPage/CatchesOverview/CatchesOverview';
+import {
+  defaultVisibleColumns,
+  displayLabelToFieldMap,
+  FieldIdentifier,
+  fieldToDisplayLabelMap,
+} from '@/components/catchesPage/constants';
+import {
+  getBodyOfWaterOptions,
+  getColumnOptions,
+  getSelectAllOption,
+  getYearOptions,
+} from '@/components/catchesPage/optionGenerators';
+import TableSettingsDrawer from '@/components/catchesPage/TableSettingsDrawer/TableSettingsDrawer';
+import { useGlobalState } from '@/context/GlobalState';
+import { useHeaderActions } from '@/context/HeaderActionsContext';
 import { DEFAULT_BODY_OF_WATER } from '@/lib/constants/constants';
 import { CatchUtils } from '@/lib/utils/catchUtils';
-import { useLocale, useTranslations } from 'next-intl';
 
 const currentYear = new Date().getFullYear().toString();
 
@@ -58,7 +56,7 @@ const updateQueryParams = (selectedCatch: ICatch | null, router: ReturnType<type
   } else {
     router.push('/', { scroll: false });
   }
-}
+};
 
 export default function CatchesPage() {
   const locale = useLocale();
@@ -81,19 +79,21 @@ export default function CatchesPage() {
   const [locationIconsEnabled, setLocationIconsEnabled] = useState(false);
   const [selectedCatch, setSelectedCatch] = useState<ICatch | null>(null);
   const [catchDetailsOpen, setCatchDetailsOpen] = useState(false);
-  const [colDefs, setColDefs] = useState<ColDef<ICatch>[]>(getColumnDefs(
-    imageIconsEnabled, 
-    SpeciesColWidths.NoIcon, 
-    locationIconsEnabled, 
-    LocationColWidths.NoIcon,
-    displayNameMap,
-    t
-  )); 
+  const [colDefs, setColDefs] = useState<ColDef<ICatch>[]>(
+    getColumnDefs(
+      imageIconsEnabled,
+      SpeciesColWidths.NoIcon,
+      locationIconsEnabled,
+      LocationColWidths.NoIcon,
+      displayNameMap,
+      t
+    )
+  );
   const [defaultColDef, setDefaultColDef] = useState<ColDef>({
     sortable: true,
     filter: false,
     resizable: false,
-    suppressHeaderFilterButton: true
+    suppressHeaderFilterButton: true,
   });
 
   useEffect(() => {
@@ -101,9 +101,7 @@ export default function CatchesPage() {
       const params = new URLSearchParams(window.location.search);
       const catchNumber = params.get('catchNumber');
       if (catchNumber) {
-        const catchData = catches.find(
-          (catchItem) => catchItem.catchNumber.toString() === catchNumber
-        );
+        const catchData = catches.find((catchItem) => catchItem.catchNumber.toString() === catchNumber);
         if (catchData) {
           setSelectedCatch(catchData);
         }
@@ -114,24 +112,31 @@ export default function CatchesPage() {
   useEffect(() => {
     const newSpeciesColWidth = imageIconsEnabled ? SpeciesColWidths.WithIcon : SpeciesColWidths.NoIcon;
     const newLocationColWidth = locationIconsEnabled ? LocationColWidths.WithIcon : LocationColWidths.NoIcon;
-    setColDefs(getColumnDefs(imageIconsEnabled, newSpeciesColWidth, locationIconsEnabled, newLocationColWidth, displayNameMap, t));
+    setColDefs(
+      getColumnDefs(imageIconsEnabled, newSpeciesColWidth, locationIconsEnabled, newLocationColWidth, displayNameMap, t)
+    );
   }, [imageIconsEnabled, locationIconsEnabled, displayNameMap, locale]);
-  
-  const onGridReady = useCallback((params: GridReadyEvent) => {
-    // Initial call to set the default column visibilities
-    applyColumnVisibility();
 
-    if (selectedYear) {
-      applyYearFilter(selectedYear);
-    }
-    if (selectedBodyOfWater) {
-      applyBodyOfWaterFilter(selectedBodyOfWater);
-    }
-  }, [selectedYear, selectedBodyOfWater]);
+  const onGridReady = useCallback(
+    (params: GridReadyEvent) => {
+      // Initial call to set the default column visibilities
+      applyColumnVisibility();
+
+      if (selectedYear) {
+        applyYearFilter(selectedYear);
+      }
+      if (selectedBodyOfWater) {
+        applyBodyOfWaterFilter(selectedBodyOfWater);
+      }
+    },
+    [selectedYear, selectedBodyOfWater]
+  );
 
   useEffect(() => {
     if (catches.length > 0) {
-      const uniqueYears = CatchUtils.getUniqueYearsForBodyOfWater(catches, DEFAULT_BODY_OF_WATER).map((item) => item.year);
+      const uniqueYears = CatchUtils.getUniqueYearsForBodyOfWater(catches, DEFAULT_BODY_OF_WATER).map(
+        (item) => item.year
+      );
       if (uniqueYears.length > 0) {
         setUniqueYears(uniqueYears);
         if (!selectedYear) {
@@ -174,7 +179,9 @@ export default function CatchesPage() {
   useEffect(() => {
     // Set the header actions for this page
     setActions(
-      <ActionIcon bg={'var(--mantine-color-dark-8)'} variant='default' onClick={open} disabled={catchDetailsOpen}><IconAdjustments size={20}/></ActionIcon>
+      <ActionIcon bg="var(--mantine-color-dark-8)" variant="default" onClick={open} disabled={catchDetailsOpen}>
+        <IconAdjustments size={20} />
+      </ActionIcon>
     );
 
     // Cleanup when leaving the page
@@ -209,7 +216,7 @@ export default function CatchesPage() {
   }, [updateRowCount, updateFilteredCatches]);
 
   const applyYearFilter = useCallback((year: string | null) => {
-    if (year && year !== 'AllYears') { 
+    if (year && year !== 'AllYears') {
       const filterModel = {
         type: 'inRange',
         dateFrom: `${year}-01-01`,
@@ -226,31 +233,32 @@ export default function CatchesPage() {
     }
   }, []);
 
-  const applyBodyOfWaterFilter = useCallback((bodyOfWater: string | null) => {
-    if (bodyOfWater && bodyOfWater !== 'AllBodiesOfWater') {
-      const filterModel = {
-        filterType: 'text',
-        type: 'equals',
-        filter: bodyOfWater
-      };
-      gridRef.current!.api.setColumnFilterModel(FieldIdentifier.BodyOfWater, filterModel)
-        .then(() => {
+  const applyBodyOfWaterFilter = useCallback(
+    (bodyOfWater: string | null) => {
+      if (bodyOfWater && bodyOfWater !== 'AllBodiesOfWater') {
+        const filterModel = {
+          filterType: 'text',
+          type: 'equals',
+          filter: bodyOfWater,
+        };
+        gridRef.current!.api.setColumnFilterModel(FieldIdentifier.BodyOfWater, filterModel).then(() => {
           gridRef.current!.api.onFilterChanged();
         });
-    } else {
-      gridRef.current!.api.setColumnFilterModel(FieldIdentifier.BodyOfWater, null)
-        .then(() => {
+      } else {
+        gridRef.current!.api.setColumnFilterModel(FieldIdentifier.BodyOfWater, null).then(() => {
           gridRef.current!.api.onFilterChanged();
         });
-    }
-  }, [selectedBodyOfWater, catches]);
+      }
+    },
+    [selectedBodyOfWater, catches]
+  );
 
   useEffect(() => {
     if (gridRef.current?.api && selectedYear) {
       applyYearFilter(selectedYear);
     }
   }, [selectedYear, applyYearFilter]);
-  
+
   useEffect(() => {
     if (gridRef.current?.api && selectedBodyOfWater) {
       applyBodyOfWaterFilter(selectedBodyOfWater);
@@ -282,10 +290,8 @@ export default function CatchesPage() {
       api.setColumnsVisible(Object.values(FieldIdentifier), false);
 
       // Show only selected columns
-      const visibleFields = visibleColumns
-        .map((header) => displayLabelToFieldMap[header])
-        .filter(Boolean);
-        
+      const visibleFields = visibleColumns.map((header) => displayLabelToFieldMap[header]).filter(Boolean);
+
       api.setColumnsVisible(visibleFields, true);
 
       adjustColumnFlex();
@@ -324,12 +330,9 @@ export default function CatchesPage() {
       if (val === t('Common.SelectAll')) {
         // Toggle select all
         return current.length === colDefs.length ? [] : [...allColumnLabels];
-      } else {
-        // Toggle individual column
-        return current.includes(val)
-          ? current.filter((v) => v !== val)
-          : [...current, val];
       }
+      // Toggle individual column
+      return current.includes(val) ? current.filter((v) => v !== val) : [...current, val];
     });
   };
 
@@ -352,7 +355,7 @@ export default function CatchesPage() {
     }, 100);
     setTimeout(() => {
       setLocationIconsEnabled(false);
-    }, 50);      
+    }, 50);
   };
 
   useEffect(() => {
@@ -360,15 +363,18 @@ export default function CatchesPage() {
     updateQueryParams(selectedCatch, router); // Update query params based on selectedCatch
   }, [selectedCatch]);
 
-  const selectAllOption = getSelectAllOption(t("Common.SelectAll"), visibleColumns, colDefs);
+  const selectAllOption = getSelectAllOption(t('Common.SelectAll'), visibleColumns, colDefs);
   const columnOptions = getColumnOptions(colDefs, visibleColumns, fieldToDisplayLabelMap, t);
   const yearOptions = getYearOptions(['AllYears', ...uniqueYears], selectedYear, t);
-  const bodyOfWaterOptions = getBodyOfWaterOptions(['AllBodiesOfWater', ...uniqueBodiesOfWater], selectedBodyOfWater, t); 
+  const bodyOfWaterOptions = getBodyOfWaterOptions(
+    ['AllBodiesOfWater', ...uniqueBodiesOfWater],
+    selectedBodyOfWater,
+    t
+  );
 
   return (
-    <Container p={0} pt={'md'} pb={'md'} size={'sm'}>
-
-      <Stack p={0} gap={'sm'} align='flex-start'>
+    <Container p={0} pt="md" pb="md" size="sm">
+      <Stack p={0} gap="sm" align="flex-start">
         <TableSettingsDrawer
           opened={opened}
           close={close}
@@ -395,8 +401,14 @@ export default function CatchesPage() {
           resetTableSettings={resetTableSettings}
         />
 
-        <Box pl={'xs'} pt={'sm'} visibleFrom='md'>
-          <Button variant="default" onClick={open} radius={'md'} bg="var(--mantine-color-dark-7)" leftSection={<IconAdjustments size={20} />}>
+        <Box pl="xs" pt="sm" visibleFrom="md">
+          <Button
+            variant="default"
+            onClick={open}
+            radius="md"
+            bg="var(--mantine-color-dark-7)"
+            leftSection={<IconAdjustments size={20} />}
+          >
             {t('CatchesPage.TableSettings.Button')}
           </Button>
         </Box>
@@ -413,13 +425,10 @@ export default function CatchesPage() {
       </Stack>
 
       {catchDetailsOpen && selectedCatch && (
-        <CatchDetails
-          selectedCatch={selectedCatch}
-          setSelectedCatch={setSelectedCatch}
-        />
+        <CatchDetails selectedCatch={selectedCatch} setSelectedCatch={setSelectedCatch} />
       )}
 
-      <Box pl={'md'} pr={'md'}>
+      <Box pl="md" pr="md">
         <CatchesGrid
           gridRef={gridRef}
           colDefs={colDefs}
@@ -433,7 +442,6 @@ export default function CatchesPage() {
           locale={locale}
         />
       </Box>
-
     </Container>
   );
 }

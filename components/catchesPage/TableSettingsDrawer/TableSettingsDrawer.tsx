@@ -1,10 +1,26 @@
-import { Box, Button, Combobox, Drawer, Group, Input, InputBase, Pill, PillsInput, Stack, Switch, Text, Tooltip } from "@mantine/core";
-import { SetStateAction } from "react";
-import classes from "./TableSettingsDrawer.module.css";
-import "./TableSettingsDrawer.css";
-import { IconCalendar, IconInfoCircle, IconRestore, IconRipple, IconTableColumn } from "@tabler/icons-react";
-import { displayLabelToFieldMap, fieldToIconMap } from "../constants";
-import { useTranslations } from "next-intl";
+import { SetStateAction } from 'react';
+import {
+  Box,
+  Button,
+  Combobox,
+  Drawer,
+  Group,
+  Input,
+  InputBase,
+  Pill,
+  PillsInput,
+  Stack,
+  Switch,
+  Text,
+  Tooltip,
+} from '@mantine/core';
+import classes from './TableSettingsDrawer.module.css';
+
+import './TableSettingsDrawer.css';
+
+import { IconCalendar, IconInfoCircle, IconRestore, IconRipple, IconTableColumn } from '@tabler/icons-react';
+import { useTranslations } from 'next-intl';
+import { displayLabelToFieldMap, fieldToIconMap } from '../constants';
 
 const MAX_DISPLAYED_VALUES = 2;
 
@@ -72,24 +88,19 @@ export default function TableSettingsDrawer({
       const Icon = fieldToIconMap[field];
 
       return (
-      <Pill key={item} withRemoveButton onRemove={() => handleValueRemove(item)} fz={'var(--mantine-font-size-sm)'}>
-        {<Group h={'100%'} gap={'xs'} align="center" wrap="nowrap"><Icon size={16} /><Text fz={'sm'}>{t(item)}</Text></Group>}
-      </Pill>
-      )
+        <Pill key={item} withRemoveButton onRemove={() => handleValueRemove(item)} fz="var(--mantine-font-size-sm)">
+          <Group h="100%" gap="xs" align="center" wrap="nowrap">
+            <Icon size={16} />
+            <Text fz="sm">{t(item)}</Text>
+          </Group>
+        </Pill>
+      );
     });
 
   const imageIconSwitchLabel = () => {
     return (
-      <Group
-        gap={'xs'}
-        wrap="nowrap"
-        align="center"
-      >
-        <Text
-          fw={500}
-        >
-          {tTable('ImageIcons')}
-        </Text>
+      <Group gap="xs" wrap="nowrap" align="center">
+        <Text fw={500}>{tTable('ImageIcons')}</Text>
         <Tooltip
           onClick={(event) => event.preventDefault()}
           label={tTable('ImageIconsInfo')}
@@ -98,28 +109,16 @@ export default function TableSettingsDrawer({
           w={200}
           events={{ hover: true, focus: true, touch: true }}
         >
-          <IconInfoCircle
-            size={22}
-            stroke={2}
-            color="var(--mantine-color-dimmed)"
-          />
+          <IconInfoCircle size={22} stroke={2} color="var(--mantine-color-dimmed)" />
         </Tooltip>
       </Group>
-    )
-  }
+    );
+  };
 
   const locationIconSwitchLabel = () => {
     return (
-      <Group
-        gap={'xs'}
-        wrap="nowrap"
-        align="center"
-      >
-        <Text
-          fw={500}
-        >
-          {tTable('LocationIcons')}
-        </Text>
+      <Group gap="xs" wrap="nowrap" align="center">
+        <Text fw={500}>{tTable('LocationIcons')}</Text>
         <Tooltip
           onClick={(event) => event.preventDefault()}
           label={tTable('LocationIconsInfo')}
@@ -128,21 +127,17 @@ export default function TableSettingsDrawer({
           w={200}
           events={{ hover: true, focus: true, touch: true }}
         >
-          <IconInfoCircle
-            size={22}
-            stroke={2}
-            color="var(--mantine-color-dimmed)"
-          />
+          <IconInfoCircle size={22} stroke={2} color="var(--mantine-color-dimmed)" />
         </Tooltip>
       </Group>
-    )
-  }
+    );
+  };
 
   return (
-    <Drawer.Root opened={opened} onClose={close} size="xs" >
+    <Drawer.Root opened={opened} onClose={close} size="xs">
       <Drawer.Overlay />
-      <Drawer.Content bg={'var(--mantine-color-dark-9)'} >
-        <Drawer.Header bg={'var(--mantine-color-dark-9)'}>
+      <Drawer.Content bg="var(--mantine-color-dark-9)">
+        <Drawer.Header bg="var(--mantine-color-dark-9)">
           <Drawer.Title fz="var(--mantine-font-size-lg)" fw="var(--mantine-heading-font-weight)">
             {tTable('Title')}
           </Drawer.Title>
@@ -157,23 +152,25 @@ export default function TableSettingsDrawer({
                   pointer
                   onClick={() => columnsCombobox.toggleDropdown()}
                   label={tTable('Columns')}
-                  fz={'var(--mantine-font-size-md)'}
+                  fz="var(--mantine-font-size-md)"
                   rightSection={<Combobox.Chevron />}
                   rightSectionPointerEvents="none"
                   size="md"
-                  leftSection={<IconTableColumn size={20}/>}
-                  leftSectionPointerEvents='none'
+                  leftSection={<IconTableColumn size={20} />}
+                  leftSectionPointerEvents="none"
                 >
                   <Pill.Group style={{ gap: '6px', flexWrap: 'nowrap' }}>
                     {visibleColumns.length > 0 ? (
                       <>
                         {pillValues}
                         {visibleColumns.length > MAX_DISPLAYED_VALUES && (
-                          <Pill>+{visibleColumns.length - (MAX_DISPLAYED_VALUES - 1)} {tCommon('Others')}</Pill>
+                          <Pill>
+                            +{visibleColumns.length - (MAX_DISPLAYED_VALUES - 1)} {tCommon('Others')}
+                          </Pill>
                         )}
                       </>
                     ) : (
-                      <Input.Placeholder>{tCommon("OneOrMore")}</Input.Placeholder>
+                      <Input.Placeholder>{tCommon('OneOrMore')}</Input.Placeholder>
                     )}
                     <Combobox.EventsTarget>
                       {/* Replace the hidden input with a non-focusable div */}
@@ -188,9 +185,7 @@ export default function TableSettingsDrawer({
               <Combobox.Dropdown>
                 <Combobox.Options>
                   {columnOptions}
-                  <Combobox.Group label="-">
-                    {selectAllOption}
-                  </Combobox.Group>
+                  <Combobox.Group label="-">{selectAllOption}</Combobox.Group>
                 </Combobox.Options>
               </Combobox.Dropdown>
             </Combobox>
@@ -214,10 +209,12 @@ export default function TableSettingsDrawer({
                   rightSectionPointerEvents="none"
                   onClick={() => bodyOfWaterCombobox.toggleDropdown()}
                   size="md"
-                  leftSection={<IconRipple size={20}/>}
-                  leftSectionPointerEvents='none'
+                  leftSection={<IconRipple size={20} />}
+                  leftSectionPointerEvents="none"
                 >
-                  {selectedBodyOfWater === "AllBodiesOfWater" ? t('CatchesPage.TableSettings.AllBodiesOfWater') : selectedBodyOfWater || <Input.Placeholder>{tTable('BodyOfWater')}</Input.Placeholder>}
+                  {selectedBodyOfWater === 'AllBodiesOfWater'
+                    ? t('CatchesPage.TableSettings.AllBodiesOfWater')
+                    : selectedBodyOfWater || <Input.Placeholder>{tTable('BodyOfWater')}</Input.Placeholder>}
                 </InputBase>
               </Combobox.Target>
 
@@ -245,10 +242,12 @@ export default function TableSettingsDrawer({
                   rightSectionPointerEvents="none"
                   onClick={() => yearCombobox.toggleDropdown()}
                   size="md"
-                  leftSection={<IconCalendar size={20}/>}
-                  leftSectionPointerEvents='none'
+                  leftSection={<IconCalendar size={20} />}
+                  leftSectionPointerEvents="none"
                 >
-                  {selectedYear === "AllYears" ? t('CatchesPage.TableSettings.AllYears') : selectedYear || <Input.Placeholder>{tTable('Year')}</Input.Placeholder>}
+                  {selectedYear === 'AllYears'
+                    ? t('CatchesPage.TableSettings.AllYears')
+                    : selectedYear || <Input.Placeholder>{tTable('Year')}</Input.Placeholder>}
                 </InputBase>
               </Combobox.Target>
 
@@ -263,7 +262,7 @@ export default function TableSettingsDrawer({
                 checked={filtersSliderChecked}
                 fw={500}
                 label={tTable('Filters')}
-                labelPosition='left'
+                labelPosition="left"
                 onChange={(event) => setFiltersSliderChecked(event.currentTarget.checked)}
                 size="md"
               />
@@ -272,7 +271,7 @@ export default function TableSettingsDrawer({
                 checked={imageIconsEnabled}
                 fw={500}
                 label={imageIconSwitchLabel()}
-                labelPosition='left'
+                labelPosition="left"
                 onChange={(event) => setImageIconsEnabled(event.currentTarget.checked)}
                 size="md"
               />
@@ -281,27 +280,26 @@ export default function TableSettingsDrawer({
                 checked={locationIconsEnabled}
                 fw={500}
                 label={locationIconSwitchLabel()}
-                labelPosition='left'
+                labelPosition="left"
                 onChange={(event) => setLocationIconsEnabled(event.currentTarget.checked)}
                 size="md"
               />
             </Stack>
 
-              <Box mt={'lg'}>
-                <Button
-                  onClick={resetTableSettings}
-                  variant="default"
-                  size="md"
-                  radius={'md'}
-                  leftSection={<IconRestore size={20} />}
-                >
-                  {tTable('Restore')}
-                </Button>
-              </Box>
-
+            <Box mt="lg">
+              <Button
+                onClick={resetTableSettings}
+                variant="default"
+                size="md"
+                radius="md"
+                leftSection={<IconRestore size={20} />}
+              >
+                {tTable('Restore')}
+              </Button>
+            </Box>
           </Stack>
         </Drawer.Body>
       </Drawer.Content>
     </Drawer.Root>
-  )
-};
+  );
+}

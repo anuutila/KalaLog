@@ -1,53 +1,55 @@
-import { ICatch } from "../types/catch";
+import { ICatch } from '../types/catch';
 
 /**
  * Utility functions for analyzing catch data
  */
 export const CatchUtils = {
-
   /**
    * Get unique fish species from catch records
    */
   getUniqueSpecies(catches: ICatch[]): string[] {
-    return Array.from(new Set(
-      catches
-        .map(c => c.species)
-        .filter(species => species && species.trim().length > 0)
-    )).sort();
+    return Array.from(
+      new Set(catches.map((c) => c.species).filter((species) => species && species.trim().length > 0))
+    ).sort();
   },
 
   /**
    * Get unique fishing spots
    */
   getUniqueSpots(catches: ICatch[]): string[] {
-    return Array.from(new Set(
-      catches
-        .map(c => c.location.spot)
-        .filter((spot): spot is string => 
-          spot !== null && spot !== undefined && spot.trim().length > 0)
-    )).sort();
+    return Array.from(
+      new Set(
+        catches
+          .map((c) => c.location.spot)
+          .filter((spot): spot is string => spot !== null && spot !== undefined && spot.trim().length > 0)
+      )
+    ).sort();
   },
 
   /**
    * Get unique fish lenghts
    */
   getUniqueLengths(catches: ICatch[]): number[] {
-    return Array.from(new Set(
-      catches
-        .map(c => c.length)
-        .filter((length): length is number => length !== null && length !== undefined && length > 0)
-    )).sort((a, b) => a - b);
+    return Array.from(
+      new Set(
+        catches
+          .map((c) => c.length)
+          .filter((length): length is number => length !== null && length !== undefined && length > 0)
+      )
+    ).sort((a, b) => a - b);
   },
 
   /**
    * Get unique fish weights
    */
   getUniqueWeights(catches: ICatch[]): number[] {
-    return Array.from(new Set(
-      catches
-        .map(c => c.weight)
-        .filter((weight): weight is number => weight !== null && weight !== undefined && weight > 0)
-    )).sort((a, b) => a - b);
+    return Array.from(
+      new Set(
+        catches
+          .map((c) => c.weight)
+          .filter((weight): weight is number => weight !== null && weight !== undefined && weight > 0)
+      )
+    ).sort((a, b) => a - b);
   },
 
   /**
@@ -59,9 +61,11 @@ export const CatchUtils = {
   }> {
     const bodyOfWaterMap = new Map<string, number>();
 
-    catches.forEach(c => {
+    catches.forEach((c) => {
       const bodyOfWater = c.location.bodyOfWater;
-      if (!bodyOfWater) return;
+      if (!bodyOfWater) {
+        return;
+      }
 
       bodyOfWaterMap.set(bodyOfWater, (bodyOfWaterMap.get(bodyOfWater) || 0) + 1);
     });
@@ -69,7 +73,7 @@ export const CatchUtils = {
     return Array.from(bodyOfWaterMap.entries())
       .map(([bodyOfWater, catchCount]) => ({
         bodyOfWater,
-        catchCount
+        catchCount,
       }))
       .sort((a, b) => b.catchCount - a.catchCount);
   },
@@ -77,25 +81,30 @@ export const CatchUtils = {
   /**
    * Get unique anglers with their catch counts
    */
-  getUniqueAnglers(catches: ICatch[]): Array<{ 
-    name: string; 
+  getUniqueAnglers(catches: ICatch[]): Array<{
+    name: string;
     userId: string | null | undefined;
     catchCount: number;
   }> {
-    const anglerMap = new Map<string, {
-      userId: string | null | undefined;
-      catchCount: number;
-    }>();
+    const anglerMap = new Map<
+      string,
+      {
+        userId: string | null | undefined;
+        catchCount: number;
+      }
+    >();
 
-    catches.forEach(c => {
+    catches.forEach((c) => {
       const name = c.caughtBy.name;
-      if (!name) return;
+      if (!name) {
+        return;
+      }
 
       const existing = anglerMap.get(name) || {
         userId: c.caughtBy.userId,
-        catchCount: 0
+        catchCount: 0,
       };
-      
+
       existing.catchCount++;
       anglerMap.set(name, existing);
     });
@@ -104,7 +113,7 @@ export const CatchUtils = {
       .map(([name, data]) => ({
         name,
         userId: data.userId,
-        catchCount: data.catchCount
+        catchCount: data.catchCount,
       }))
       .sort((a, b) => a.name.localeCompare(b.name));
   },
@@ -118,9 +127,11 @@ export const CatchUtils = {
   }> {
     const lureMap = new Map<string, number>();
 
-    catches.forEach(c => {
+    catches.forEach((c) => {
       const lure = c.lure;
-      if (!lure) return;
+      if (!lure) {
+        return;
+      }
 
       lureMap.set(lure, (lureMap.get(lure) || 0) + 1);
     });
@@ -128,7 +139,7 @@ export const CatchUtils = {
     return Array.from(lureMap.entries())
       .map(([lure, catchCount]) => ({
         lure,
-        catchCount
+        catchCount,
       }))
       .sort((a, b) => b.catchCount - a.catchCount);
   },
@@ -142,7 +153,7 @@ export const CatchUtils = {
   }> {
     const yearMap = new Map<string, number>();
 
-    catches.forEach(c => {
+    catches.forEach((c) => {
       const year = c.date.split('-')[0];
       yearMap.set(year, (yearMap.get(year) || 0) + 1);
     });
@@ -150,7 +161,7 @@ export const CatchUtils = {
     return Array.from(yearMap.entries())
       .map(([year, catchCount]) => ({
         year,
-        catchCount
+        catchCount,
       }))
       .sort((a, b) => b.year.localeCompare(a.year));
   },
@@ -158,15 +169,18 @@ export const CatchUtils = {
   /**
    * Get unique years with their catch counts, but only for a specific body of water
    */
-  getUniqueYearsForBodyOfWater(catches: ICatch[], bodyOfWater: string): Array<{
+  getUniqueYearsForBodyOfWater(
+    catches: ICatch[],
+    bodyOfWater: string
+  ): Array<{
     year: string;
     catchCount: number;
   }> {
     const yearMap = new Map<string, number>();
 
     catches
-      .filter(c => c.location.bodyOfWater === bodyOfWater)
-      .forEach(c => {
+      .filter((c) => c.location.bodyOfWater === bodyOfWater)
+      .forEach((c) => {
         const year = c.date.split('-')[0];
         yearMap.set(year, (yearMap.get(year) || 0) + 1);
       });
@@ -174,7 +188,7 @@ export const CatchUtils = {
     return Array.from(yearMap.entries())
       .map(([year, catchCount]) => ({
         year,
-        catchCount
+        catchCount,
       }))
       .sort((a, b) => b.year.localeCompare(a.year));
   },
@@ -183,17 +197,19 @@ export const CatchUtils = {
    * Get the total amount of a specific species
    */
   getSpeciesTotal(catches: ICatch[], species: string): number {
-    return catches.filter(c => c.species === species)?.length || 0;
+    return catches.filter((c) => c.species === species)?.length || 0;
   },
 
   /**
    * Get the length of the longest daily fishing streak
    */
   getLongestFishingStreak(catches: ICatch[]): number {
-    if (!catches.length) return 0;
+    if (!catches.length) {
+      return 0;
+    }
 
     // Extract unique dates and sort them.
-    const uniqueDates = Array.from(new Set(catches.map(c => c.date))).sort();
+    const uniqueDates = Array.from(new Set(catches.map((c) => c.date))).sort();
 
     let longestStreak = 0;
     let currentStreak = 1;
@@ -222,16 +238,23 @@ export const CatchUtils = {
    * Get the amount of unique seasons in the catch records
    */
   getUniqueSeasons(catches: ICatch[]): number {
-    const seasons = Array.from(new Set(
-      catches
-        .map(c => {
-          const month = parseInt(c.date.split('-')[1]);
-          if (month >= 3 && month <= 5) return 'spring';
-          if (month >= 6 && month <= 8) return 'summer';
-          if (month >= 9 && month <= 11) return 'autumn';
+    const seasons = Array.from(
+      new Set(
+        catches.map((c) => {
+          const month = parseInt(c.date.split('-')[1], 10);
+          if (month >= 3 && month <= 5) {
+            return 'spring';
+          }
+          if (month >= 6 && month <= 8) {
+            return 'summer';
+          }
+          if (month >= 9 && month <= 11) {
+            return 'autumn';
+          }
           return 'winter';
         })
-    ));
+      )
+    );
 
     return seasons.length || 0;
   },
@@ -243,16 +266,14 @@ export const CatchUtils = {
    *
    * Assumes each catch has a date string ("YYYY-MM-DD") and a time string ("HH:MM").
    */
-  resolveTimeframeCatches(
-    catches: ICatch[],
-    timeframe: number,
-    requiredCatchCount?: number
-  ): number {
-    if (!catches || catches.length === 0) return 0;
+  resolveTimeframeCatches(catches: ICatch[], timeframe: number, requiredCatchCount?: number): number {
+    if (!catches || catches.length === 0) {
+      return 0;
+    }
 
     // Convert catches into Date objects and sort them chronologically.
     const dateTimeCatches = catches
-      .map(c => new Date(`${c.date}T${c.time}:00`))
+      .map((c) => new Date(`${c.date}T${c.time}:00`))
       .sort((a, b) => a.getTime() - b.getTime());
 
     let maxCount = 0;
@@ -284,20 +305,21 @@ export const CatchUtils = {
    * Given an array of catches and a minimum distance (in meters),
    * returns the maximum count of unique spots within a single body of water.
    *
-   * Only catches within the same body of water (catch.location.bodyOfWater) 
-   * are grouped together, and unique spots are determined by their GPS 
+   * Only catches within the same body of water (catch.location.bodyOfWater)
+   * are grouped together, and unique spots are determined by their GPS
    * coordinates (catch.location.coordinates, formatted as "lat,lng").
    */
-  getUniqueSpotsBasedOnDistanceAndBoW(
-    catches: ICatch[],
-    minDistance: number
-  ): number {
+  getUniqueSpotsBasedOnDistanceAndBoW(catches: ICatch[], minDistance: number): number {
     // Group catches by body of water.
     const groups: Record<string, ICatch[]> = {};
     catches.forEach((catchItem) => {
       const bodyOfWater = catchItem.location?.bodyOfWater;
-      if (!bodyOfWater) return;
-      if (!groups[bodyOfWater]) groups[bodyOfWater] = [];
+      if (!bodyOfWater) {
+        return;
+      }
+      if (!groups[bodyOfWater]) {
+        groups[bodyOfWater] = [];
+      }
       groups[bodyOfWater].push(catchItem);
     });
 
@@ -306,16 +328,22 @@ export const CatchUtils = {
       const uniqueSpots: { lat: number; lng: number }[] = [];
       groupCatches.forEach((catchItem) => {
         const coordStr = catchItem.location?.coordinates;
-        if (!coordStr) return;
+        if (!coordStr) {
+          return;
+        }
         const [latStr, lngStr] = coordStr.split(',');
         const lat = parseFloat(latStr);
         const lng = parseFloat(lngStr);
-        if (isNaN(lat) || isNaN(lng)) return;
+        if (isNaN(lat) || isNaN(lng)) {
+          return;
+        }
 
         const isUnique = uniqueSpots.every(
           (spot) => getDistanceBetweenPoints(lat, lng, spot.lat, spot.lng) >= minDistance
         );
-        if (isUnique) uniqueSpots.push({ lat, lng });
+        if (isUnique) {
+          uniqueSpots.push({ lat, lng });
+        }
       });
       return uniqueSpots.length;
     };
@@ -324,7 +352,9 @@ export const CatchUtils = {
     let maxCount = 0;
     Object.values(groups).forEach((groupCatches) => {
       const count = getUniqueCount(groupCatches);
-      if (count > maxCount) maxCount = count;
+      if (count > maxCount) {
+        maxCount = count;
+      }
     });
 
     return maxCount;
@@ -341,24 +371,33 @@ export const CatchUtils = {
     maxWeight: number | null;
     maxLength: number | null;
   }> {
-    const speciesMap = new Map<string, {
-      weights: number[];
-      lengths: number[];
-      count: number;
-    }>();
+    const speciesMap = new Map<
+      string,
+      {
+        weights: number[];
+        lengths: number[];
+        count: number;
+      }
+    >();
 
-    catches.forEach(c => {
+    catches.forEach((c) => {
       const species = c.species;
-      if (!species) return;
+      if (!species) {
+        return;
+      }
 
       const existing = speciesMap.get(species) || {
         weights: [],
         lengths: [],
-        count: 0
+        count: 0,
       };
 
-      if (c.weight) existing.weights.push(c.weight);
-      if (c.length) existing.lengths.push(c.length);
+      if (c.weight) {
+        existing.weights.push(c.weight);
+      }
+      if (c.length) {
+        existing.lengths.push(c.length);
+      }
       existing.count++;
 
       speciesMap.set(species, existing);
@@ -368,20 +407,20 @@ export const CatchUtils = {
       .map(([species, data]) => ({
         species,
         catchCount: data.count,
-        avgWeight: data.weights.length ?
-          data.weights.reduce((a, b) => a + b, 0) / data.weights.length : null,
-        avgLength: data.lengths.length ?
-          data.lengths.reduce((a, b) => a + b, 0) / data.lengths.length : null,
-        maxWeight: data.weights.length ?
-          Math.max(...data.weights) : null,
-        maxLength: data.lengths.length ?
-          Math.max(...data.lengths) : null
+        avgWeight: data.weights.length ? data.weights.reduce((a, b) => a + b, 0) / data.weights.length : null,
+        avgLength: data.lengths.length ? data.lengths.reduce((a, b) => a + b, 0) / data.lengths.length : null,
+        maxWeight: data.weights.length ? Math.max(...data.weights) : null,
+        maxLength: data.lengths.length ? Math.max(...data.lengths) : null,
       }))
       .sort((a, b) => b.catchCount - a.catchCount);
-  }
+  },
 };
 
-export function createCatchAndImagesFormData(catchData: Omit<ICatch, 'id' | 'createdAt' | 'catchNumber'>, addedImages: File[], deletedImages: (string | undefined)[] = []): FormData {
+export function createCatchAndImagesFormData(
+  catchData: Omit<ICatch, 'id' | 'createdAt' | 'catchNumber'>,
+  addedImages: File[],
+  deletedImages: (string | undefined)[] = []
+): FormData {
   const catchAndImageData = new FormData();
 
   // Append form data (parsedFormData fields)
@@ -394,16 +433,16 @@ export function createCatchAndImagesFormData(catchData: Omit<ICatch, 'id' | 'cre
       } else if (key === 'images') {
         catchAndImageData.append(key, JSON.stringify(value));
       } else {
-      catchAndImageData.append(key, value as string);
+        catchAndImageData.append(key, value as string);
       }
     }
   });
 
   // Append added and deleted images
-  addedImages.forEach((file, index) => {
+  addedImages.forEach((file) => {
     catchAndImageData.append(`addedImages`, file);
   });
-  deletedImages.forEach((publicId, index) => {
+  deletedImages.forEach((publicId) => {
     catchAndImageData.append(`deletedImages`, publicId || '');
   });
 
@@ -413,12 +452,7 @@ export function createCatchAndImagesFormData(catchData: Omit<ICatch, 'id' | 'cre
 /**
  * Calculates the distance (in meters) between two coordinates using the Haversine formula.
  */
-function getDistanceBetweenPoints(
-  lat1: number,
-  lng1: number,
-  lat2: number,
-  lng2: number
-): number {
+function getDistanceBetweenPoints(lat1: number, lng1: number, lat2: number, lng2: number): number {
   const R = 6371e3; // Earth's radius in meters
   const toRad = (x: number) => (x * Math.PI) / 180;
   const phi1 = toRad(lat1);
@@ -427,8 +461,7 @@ function getDistanceBetweenPoints(
   const deltaLambda = toRad(lng2 - lng1);
   const a =
     Math.sin(deltaPhi / 2) * Math.sin(deltaPhi / 2) +
-    Math.cos(phi1) * Math.cos(phi2) *
-    Math.sin(deltaLambda / 2) * Math.sin(deltaLambda / 2);
+    Math.cos(phi1) * Math.cos(phi2) * Math.sin(deltaLambda / 2) * Math.sin(deltaLambda / 2);
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return R * c;
 }

@@ -1,8 +1,8 @@
-import { Carousel, Embla } from '@mantine/carousel';
-import { Image, Box, ActionIcon, Text } from '@mantine/core';
-import { IconMaximize } from '@tabler/icons-react';
-import classes from './CatchDetails.module.css';
 import { useCallback, useEffect, useState } from 'react';
+import { IconMaximize } from '@tabler/icons-react';
+import { Carousel, Embla } from '@mantine/carousel';
+import { ActionIcon, Box, Image } from '@mantine/core';
+import classes from './CatchDetails.module.css';
 
 interface CatchImageCarouselProps {
   images: string[];
@@ -10,16 +10,14 @@ interface CatchImageCarouselProps {
   setFullscreen: (src: string) => void;
 }
 
-export default function CatchImageCarousel({
-  images,
-  isFallbackImage,
-  setFullscreen,
-}: CatchImageCarouselProps) {
+export default function CatchImageCarousel({ images, isFallbackImage, setFullscreen }: CatchImageCarouselProps) {
   const [embla, setEmbla] = useState<Embla | null>(null); // Embla API instance
   const [activeIndex, setActiveIndex] = useState(0); // Track active image index
 
   const handleSelect = useCallback(() => {
-    if (!embla) return;
+    if (!embla) {
+      return;
+    }
     setActiveIndex(embla.selectedScrollSnap()); // Get the currently active slide index
   }, [embla]);
 
@@ -31,7 +29,7 @@ export default function CatchImageCarousel({
   }, [embla, handleSelect]);
 
   return (
-    <Box pos={'relative'}>
+    <Box pos="relative">
       <Carousel
         withIndicators={images.length > 1}
         withControls={images.length > 1}
@@ -42,10 +40,10 @@ export default function CatchImageCarousel({
           control: classes.control,
         }}
         getEmblaApi={setEmbla} // Get the Embla API instance
-        pos={'relative'}
+        pos="relative"
       >
-        {images.length > 0
-          ? images.map((src, index) => (
+        {images.length > 0 ? (
+          images.map((src, index) => (
             <Carousel.Slide key={index}>
               <Box pos="relative" w="100%" h={{ base: 300, md: 500 }}>
                 <Image
@@ -60,7 +58,8 @@ export default function CatchImageCarousel({
               </Box>
             </Carousel.Slide>
           ))
-          : <Carousel.Slide>
+        ) : (
+          <Carousel.Slide>
             <Box pos="relative" w="100%" h={{ base: 300, md: 500 }}>
               <Image
                 src="/no-image-placeholder.png"
@@ -72,18 +71,19 @@ export default function CatchImageCarousel({
                 }}
               />
             </Box>
-          </Carousel.Slide>}
+          </Carousel.Slide>
+        )}
       </Carousel>
       {!isFallbackImage && (
         <ActionIcon
-          pos={'absolute'}
+          pos="absolute"
           bottom={10}
           right={10}
           size="lg"
           variant="light"
           bg="rgba(0, 0, 0, 0.5)"
           onClick={() => setFullscreen(images[activeIndex])}
-          radius={'md'}
+          radius="md"
         >
           <IconMaximize size={20} color="white" />
         </ActionIcon>

@@ -1,10 +1,10 @@
-import cloudinary from "@/lib/cloudinary/cloudinary";
-import { ErrorResponse, ImageDeletionResponse } from "@/lib/types/responses";
-import { creatorRoles, editorRoles, UserRole } from "@/lib/types/user";
-import { requireRole } from "@/lib/utils/authorization";
-import { handleError } from "@/lib/utils/handleError";
-import { extractFolderName } from "@/lib/utils/utils";
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from 'next/server';
+import cloudinary from '@/lib/cloudinary/cloudinary';
+import { ErrorResponse, ImageDeletionResponse } from '@/lib/types/responses';
+import { creatorRoles, editorRoles } from '@/lib/types/user';
+import { requireRole } from '@/lib/utils/authorization';
+import { handleError } from '@/lib/utils/handleError';
+import { extractFolderName } from '@/lib/utils/utils';
 
 export async function POST(req: NextRequest): Promise<NextResponse<ImageDeletionResponse | ErrorResponse>> {
   try {
@@ -39,7 +39,10 @@ export async function POST(req: NextRequest): Promise<NextResponse<ImageDeletion
       }
     }
 
-    return NextResponse.json<ImageDeletionResponse>({ message: 'Images deleted successfully.', data: { successfulDeletions, failedDeletions } }, { status: 200 });
+    return NextResponse.json<ImageDeletionResponse>(
+      { message: 'Images deleted successfully.', data: { successfulDeletions, failedDeletions } },
+      { status: 200 }
+    );
   } catch (error: unknown) {
     return handleError(error, 'An unexpected error occurred while deleting the images. Please try again later.');
   }

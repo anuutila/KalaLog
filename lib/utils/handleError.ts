@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
-import { ErrorResponse } from '@/lib/types/responses';
 import { ZodError } from 'zod';
+import { ErrorResponse } from '@/lib/types/responses';
 import { CustomError } from './customError';
 
 export const handleError = (
@@ -12,8 +12,8 @@ export const handleError = (
 
   let statusCode = defaultStatusCode;
   let errorCode = 'UnknownError'; // Default error code
-  let message = defaultMessage;  // Default message
-  let details: any[] = [];       // Additional error details
+  let message = defaultMessage; // Default message
+  let details: any[] = []; // Additional error details
 
   if (error instanceof ZodError) {
     // Handle Zod validation errors
@@ -37,7 +37,7 @@ export const handleError = (
     details = [error.message];
   }
   const response: ErrorResponse = {
-    errorCode: errorCode,
+    errorCode,
     message,
     details,
   };

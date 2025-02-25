@@ -1,14 +1,14 @@
 import {
-  IconFish,
+  IconCalendar,
   IconCamera,
-  IconRuler2,
-  IconWeight,
+  IconClock,
+  IconFish,
   IconFishHook,
   IconMapPin2,
-  IconClock,
-  IconCalendar,
-  IconUser,
   IconRipple,
+  IconRuler2,
+  IconUser,
+  IconWeight,
 } from '@tabler/icons-react';
 
 export enum FieldIdentifier {
@@ -54,7 +54,7 @@ export const defaultVisibleColumns = [
   fieldToDisplayLabelMap[FieldIdentifier.Species],
   fieldToDisplayLabelMap[FieldIdentifier.Length],
   fieldToDisplayLabelMap[FieldIdentifier.Date],
-  fieldToDisplayLabelMap[FieldIdentifier.CaughtBy]
+  fieldToDisplayLabelMap[FieldIdentifier.CaughtBy],
 ];
 
 export const displayLabelToFieldMap: Record<string, FieldIdentifier> = Object.fromEntries(

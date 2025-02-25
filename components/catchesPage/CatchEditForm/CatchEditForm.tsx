@@ -1,21 +1,50 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Autocomplete, Button, Combobox, Container, Fieldset, Group, Input, InputBase, NumberInput, Stack, TextInput, useCombobox } from '@mantine/core';
-import { ICatch } from '@/lib/types/catch';
-import { useGlobalState } from '@/context/GlobalState';
-import { CatchEditedResponse, UsersByFirstNameResponse } from '@/lib/types/responses';
-import { showNotification } from '@/lib/notifications/notifications';
-import { CatchUtils } from '@/lib/utils/catchUtils';
-import { IconCalendar, IconClock, IconEdit, IconEraser, IconFish, IconFishHook, IconMap, IconMapPin, IconMessage, IconRipple, IconRuler2, IconSelector, IconUser, IconUserQuestion, IconWeight } from '@tabler/icons-react';
-import { useLoadingOverlay } from '@/context/LoadingOverlayContext';
-import FullscreenImage from '../CatchDetails/FullscreenImage';
+import {
+  IconCalendar,
+  IconClock,
+  IconEdit,
+  IconEraser,
+  IconFish,
+  IconFishHook,
+  IconMap,
+  IconMapPin,
+  IconMessage,
+  IconRipple,
+  IconRuler2,
+  IconSelector,
+  IconUser,
+  IconUserQuestion,
+  IconWeight,
+} from '@tabler/icons-react';
+import { useTranslations } from 'next-intl';
+import {
+  Autocomplete,
+  Button,
+  Combobox,
+  Container,
+  Fieldset,
+  Group,
+  Input,
+  InputBase,
+  NumberInput,
+  Stack,
+  TextInput,
+  useCombobox,
+} from '@mantine/core';
 import ImageUploadForm from '@/components/ImageUploadForm/ImageUploadForm';
-import { editCatch } from '@/services/api/catchService';
+import { useGlobalState } from '@/context/GlobalState';
+import { useLoadingOverlay } from '@/context/LoadingOverlayContext';
+import { showNotification } from '@/lib/notifications/notifications';
+import { ICatch } from '@/lib/types/catch';
+import { CatchEditedResponse, UsersByFirstNameResponse } from '@/lib/types/responses';
+import { editorRoles } from '@/lib/types/user';
+import { CatchUtils } from '@/lib/utils/catchUtils';
 import { handleApiError } from '@/lib/utils/handleApiError';
 import { optimizeImage } from '@/lib/utils/utils';
+import { editCatch } from '@/services/api/catchService';
 import { getUsersByFirstName } from '@/services/api/userService';
+import FullscreenImage from '../CatchDetails/FullscreenImage';
 import classes from './CatchEditForm.module.css';
-import { useTranslations } from 'next-intl';
-import { editorRoles } from '@/lib/types/user';
 
 interface CatchEditFormProps {
   catchData: ICatch;
@@ -25,7 +54,13 @@ interface CatchEditFormProps {
   setDisableScroll: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export default function CatchEditForm({ catchData, setIsInEditView, setSelectedCatch, openCancelEditModal, setDisableScroll }: CatchEditFormProps) {
+export default function CatchEditForm({
+  catchData,
+  setIsInEditView,
+  setSelectedCatch,
+  openCancelEditModal,
+  setDisableScroll,
+}: CatchEditFormProps) {
   const { catches, setCatches, jwtUserInfo } = useGlobalState();
   const { showLoading, hideLoading } = useLoadingOverlay();
   const t = useTranslations();
@@ -55,7 +90,7 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
   const [spotValue, setSpotValue] = useState<string>(catchData.location.spot || '');
   const [filteredSpotOptions, setFilteredSpotOptions] = useState<string[]>([]);
   const [spotsDropdownOpened, setSpotsDropdownOpened] = useState<boolean>(false);
-  
+
   const [anglerName, setAnglerName] = useState<string>(catchData.caughtBy.name || '');
   const [filteredAnglerOptions, setFilteredAnglerOptions] = useState<string[]>([]);
   const [anglersDropdownOpened, setAnglersDropdownOpened] = useState<boolean>(false);
@@ -64,8 +99,15 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
   const [deletedImages, setDeletedImages] = useState<(string | undefined)[]>([]);
   const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
 
-  const [matchingUsers, setMatchingUsers] = useState<{ id: string | null, username: string, firstName: string, lastName: string }[]>([]);
-  const [linkedUser, setLinkedUser] = useState<{ id: string | null, username: string, firstName: string, lastName: string } | null>();
+  const [matchingUsers, setMatchingUsers] = useState<
+    { id: string | null; username: string; firstName: string; lastName: string }[]
+  >([]);
+  const [linkedUser, setLinkedUser] = useState<{
+    id: string | null;
+    username: string;
+    firstName: string;
+    lastName: string;
+  } | null>();
   const [userLinkingDone, setUserLinkingDone] = useState(true);
   const [showUserLinkingDropdown, setShowUserLinkingDropdown] = useState(false);
   const [isLinkingUser, setIsLinkingUser] = useState(false);
@@ -83,7 +125,12 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
       setUserAutomaticallyLinked(true);
       setUserLinkingDone(true);
       setAnglerName(jwtUserInfo.firstname);
-      setLinkedUser({ id: jwtUserInfo.userId, username: jwtUserInfo.username, firstName: jwtUserInfo.firstname, lastName: jwtUserInfo.lastname });
+      setLinkedUser({
+        id: jwtUserInfo.userId,
+        username: jwtUserInfo.username,
+        firstName: jwtUserInfo.firstname,
+        lastName: jwtUserInfo.lastname,
+      });
     }
   }, [jwtUserInfo]);
 
@@ -92,10 +139,8 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
     return () => {
       setDisableScroll(false);
     };
-  } , [fullscreenImage]);
+  }, [fullscreenImage]);
 
-  
-  
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
 
@@ -130,7 +175,6 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
         setShowUserLinkingDropdown(false);
         setLinkedUser(matchingUsers[0]);
         setUserLinkingDone(true);
-
       } else if (matchingUsers.length > 1) {
         // Multiple matches require manual selection from a dropdown
         setShowUserLinkingDropdown(true);
@@ -170,8 +214,8 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
       const updatedCatch: ICatch = {
         ...formData,
         species: tFishEnFi.has(speciesValue) ? tFishEnFi(speciesValue) : speciesValue,
-        length: (typeof lengthValue === 'string' || lengthValue === 0) ? null : lengthValue,
-        weight: (typeof weightValue === 'string' || weightValue === 0) ? null : weightValue,
+        length: typeof lengthValue === 'string' || lengthValue === 0 ? null : lengthValue,
+        weight: typeof weightValue === 'string' || weightValue === 0 ? null : weightValue,
         lure: lureValue,
         location: {
           ...formData.location,
@@ -182,7 +226,7 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
           username: linkedUser?.username ?? (!nameEdited ? formData.caughtBy.username ?? null : null),
           lastName: linkedUser?.lastName ?? (!nameEdited ? formData.caughtBy.lastName ?? null : null),
           userId: linkedUser?.id ?? (!nameEdited ? formData.caughtBy.userId ?? null : null),
-        }
+        },
       };
 
       // Optimize images before uploading
@@ -199,7 +243,12 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
       }
 
       // Send updated catch data to the API
-      const catchUpdateResponse: CatchEditedResponse = await editCatch(updatedCatch, catchData.id, optimizedImages, deletedImages);
+      const catchUpdateResponse: CatchEditedResponse = await editCatch(
+        updatedCatch,
+        catchData.id,
+        optimizedImages,
+        deletedImages
+      );
       console.log(catchUpdateResponse.message, catchUpdateResponse.data);
       if (catchUpdateResponse.data.failedImageOperations) {
         showNotification('warning', catchUpdateResponse.message, { withTitle: true });
@@ -225,105 +274,123 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
 
   const speciesOptions = [t('Fish.Ahven'), t('Fish.Hauki'), t('Fish.Kuha')];
 
-  const lureOptions = useMemo(() => 
-    CatchUtils.getUniqueLures(catches).map((lure) => lure.lure).filter((lure) => lure !== '?'), 
+  const lureOptions = useMemo(
+    () =>
+      CatchUtils.getUniqueLures(catches)
+        .map((lure) => lure.lure)
+        .filter((lure) => lure !== '?'),
     [catches]
   );
 
-  const bodyOfWaterOptions = useMemo(() =>
-    CatchUtils.getUniqueBodiesOfWater(catches).map((item) => item.bodyOfWater),
+  const bodyOfWaterOptions = useMemo(
+    () => CatchUtils.getUniqueBodiesOfWater(catches).map((item) => item.bodyOfWater),
     [catches]
   );
 
-  const spotOptions = useMemo(() =>
-    CatchUtils.getUniqueSpots(catches),
+  const spotOptions = useMemo(() => CatchUtils.getUniqueSpots(catches), [catches]);
+
+  const anglerOptions = useMemo(
+    () =>
+      CatchUtils.getUniqueAnglers(catches)
+        .map((angler) => angler.name)
+        .filter((name) => name !== '?'),
     [catches]
   );
 
-  const anglerOptions = useMemo(() =>
-    CatchUtils.getUniqueAnglers(catches).map((angler) => angler.name).filter((name) => name !== '?'),
-    [catches]
+  const handleSpeciesChange = useCallback(
+    (value: string) => {
+      setSpeciesValue(value);
+      const filtered = speciesOptions.filter((option) => option.toLowerCase().includes(value.toLowerCase().trim()));
+      setFiltereSpeciesOptions(filtered);
+      setSpeciesDropdownOpened(filtered.length > 0);
+    },
+    [speciesOptions]
   );
 
-  const handleSpeciesChange = useCallback((value: string) => {
-    setSpeciesValue(value);
-    const filtered = speciesOptions.filter((option) =>
-      option.toLowerCase().includes(value.toLowerCase().trim())
-    );
-    setFiltereSpeciesOptions(filtered);
-    setSpeciesDropdownOpened(filtered.length > 0);
-  }, [speciesOptions]);
+  const speciesRightSection = useMemo(
+    () =>
+      speciesDropdownOpened && (filteredSpeciesOptions.length > 0 || speciesValue === '') ? (
+        <IconSelector onClick={() => setSpeciesDropdownOpened(false)} />
+      ) : null,
+    [speciesDropdownOpened, filteredSpeciesOptions.length, speciesValue]
+  );
 
-  const speciesRightSection = useMemo(() => 
-    speciesDropdownOpened && (filteredSpeciesOptions.length > 0 || speciesValue === '') ? 
-      <IconSelector onClick={() => setSpeciesDropdownOpened(false)}/> : 
-      null
-  , [speciesDropdownOpened, filteredSpeciesOptions.length, speciesValue]);
+  const handleLureChange = useCallback(
+    (value: string) => {
+      setLureValue(value);
+      const filtered = lureOptions.filter((option) => option.toLowerCase().includes(value.toLowerCase().trim()));
+      setFilteredLureOptions(filtered);
+      setLuresDropdownOpened(filtered.length > 0);
+    },
+    [lureOptions]
+  );
 
-  const handleLureChange = useCallback((value: string) => {
-    setLureValue(value);
-    const filtered = lureOptions.filter((option) =>
-      option.toLowerCase().includes(value.toLowerCase().trim())
-    );
-    setFilteredLureOptions(filtered);
-    setLuresDropdownOpened(filtered.length > 0);
-  }, [lureOptions]);
-  
-  const lureRightSection = useMemo(() => 
-    luresDropdownOpened && (filteredLureOptions.length > 0 || lureValue === '') ? 
-      <IconSelector onClick={() => setLuresDropdownOpened(false)}/> : 
-      null
-  , [luresDropdownOpened, filteredLureOptions.length, lureValue]);
+  const lureRightSection = useMemo(
+    () =>
+      luresDropdownOpened && (filteredLureOptions.length > 0 || lureValue === '') ? (
+        <IconSelector onClick={() => setLuresDropdownOpened(false)} />
+      ) : null,
+    [luresDropdownOpened, filteredLureOptions.length, lureValue]
+  );
 
-  const handleBodyOfWaterChange = useCallback((value: string) => {
-    setBodyOfWaterValue(value);
-    const filtered = bodyOfWaterOptions.filter((option) =>
-      option.toLowerCase().includes(value.toLowerCase().trim())
-    );
-    setFilteredBodyOfWaterOptions(filtered);
-    setBodiesOfWaterDropdownOpened(filtered.length > 0);
-  } , [bodyOfWaterOptions]);
+  const handleBodyOfWaterChange = useCallback(
+    (value: string) => {
+      setBodyOfWaterValue(value);
+      const filtered = bodyOfWaterOptions.filter((option) => option.toLowerCase().includes(value.toLowerCase().trim()));
+      setFilteredBodyOfWaterOptions(filtered);
+      setBodiesOfWaterDropdownOpened(filtered.length > 0);
+    },
+    [bodyOfWaterOptions]
+  );
 
-  const bodyOfWaterRightSection = useMemo(() => 
-    bodiesOfWaterDropdownOpened && (filteredBodyOfWaterOptions.length > 0 || spotValue === '') ? 
-      <IconSelector onClick={() => setBodiesOfWaterDropdownOpened(false)}/> : 
-      null
-  , [bodiesOfWaterDropdownOpened, filteredBodyOfWaterOptions.length, bodyOfWaterValue]);
+  const bodyOfWaterRightSection = useMemo(
+    () =>
+      bodiesOfWaterDropdownOpened && (filteredBodyOfWaterOptions.length > 0 || spotValue === '') ? (
+        <IconSelector onClick={() => setBodiesOfWaterDropdownOpened(false)} />
+      ) : null,
+    [bodiesOfWaterDropdownOpened, filteredBodyOfWaterOptions.length, bodyOfWaterValue]
+  );
 
-  const handleSpotChange = useCallback((value: string) => {
-    setSpotValue(value);
-    const filtered = spotOptions.filter((option) =>
-      option.toLowerCase().includes(value.toLowerCase().trim())
-    );
-    setFilteredSpotOptions(filtered);
-    setSpotsDropdownOpened(filtered.length > 0);
-  } , [spotOptions]);
+  const handleSpotChange = useCallback(
+    (value: string) => {
+      setSpotValue(value);
+      const filtered = spotOptions.filter((option) => option.toLowerCase().includes(value.toLowerCase().trim()));
+      setFilteredSpotOptions(filtered);
+      setSpotsDropdownOpened(filtered.length > 0);
+    },
+    [spotOptions]
+  );
 
-  const spotRightSection = useMemo(() => 
-    spotsDropdownOpened && (filteredSpotOptions.length > 0 || spotValue === '') ? 
-      <IconSelector onClick={() => setSpotsDropdownOpened(false)}/> : 
-      null
-  , [spotsDropdownOpened, filteredSpotOptions.length, spotValue]);
+  const spotRightSection = useMemo(
+    () =>
+      spotsDropdownOpened && (filteredSpotOptions.length > 0 || spotValue === '') ? (
+        <IconSelector onClick={() => setSpotsDropdownOpened(false)} />
+      ) : null,
+    [spotsDropdownOpened, filteredSpotOptions.length, spotValue]
+  );
 
-  const handleAnglerChange = useCallback((value: string) => {
-    setNameEdited(true);
-    setUserLinkingDone(false);
-    setAnglerName(value);
-    const filtered = anglerOptions.filter((option) =>
-      option.toLowerCase().includes(value.toLowerCase().trim())
-    );
-    setFilteredAnglerOptions(filtered);
-    setAnglersDropdownOpened(filtered.length > 0);
-  }, [anglerOptions]);
+  const handleAnglerChange = useCallback(
+    (value: string) => {
+      setNameEdited(true);
+      setUserLinkingDone(false);
+      setAnglerName(value);
+      const filtered = anglerOptions.filter((option) => option.toLowerCase().includes(value.toLowerCase().trim()));
+      setFilteredAnglerOptions(filtered);
+      setAnglersDropdownOpened(filtered.length > 0);
+    },
+    [anglerOptions]
+  );
 
-  const anglersRightSection = useMemo(() => 
-    anglersDropdownOpened && (filteredAnglerOptions.length > 0 || anglerName === '') ? 
-      <IconSelector onClick={() => setAnglersDropdownOpened(false)}/> : 
-      null
-  , [anglersDropdownOpened, filteredAnglerOptions.length, anglerName]);
+  const anglersRightSection = useMemo(
+    () =>
+      anglersDropdownOpened && (filteredAnglerOptions.length > 0 || anglerName === '') ? (
+        <IconSelector onClick={() => setAnglersDropdownOpened(false)} />
+      ) : null,
+    [anglersDropdownOpened, filteredAnglerOptions.length, anglerName]
+  );
 
   const handleFormChange = () => {
-    setIsFormValid(formRef.current?.checkValidity() ?? false)
+    setIsFormValid(formRef.current?.checkValidity() ?? false);
   };
 
   useEffect(() => {
@@ -331,15 +398,14 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
   }, [speciesValue, anglerName, bodyOfWaterValue, formData.date, formData.time]);
 
   return (
-    <Container size={'sm'} p={'0'} maw={'100%'}>
+    <Container size="sm" p="0" maw="100%">
       <form onSubmit={handleSubmit} ref={formRef}>
-        <Fieldset disabled={isLoading} variant='default' radius={'md'} pt={'md'}>
-          <Stack gap={'lg'}>
-
+        <Fieldset disabled={isLoading} variant="default" radius="md" pt="md">
+          <Stack gap="lg">
             <Autocomplete
-              size='md'
-              type='text'
-              name='species'
+              size="md"
+              type="text"
+              name="species"
               value={speciesValue}
               label={tNewCatch('Species')}
               placeholder={tNewCatch('Species')}
@@ -350,10 +416,10 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
               rightSection={speciesRightSection}
               data={speciesOptions}
               defaultDropdownOpened={false}
-              leftSection={<IconFish size={20}/>}
-              leftSectionPointerEvents='none'
+              leftSection={<IconFish size={20} />}
+              leftSectionPointerEvents="none"
             />
-            <Group grow gap='lg'>
+            <Group grow gap="lg">
               <NumberInput
                 size="md"
                 name="length"
@@ -362,11 +428,11 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
                 min={0}
                 max={999}
                 placeholder="cm"
-                suffix=' cm'
+                suffix=" cm"
                 value={lengthValue}
                 onChange={setLengthValue}
-                leftSection={<IconRuler2 size={20}/>}
-                leftSectionPointerEvents='none'
+                leftSection={<IconRuler2 size={20} />}
+                leftSectionPointerEvents="none"
               />
               <NumberInput
                 size="md"
@@ -376,49 +442,49 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
                 min={0}
                 max={999}
                 placeholder="kg"
-                suffix=' kg'
+                suffix=" kg"
                 value={weightValue}
                 onChange={setWeightValue}
-                leftSection={<IconWeight size={20}/>}
-                leftSectionPointerEvents='none'
+                leftSection={<IconWeight size={20} />}
+                leftSectionPointerEvents="none"
               />
             </Group>
             <Autocomplete
-              size='md'
-              type='text'
+              size="md"
+              type="text"
               label={t('Common.Lure')}
               placeholder={tNewCatch('Placeholders.Lure')}
-              name='lure'
+              name="lure"
               value={lureValue}
               onChange={handleLureChange}
               onFocus={() => setLuresDropdownOpened(true)}
               onBlur={() => setLuresDropdownOpened(false)}
               rightSection={lureRightSection}
               data={lureOptions}
-              leftSection={<IconFishHook size={20}/>}
-              leftSectionPointerEvents='none'
+              leftSection={<IconFishHook size={20} />}
+              leftSectionPointerEvents="none"
             />
             <Autocomplete
-                size='md'
-                type='text'
-                name='bodyOfWater'
-                label={t('Common.BodyOfWater')}
-                placeholder={tNewCatch('Placeholders.BodyOfWater')}
-                value={bodyOfWaterValue}
-                onChange={handleBodyOfWaterChange}
-                onFocus={() => setBodiesOfWaterDropdownOpened(true)}
-                onBlur={() => setBodiesOfWaterDropdownOpened(false)}
-                rightSection={spotRightSection}
-                data={bodyOfWaterOptions}
-                defaultDropdownOpened={false}
-                leftSection={<IconRipple size={20}/>}
-                leftSectionPointerEvents='none'
-                required
-              />
+              size="md"
+              type="text"
+              name="bodyOfWater"
+              label={t('Common.BodyOfWater')}
+              placeholder={tNewCatch('Placeholders.BodyOfWater')}
+              value={bodyOfWaterValue}
+              onChange={handleBodyOfWaterChange}
+              onFocus={() => setBodiesOfWaterDropdownOpened(true)}
+              onBlur={() => setBodiesOfWaterDropdownOpened(false)}
+              rightSection={bodyOfWaterRightSection}
+              data={bodyOfWaterOptions}
+              defaultDropdownOpened={false}
+              leftSection={<IconRipple size={20} />}
+              leftSectionPointerEvents="none"
+              required
+            />
             <Autocomplete
-              size='md'
-              type='text'
-              name='spot'
+              size="md"
+              type="text"
+              name="spot"
               label={t('Common.Spot')}
               placeholder={tNewCatch('Placeholders.Spot')}
               value={spotValue}
@@ -428,20 +494,20 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
               rightSection={spotRightSection}
               data={spotOptions}
               defaultDropdownOpened={false}
-              leftSection={<IconMap size={20}/>}
-              leftSectionPointerEvents='none'
+              leftSection={<IconMap size={20} />}
+              leftSectionPointerEvents="none"
             />
             <TextInput
-                size='md'
-                type='text'
-                name='coordinates'
-                label={tNewCatch('Coordinates')}
-                placeholder="N, E"
-                value={formData.location.coordinates ?? ''}
-                onChange={handleChange}
-                pattern='^([-+]?\d{1,3}\.\d{1,12},\s*[-+]?\d{1,3}\.\d{1,12})?$' // GPS coordinates pattern
-                leftSection={<IconMapPin size={20}/>}
-                leftSectionPointerEvents='none'
+              size="md"
+              type="text"
+              name="coordinates"
+              label={tNewCatch('Coordinates')}
+              placeholder="N, E"
+              value={formData.location.coordinates ?? ''}
+              onChange={handleChange}
+              pattern="^([-+]?\d{1,3}\.\d{1,12},\s*[-+]?\d{1,3}\.\d{1,12})?$" // GPS coordinates pattern
+              leftSection={<IconMapPin size={20} />}
+              leftSectionPointerEvents="none"
             />
             <Group grow>
               <TextInput
@@ -452,8 +518,8 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
                 value={formData.date}
                 onChange={handleChange}
                 required
-                leftSection={<IconCalendar size={20}/>}
-                leftSectionPointerEvents='none'
+                leftSection={<IconCalendar size={20} />}
+                leftSectionPointerEvents="none"
               />
               <TextInput
                 size="md"
@@ -463,14 +529,14 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
                 value={formData.time}
                 onChange={handleChange}
                 required
-                leftSection={<IconClock size={20}/>}
-                leftSectionPointerEvents='none'
+                leftSection={<IconClock size={20} />}
+                leftSectionPointerEvents="none"
               />
             </Group>
             <Autocomplete
-              size='md'
-              type='text'
-              name='caughtBy'
+              size="md"
+              type="text"
+              name="caughtBy"
               label={tNewCatch('CaughtBy')}
               placeholder={tNewCatch('Placeholders.CaughtBy')}
               value={anglerName}
@@ -478,12 +544,17 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
               onChange={handleAnglerChange}
               onOptionSubmit={(val) => linkUser(val)}
               onFocus={() => setAnglersDropdownOpened(true)}
-              onBlur={() => { setAnglersDropdownOpened(false); if (!userLinkingDone) {linkUser(anglerName)}; }}
+              onBlur={() => {
+                setAnglersDropdownOpened(false);
+                if (!userLinkingDone) {
+                  linkUser(anglerName);
+                }
+              }}
               rightSection={anglersRightSection}
               data={anglerOptions}
               defaultDropdownOpened={false}
               leftSection={<IconUser size={20} />}
-              leftSectionPointerEvents='none'
+              leftSectionPointerEvents="none"
               disabled={userAutomaticallyLinked}
             />
 
@@ -515,10 +586,16 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
                     onClick={() => userCombobox.toggleDropdown()}
                     size="md"
                     leftSection={<IconUserQuestion size={20} />}
-                    leftSectionPointerEvents='none'
+                    leftSectionPointerEvents="none"
                     required
                   >
-                    {linkedUser ? `${linkedUser?.firstName} ${linkedUser?.lastName} (${linkedUser?.username})` : (linkedUser === null ? <Input.Placeholder>Valitse oikea käyttäjä</Input.Placeholder> : 'Ei käyttäjätiliä')}
+                    {linkedUser ? (
+                      `${linkedUser?.firstName} ${linkedUser?.lastName} (${linkedUser?.username})`
+                    ) : linkedUser === null ? (
+                      <Input.Placeholder>Valitse oikea käyttäjä</Input.Placeholder>
+                    ) : (
+                      'Ei käyttäjätiliä'
+                    )}
                   </InputBase>
                 </Combobox.Target>
 
@@ -529,22 +606,20 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
                         {user.firstName} {user.lastName} ({user.username})
                       </Combobox.Option>
                     ))}
-                    <Combobox.Option value="0">
-                      {tNewCatch('NoUser')}
-                    </Combobox.Option>
+                    <Combobox.Option value="0">{tNewCatch('NoUser')}</Combobox.Option>
                   </Combobox.Options>
                 </Combobox.Dropdown>
               </Combobox>
             )}
 
             <TextInput
-              size='md'
-              type='text'
+              size="md"
+              type="text"
               name="comment"
               label={t('Common.Comment')}
               placeholder={tNewCatch('Placeholders.Comment')}
               leftSection={<IconMessage size={20} />}
-              leftSectionPointerEvents='none'
+              leftSectionPointerEvents="none"
               value={formData.comment ?? ''}
               onChange={handleChange}
             />
@@ -556,19 +631,19 @@ export default function CatchEditForm({ catchData, setIsInEditView, setSelectedC
               setDeletedImages={setDeletedImages}
             />
 
-            {fullscreenImage && (
-              <FullscreenImage
-                src={fullscreenImage}
-                onClose={() => setFullscreenImage(null)}
-              />
-            )}
+            {fullscreenImage && <FullscreenImage src={fullscreenImage} onClose={() => setFullscreenImage(null)} />}
 
-            <Group mt="xs" mb={'xs'} grow>
-              <Button size='md' variant="default" onClick={() => openCancelEditModal()} leftSection={<IconEraser size={20} />}>
+            <Group mt="xs" mb="xs" grow>
+              <Button
+                size="md"
+                variant="default"
+                onClick={() => openCancelEditModal()}
+                leftSection={<IconEraser size={20} />}
+              >
                 {t('Common.Cancel')}
               </Button>
               <Button
-                size='md'
+                size="md"
                 type="submit"
                 loading={isLoading || isLinkingUser}
                 loaderProps={{ type: 'dots' }}

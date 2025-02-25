@@ -1,7 +1,7 @@
-import { IAchievement } from "./achievement";
-import { ICatch } from "./catch";
-import { JwtUserInfo } from "./jwtUserInfo";
-import { UserRole } from "./user";
+import { IAchievement } from './achievement';
+import { ICatch } from './catch';
+import { JwtUserInfo } from './jwtUserInfo';
+import { UserRole } from './user';
 
 // Common response type
 export interface BaseResponse<T = undefined> {
@@ -9,10 +9,12 @@ export interface BaseResponse<T = undefined> {
   data?: T; // Optional data specific to the response
 }
 
-export type UserInfoResponse = Required<BaseResponse<{
-  loggedIn: boolean;
-  jwtUserInfo: JwtUserInfo | null;
-}>>;
+export type UserInfoResponse = Required<
+  BaseResponse<{
+    loggedIn: boolean;
+    jwtUserInfo: JwtUserInfo | null;
+  }>
+>;
 
 export type CatchesResponse = Required<BaseResponse<ICatch[]>>;
 
@@ -56,7 +58,7 @@ export type ImageDeletionResponse = Required<BaseResponse<ImageDeletionResponseD
 
 export type SignedImageURLsResponse = Required<BaseResponse<string[]>>;
 
-export type AuthorizationResponse = Required<BaseResponse<{ role: UserRole, username: string }>>;;
+export type AuthorizationResponse = Required<BaseResponse<{ role: UserRole; username: string }>>;
 
 export type LogoutResponse = BaseResponse;
 

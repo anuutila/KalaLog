@@ -1,19 +1,26 @@
 import { ColDef } from 'ag-grid-community';
-import { LocationCellRenderer } from './LocationCellRenderer/LocationCellRenderer';
-import { lengthFormatter, weightFormatter, upperCaseFormatter, dateFormatter, customUnitComparator } from '@/lib/utils/agGridUtils';
 import { ICatch } from '@/lib/types/catch';
+import {
+  customUnitComparator,
+  dateFormatter,
+  lengthFormatter,
+  upperCaseFormatter,
+  weightFormatter,
+} from '@/lib/utils/agGridUtils';
+import { LocationCellRenderer } from './LocationCellRenderer/LocationCellRenderer';
 import { speciesCellRenderer } from './SpeciesCellRenderer/SpeciesCellRenderer';
 
 export const getColumnDefs = (
-  imageIconsEnabled: boolean, 
-  speciesColumnWidth: number, 
-  locationIconsEnabled: boolean, 
+  imageIconsEnabled: boolean,
+  speciesColumnWidth: number,
+  locationIconsEnabled: boolean,
   locationColumnWidth: number,
   displayNameMap: { [userId: string]: string },
   t: any
 ): ColDef[] => [
-  { field: 'species', 
-    headerName: t('Common.Species'), 
+  {
+    field: 'species',
+    headerName: t('Common.Species'),
     width: speciesColumnWidth, // 65 without and 95 with icon
     cellRenderer: speciesCellRenderer,
     cellRendererParams: {
@@ -75,28 +82,29 @@ export const getColumnDefs = (
     valueGetter: (params) => params.data.location?.spot || '-',
     filter: 'agTextColumnFilter',
     filterParams: {
-      textFormatter: (value: ICatch['location']['spot'] | null) =>
-        value?.toLowerCase() || '',
+      textFormatter: (value: ICatch['location']['spot'] | null) => value?.toLowerCase() || '',
     },
   },
-  { 
-    field: 'time', 
-    headerName: t('Common.Time'), 
-    width: 75 },
-  { 
-    field: 'date', 
-    headerName: t('Common.DateShort'), 
-    width: 90, 
-    valueFormatter: dateFormatter, 
-    filter: true },
-  { 
-    field: 'caughtBy', 
+  {
+    field: 'time',
+    headerName: t('Common.Time'),
+    width: 75,
+  },
+  {
+    field: 'date',
+    headerName: t('Common.DateShort'),
+    width: 90,
+    valueFormatter: dateFormatter,
+    filter: true,
+  },
+  {
+    field: 'caughtBy',
     headerName: t('Common.CaughtBy'),
-    width: 85, valueFormatter: 
-    upperCaseFormatter, 
-    valueGetter: (params) => 
-      params.data.caughtBy?.userId && displayNameMap[params.data.caughtBy.userId] 
-        ? displayNameMap[params.data.caughtBy.userId] 
-        : params.data.caughtBy.name
+    width: 85,
+    valueFormatter: upperCaseFormatter,
+    valueGetter: (params) =>
+      params.data.caughtBy?.userId && displayNameMap[params.data.caughtBy.userId]
+        ? displayNameMap[params.data.caughtBy.userId]
+        : params.data.caughtBy.name,
   },
 ];

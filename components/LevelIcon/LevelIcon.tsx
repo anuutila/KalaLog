@@ -1,4 +1,3 @@
-import { Box, Center } from '@mantine/core';
 import {
   IconNumber0Small,
   IconNumber1Small,
@@ -30,9 +29,10 @@ import {
   IconNumber27Small,
   IconNumber28Small,
   IconNumber29Small,
+  IconRosette,
   IconRosetteFilled,
-  IconRosette
 } from '@tabler/icons-react';
+import { Box, Center } from '@mantine/core';
 
 const levelIcons: Record<number, React.ElementType> = {
   0: IconNumber0Small,
@@ -85,17 +85,17 @@ export default function LevelIcon({
   const IconComponent = levelIcons[clampedLevel];
 
   return (
-    <Box pos={'absolute'} h={70} w={70}>
-      <Box pos={'absolute'} top={0} left={-60} style={{ zIndex: 1 }} h={70} w={70}>
-        <Center w={'100%'} h={'100%'}>
+    <Box pos="absolute" h={70} w={70}>
+      <Box pos="absolute" top={0} left={-60} style={{ zIndex: 1 }} h={70} w={70}>
+        <Center w="100%" h="100%">
           <IconRosetteFilled color="var(--mantine-primary-color-filled)" size={60} stroke={1} />
         </Center>
       </Box>
-      <Box pos={'absolute'} top={0} left={-60} style={{ zIndex: 2 }}>
+      <Box pos="absolute" top={0} left={-60} style={{ zIndex: 2 }}>
         <IconRosette size={70} color="var(--mantine-color-body)" stroke={1} />
       </Box>
-      <Box pos={'absolute'} top={0} left={-60} style={{ zIndex: 3 }} h={70} w={70}>
-        <Center w={'100%'} h={'100%'}>
+      <Box pos="absolute" top={0} left={-60} style={{ zIndex: 3 }} h={70} w={70}>
+        <Center w="100%" h="100%">
           <IconComponent size={size} color={color} stroke={stroke} />
         </Center>
       </Box>
@@ -107,6 +107,3 @@ export default function LevelIcon({
     </Box>
   );
 }
-
-
-

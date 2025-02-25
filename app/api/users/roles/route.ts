@@ -1,15 +1,14 @@
+import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongo/dbConnect';
 import User from '@/lib/mongo/models/user';
 import { UserRole } from '@/lib/types/user';
 import { requireRole } from '@/lib/utils/authorization';
 import { handleError } from '@/lib/utils/handleError';
-import { NextRequest, NextResponse } from 'next/server';
-
 
 export async function PUT(req: NextRequest): Promise<NextResponse> {
   try {
     await dbConnect();
-    
+
     const body = await req.json();
     const { userId, role } = body;
 
@@ -20,7 +19,9 @@ export async function PUT(req: NextRequest): Promise<NextResponse> {
     }
 
     // Validate role
-    if (![UserRole.VIEWER, UserRole.EDITOR, UserRole.CREATOR, UserRole.TRUSTED_CREATOR, UserRole.ADMIN].includes(role)) {
+    if (
+      ![UserRole.VIEWER, UserRole.EDITOR, UserRole.CREATOR, UserRole.TRUSTED_CREATOR, UserRole.ADMIN].includes(role)
+    ) {
       throw new Error('Invalid role');
     }
 
@@ -32,11 +33,7 @@ export async function PUT(req: NextRequest): Promise<NextResponse> {
     }
 
     // Update the user's role
-    const updatedUser = await User.findByIdAndUpdate(
-      userId,
-      { role },
-      { new: true, runValidators: true }
-    );
+    const updatedUser = await User.findByIdAndUpdate(userId, { role }, { new: true, runValidators: true });
 
     if (!updatedUser) {
       throw new Error('User not found');

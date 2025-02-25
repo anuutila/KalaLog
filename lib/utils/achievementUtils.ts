@@ -1,14 +1,19 @@
-import { achievementEvaluators } from "@/achievements/achievementEvaluators";
-import { IAchievement, IAchievementConfigTiered, IAchievementTiered } from "../types/achievement";
-import { ICatch } from "../types/catch";
-import { achievementConfigMap } from "@/achievements/achievementConfigs";
-import { getUserAchievements, updateAchievements } from "@/services/api/achievementService";
-import { handleApiError } from "./handleApiError";
-import { AchievementsUpdatedResponse, UserAchievementsResponse } from "../types/responses";
-import { showAchievementNotification } from "../notifications/notifications";
+import { achievementConfigMap } from '@/achievements/achievementConfigs';
+import { achievementEvaluators } from '@/achievements/achievementEvaluators';
+import { getUserAchievements, updateAchievements } from '@/services/api/achievementService';
+import { showAchievementNotification } from '../notifications/notifications';
+import { IAchievement, IAchievementConfigTiered, IAchievementTiered } from '../types/achievement';
+import { ICatch } from '../types/catch';
+import { AchievementsUpdatedResponse, UserAchievementsResponse } from '../types/responses';
+import { handleApiError } from './handleApiError';
 
-export async function recalculateUserAchievements(userId: string, catches: ICatch[], t?: any, showNotifications: boolean = false): Promise<{updates: IAchievement[], count: number}> {
-  const userCatches = catches.filter(c => c.caughtBy.userId === userId);
+export async function recalculateUserAchievements(
+  userId: string,
+  catches: ICatch[],
+  t?: any,
+  showNotifications: boolean = false
+): Promise<{ updates: IAchievement[]; count: number }> {
+  const userCatches = catches.filter((c) => c.caughtBy.userId === userId);
 
   try {
     const UserAchievementsResponse: UserAchievementsResponse = await getUserAchievements(userId);
@@ -18,7 +23,7 @@ export async function recalculateUserAchievements(userId: string, catches: ICatc
     const updates: IAchievement[] = [];
     for (const evaluator of achievementEvaluators) {
       const config = achievementConfigMap[evaluator.key];
-      const currentAchievement = currentAchievements.find(a => a.key === evaluator.key);
+      const currentAchievement = currentAchievements.find((a) => a.key === evaluator.key);
       const update = evaluator.evaluate(userCatches, config, userId, currentAchievement);
       if (update) {
         updates.push(update);
@@ -50,12 +55,9 @@ export async function recalculateUserAchievements(userId: string, catches: ICatc
  * @param newAchievements Array of achievements after recalculation.
  * @returns Array of achievements that represent a new unlock (or a new tier unlocked).
  */
-function getNewUnlocks(
-  oldAchievements: IAchievement[],
-  newAchievements: IAchievement[]
-): IAchievement[] {
+function getNewUnlocks(oldAchievements: IAchievement[], newAchievements: IAchievement[]): IAchievement[] {
   // Build a lookup map for quick access by key.
-  const oldMap = new Map(oldAchievements.map(ach => [ach.key, ach]));
+  const oldMap = new Map(oldAchievements.map((ach) => [ach.key, ach]));
   const newUnlocks: IAchievement[] = [];
 
   for (const newAch of newAchievements) {
@@ -88,19 +90,17 @@ function showAchievementNotifications(achievements: IAchievement[], t: any): voi
 export function getAchievementDescription(achievement: IAchievement, t: any): string {
   if (achievement.isOneTime) {
     return t(`Achievements.${achievement.key}.Description`);
-  } else {
-    // For tiered achievements, typecast to the appropriate types.
-    const tieredAchConfig = achievementConfigMap[achievement.key] as IAchievementConfigTiered;
-    const tieredAch = achievement as IAchievementTiered;
-
-    // Check if the first tier has a threshold of 1 and the user is on tier 1.
-    if (tieredAchConfig.baseTiers[0].threshold === 1 && tieredAch.currentTier === 1) {
-      return t(`Achievements.${tieredAchConfig.key}.DescSingular`);
-    } else {
-      // Determine which tier's threshold to display based on the number of filled stars.
-      const index = Math.max(0, Math.min(achievement.currentTier - 1, 4));
-      const thresholdValue = tieredAchConfig.baseTiers[index]?.threshold;
-      return t(`Achievements.${tieredAchConfig.key}.Description`, { value: thresholdValue });
-    }
   }
+  // For tiered achievements, typecast to the appropriate types.
+  const tieredAchConfig = achievementConfigMap[achievement.key] as IAchievementConfigTiered;
+  const tieredAch = achievement as IAchievementTiered;
+
+  // Check if the first tier has a threshold of 1 and the user is on tier 1.
+  if (tieredAchConfig.baseTiers[0].threshold === 1 && tieredAch.currentTier === 1) {
+    return t(`Achievements.${tieredAchConfig.key}.DescSingular`);
+  }
+  // Determine which tier's threshold to display based on the number of filled stars.
+  const index = Math.max(0, Math.min(achievement.currentTier - 1, 4));
+  const thresholdValue = tieredAchConfig.baseTiers[index]?.threshold;
+  return t(`Achievements.${tieredAchConfig.key}.Description`, { value: thresholdValue });
 }

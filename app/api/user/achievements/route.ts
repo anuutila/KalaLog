@@ -1,3 +1,4 @@
+import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongo/dbConnect';
 import Achievement from '@/lib/mongo/models/achievement';
 import { AchievementSchema, IAchievement } from '@/lib/types/achievement';
@@ -5,7 +6,6 @@ import { AchievementsUpdatedResponse, ErrorResponse, UserAchievementsResponse } 
 import { allRoles } from '@/lib/types/user';
 import { requireRole } from '@/lib/utils/authorization';
 import { handleError } from '@/lib/utils/handleError';
-import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(req: NextRequest): Promise<NextResponse<UserAchievementsResponse | ErrorResponse>> {
   try {
@@ -45,7 +45,10 @@ export async function GET(req: NextRequest): Promise<NextResponse<UserAchievemen
       { status: 200 }
     );
   } catch (error: unknown) {
-    return handleError(error, 'An unexpected error occurred while fetching the user achievements. Please try again later.');
+    return handleError(
+      error,
+      'An unexpected error occurred while fetching the user achievements. Please try again later.'
+    );
   }
 }
 
@@ -61,7 +64,7 @@ export async function PUT(request: NextRequest): Promise<NextResponse<Achievemen
 
     await requireRole(allRoles);
     await dbConnect();
-    
+
     const achievements = await request.json();
     console.log(`Updating ${achievements.length} achievements for user:`, userId);
     //console.log(achievements);
@@ -76,11 +79,7 @@ export async function PUT(request: NextRequest): Promise<NextResponse<Achievemen
 
     // Update the user achievements
     for (const ach of validatedAchievements) {
-      await Achievement.updateOne(
-        { userId, key: ach.key },
-        { $set: ach },
-        { upsert: true }
-      );
+      await Achievement.updateOne({ userId, key: ach.key }, { $set: ach }, { upsert: true });
     }
 
     return NextResponse.json<AchievementsUpdatedResponse>(
@@ -91,6 +90,9 @@ export async function PUT(request: NextRequest): Promise<NextResponse<Achievemen
       { status: 200 }
     );
   } catch (error: unknown) {
-    return handleError(error, 'An unexpected error occurred while updating the user achievements. Please try again later.');
+    return handleError(
+      error,
+      'An unexpected error occurred while updating the user achievements. Please try again later.'
+    );
   }
 }

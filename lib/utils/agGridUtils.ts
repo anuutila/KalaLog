@@ -17,9 +17,13 @@ export function upperCaseFormatter(params: ValueFormatterParams) {
 }
 
 export function dateFormatter(params: ValueFormatterParams) {
-  if (!params.value) return '-';
+  if (!params.value) {
+    return '-';
+  }
   const dateParts = params.value.split('-');
-  if (dateParts.length !== 3) return params.value; // Return original value if format is unexpected
+  if (dateParts.length !== 3) {
+    return params.value;
+  } // Return original value if format is unexpected
   // remove leading zeros
   dateParts[2] = dateParts[2].replace(/^0+/, '');
   dateParts[1] = dateParts[1].replace(/^0+/, '');

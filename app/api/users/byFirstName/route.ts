@@ -1,16 +1,16 @@
+import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongo/dbConnect';
 import User from '@/lib/mongo/models/user';
 import { ErrorResponse, UsersByFirstNameResponse } from '@/lib/types/responses';
-import { editorRoles, UserRole } from '@/lib/types/user';
+import { editorRoles } from '@/lib/types/user';
 import { requireRole } from '@/lib/utils/authorization';
 import { handleError } from '@/lib/utils/handleError';
-import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(req: NextRequest): Promise<NextResponse<UsersByFirstNameResponse | ErrorResponse>> {
   try {
     await dbConnect();
 
-    // Check if the user is authorized 
+    // Check if the user is authorized
     await requireRole(editorRoles);
 
     // Extract the firstName query parameter
@@ -23,7 +23,7 @@ export async function GET(req: NextRequest): Promise<NextResponse<UsersByFirstNa
 
     // Find users matching the first name (excluding admin users)
     const users = await User.find({
-      firstName: new RegExp(`^${firstName}$`, 'i') // Case-insensitive exact match
+      firstName: new RegExp(`^${firstName}$`, 'i'), // Case-insensitive exact match
     })
       .select('_id username firstName lastName') // Fetch only relevant fields
       .lean();
@@ -37,7 +37,7 @@ export async function GET(req: NextRequest): Promise<NextResponse<UsersByFirstNa
     }));
 
     return NextResponse.json<UsersByFirstNameResponse>(
-      { message: 'Users retrieved successfully', data: { users: formattedUsers} },
+      { message: 'Users retrieved successfully', data: { users: formattedUsers } },
       { status: 200 }
     );
   } catch (error: unknown) {

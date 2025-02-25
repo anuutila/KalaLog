@@ -43,7 +43,7 @@ const MONGODB_URI = NODE_ENV === 'production' ? MONGODB_URI_PROD : MONGODB_URI_D
 //   return cached.conn;
 // }
 
-const connection: {isConnected?: number} = {};
+const connection: { isConnected?: number } = {};
 
 async function dbConnect() {
   if (connection.isConnected) {

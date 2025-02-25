@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import cloudinary from '@/lib/cloudinary/cloudinary';
 import { Writable } from 'stream';
+import cloudinary from '@/lib/cloudinary/cloudinary';
 import { ErrorResponse, ImageUploadResponse } from '@/lib/types/responses';
-import { creatorRoles, editorRoles, UserRole } from '@/lib/types/user';
+import { creatorRoles, editorRoles } from '@/lib/types/user';
+import { requireRole } from '@/lib/utils/authorization';
 import { CustomError } from '@/lib/utils/customError';
 import { handleError } from '@/lib/utils/handleError';
-import { requireRole } from '@/lib/utils/authorization';
 
 export async function POST(req: NextRequest): Promise<NextResponse<ImageUploadResponse | ErrorResponse>> {
   try {
@@ -34,16 +34,13 @@ export async function POST(req: NextRequest): Promise<NextResponse<ImageUploadRe
             folder,
             public_id: publicId,
             context: {
-              Species: metadata.species, 
-              BodyOfWater: metadata.bodyOfWater, 
-              Coordinates: metadata.coordinates || '', 
-              Date: metadata.date, 
-              Time: metadata.time
+              Species: metadata.species,
+              BodyOfWater: metadata.bodyOfWater,
+              Coordinates: metadata.coordinates || '',
+              Date: metadata.date,
+              Time: metadata.time,
             },
-            transformation: [
-              { quality: 'auto' },
-              { fetch_format: 'auto' },
-            ],
+            transformation: [{ quality: 'auto' }, { fetch_format: 'auto' }],
             access_mode: 'authenticated',
           },
           (error, result) => {
@@ -74,9 +71,12 @@ export async function POST(req: NextRequest): Promise<NextResponse<ImageUploadRe
     console.log('Image uploaded successfully:', imageUrl);
 
     // Return the secure URL to the client
-    return NextResponse.json<ImageUploadResponse>({ message: 'Image uploaded succesfully', data: imageUrl }, {status: 201});
+    return NextResponse.json<ImageUploadResponse>(
+      { message: 'Image uploaded succesfully', data: imageUrl },
+      { status: 201 }
+    );
   } catch (error: any) {
     return handleError(error, 'An unexpected error occurred while uploading the image. Please try again later.');
     // return handleError(new CustomError('An unexpected error occurred while uploading the image. Please try again later.', 500, 'ImageUploadError'));
   }
-};
+}

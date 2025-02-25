@@ -1,6 +1,6 @@
-import { ErrorResponse, LogoutResponse } from "@/lib/types/responses";
-import { handleError } from "@/lib/utils/handleError";
-import { NextResponse } from "next/server";
+import { NextResponse } from 'next/server';
+import { ErrorResponse, LogoutResponse } from '@/lib/types/responses';
+import { handleError } from '@/lib/utils/handleError';
 
 export async function POST(): Promise<NextResponse<LogoutResponse | ErrorResponse>> {
   try {

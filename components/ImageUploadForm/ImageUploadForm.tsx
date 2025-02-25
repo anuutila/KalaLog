@@ -1,18 +1,20 @@
-import React, { ForwardedRef, useEffect, useImperativeHandle, useState } from "react";
-import { ICatch } from "@/lib/types/catch";
-import { ActionIcon, Box, Group, Image, Stack, Text } from "@mantine/core";
-import { Dropzone, IMAGE_MIME_TYPE } from "@mantine/dropzone";
-import { IconPhoto, IconTrash, IconUpload, IconX } from "@tabler/icons-react";
+import React, { ForwardedRef, useEffect, useImperativeHandle, useState } from 'react';
+import { IconPhoto, IconTrash, IconUpload, IconX } from '@tabler/icons-react';
+import { ActionIcon, Box, Group, Image, Stack, Text } from '@mantine/core';
+import { Dropzone, IMAGE_MIME_TYPE } from '@mantine/dropzone';
+import { ICatch } from '@/lib/types/catch';
 import classes from './ImageUploadForm.module.css';
-import './ImageUploadForm.css'
-import { Carousel } from "@mantine/carousel";
-import { useMediaQuery } from "@mantine/hooks";
-import { useGlobalState } from "@/context/GlobalState";
-import { UserRole } from "@/lib/types/user";
-import { SignedImageURLsResponse } from "@/lib/types/responses";
-import { getSignedImageURLs } from "@/services/api/imageService";
-import { handleApiError } from "@/lib/utils/handleApiError";
-import { useTranslations } from "next-intl";
+
+import './ImageUploadForm.css';
+
+import { useTranslations } from 'next-intl';
+import { Carousel } from '@mantine/carousel';
+import { useMediaQuery } from '@mantine/hooks';
+import { useGlobalState } from '@/context/GlobalState';
+import { SignedImageURLsResponse } from '@/lib/types/responses';
+import { UserRole } from '@/lib/types/user';
+import { handleApiError } from '@/lib/utils/handleApiError';
+import { getSignedImageURLs } from '@/services/api/imageService';
 
 const defaultPlaceholder = '/no-image-placeholder.png';
 
@@ -52,7 +54,7 @@ export default function ImageUploadForm({
       const fetchSignedImageURLs = async () => {
         if (catchData.images && catchData.images.length > 0) {
           try {
-            const publicIds = catchData.images.map(img => img.publicId);
+            const publicIds = catchData.images.map((img) => img.publicId);
             const signedImageURLsResponse: SignedImageURLsResponse = await getSignedImageURLs(publicIds);
             setExistingImages(signedImageURLsResponse.data.map((url, index) => ({ publicId: publicIds[index], url })));
           } catch (error) {
@@ -80,7 +82,9 @@ export default function ImageUploadForm({
   };
 
   const handleDeleteExistingImage = (index: number) => {
-    if (!setDeletedImages) return;
+    if (!setDeletedImages) {
+      return;
+    }
     setDeletedImages((prev) => [...prev, existingImages[index].publicId]);
     setExistingImages((prev) => prev.filter((_, i) => i !== index));
   };
@@ -95,21 +99,22 @@ export default function ImageUploadForm({
   return (
     <Stack gap={0}>
       <Text size="md" fw={500} mb={4}>
-      {t('NewCatchPage.AddPicture')}
+        {t('NewCatchPage.AddPicture')}
       </Text>
       <Dropzone
         onDrop={handleDrop}
         accept={IMAGE_MIME_TYPE}
         maxSize={10 * 1024 ** 2}
         maxFiles={10}
-        classNames={{ 
-          root: (!isLoggedIn || jwtUserInfo?.role === UserRole.VIEWER) ? classes.dropzoneDisabled : classes.dropzoneActive, 
-          inner: classes.dropzone_inner 
+        classNames={{
+          root:
+            !isLoggedIn || jwtUserInfo?.role === UserRole.VIEWER ? classes.dropzoneDisabled : classes.dropzoneActive,
+          inner: classes.dropzone_inner,
         }}
         h={100}
         disabled={!isLoggedIn || jwtUserInfo?.role === UserRole.VIEWER}
       >
-        <Group justify='center' align="center" wrap='nowrap' gap="md" style={{ pointerEvents: 'none' }} p={'md'} h={'100%'} >
+        <Group justify="center" align="center" wrap="nowrap" gap="md" style={{ pointerEvents: 'none' }} p="md" h="100%">
           <Dropzone.Accept>
             <IconUpload size={50} stroke={1.5} />
           </Dropzone.Accept>
@@ -117,57 +122,59 @@ export default function ImageUploadForm({
             <IconX size={50} stroke={1.5} />
           </Dropzone.Reject>
           <Dropzone.Idle>
-            <IconPhoto size={50} stroke={1.5} color='var(--mantine-color-dimmed)' />
+            <IconPhoto size={50} stroke={1.5} color="var(--mantine-color-dimmed)" />
           </Dropzone.Idle>
           <div>
             <Text size="md" inline>
               {t('NewCatchPage.AddPictureInfo')}
             </Text>
             <Text size="sm" c="var(--mantine-color-dimmed)" inline mt={7}>
-            {t('NewCatchPage.AddPictureInfo2')}
+              {t('NewCatchPage.AddPictureInfo2')}
             </Text>
           </div>
         </Group>
       </Dropzone>
 
       {(newImages.length > 0 || existingImages.length > 0) && (
-        <Box mt={'md'}>
+        <Box mt="md">
           <Text fw={500} mb={4}>{`${t('NewCatchPage.Pictures')} (${[...existingImages, ...newImages].length})`}</Text>
           <Carousel
             height={110}
             slideSize={150}
-            slideGap={'xs'}
-            align={'start'}
+            slideGap="xs"
+            align="start"
             dragFree
             withControls={!isSmallScreen}
-            containScroll={'trimSnaps'}
+            containScroll="trimSnaps"
           >
             {/* Render existing images */}
             {existingImages.map((img, index) => (
               <Carousel.Slide key={`existing-${index}`}>
                 <Box pos="relative" w={150} h={110}>
-                  <Image 
-                    src={img.url} 
+                  <Image
+                    src={img.url}
                     fallbackSrc="/no-image-placeholder.png"
-                    alt={`Existing Image ${index}`} 
-                    fit="cover" 
-                    radius="md" 
-                    w="100%" 
-                    h="100%" 
+                    alt={`Existing Image ${index}`}
+                    fit="cover"
+                    radius="md"
+                    w="100%"
+                    h="100%"
                     onClick={() => setFullscreenImage(img.url)}
                     style={{ cursor: 'pointer' }}
                   />
-                  {setDeletedImages && <ActionIcon
-                    size="sm"
-                    variant="light"
-                    pos="absolute"
-                    top={5}
-                    right={5}
-                    bg="rgba(0, 0, 0, 0.75)"
-                    onClick={() => handleDeleteExistingImage(index)}
-                  >
-                    <IconTrash size={16} color="white" />
-                  </ActionIcon>}
+                  {setDeletedImages && (
+                    <ActionIcon
+                      size="sm"
+                      variant="light"
+                      pos="absolute"
+                      top={5}
+                      right={5}
+                      bg="rgba(0, 0, 0, 0.75)"
+                      onClick={() => handleDeleteExistingImage(index)}
+                    >
+                      <IconTrash size={16} color="white" />
+                    </ActionIcon>
+                  )}
                   {/* <ActionIcon
                     size="sm"
                     variant="light"
@@ -187,14 +194,14 @@ export default function ImageUploadForm({
             {newImages.map((url, index) => (
               <Carousel.Slide key={`new-${index}`}>
                 <Box pos="relative" w={150} h={110}>
-                  <Image 
-                    src={url} 
+                  <Image
+                    src={url}
                     fallbackSrc="/no-image-placeholder.png"
-                    alt={`New Image ${index}`} 
-                    fit="cover" 
-                    radius="md" 
-                    w="100%" 
-                    h="100%" 
+                    alt={`New Image ${index}`}
+                    fit="cover"
+                    radius="md"
+                    w="100%"
+                    h="100%"
                     onClick={() => setFullscreenImage(url)}
                     style={{ cursor: 'pointer' }}
                   />

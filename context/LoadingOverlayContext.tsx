@@ -54,7 +54,7 @@ export const LoadingOverlayProvider = ({ children }: { children: React.ReactNode
         window.scrollTo(0, scrollPositionRef.current);
       }
       return () => {
-        document.documentElement.style.overflow = ''; 
+        document.documentElement.style.overflow = '';
         document.body.style.overflow = '';
         document.body.style.position = '';
         document.body.style.top = '';
@@ -65,7 +65,13 @@ export const LoadingOverlayProvider = ({ children }: { children: React.ReactNode
   return (
     <LoadingOverlayContext.Provider value={{ showLoading, hideLoading }}>
       {children}
-      <LoadingOverlay visible={visible} classNames={{ root: classes.loading_overlay_root, loader: classes.loading_overlay_loader }} overlayProps={{ blur: 2, zIndex: 2000, bg: 'rgba(0,0,0,0.5)', w: '100dvw', h: '100dvh', fixed: true}} w={'100dvw'} h={'100dvh'}/>
+      <LoadingOverlay
+        visible={visible}
+        classNames={{ root: classes.loading_overlay_root, loader: classes.loading_overlay_loader }}
+        overlayProps={{ blur: 2, zIndex: 2000, bg: 'rgba(0,0,0,0.5)', w: '100dvw', h: '100dvh', fixed: true }}
+        w={'100dvw'}
+        h={'100dvh'}
+      />
     </LoadingOverlayContext.Provider>
   );
 };

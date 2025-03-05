@@ -363,7 +363,7 @@ export default function Page() {
       if (catchCreatedResponse.data.failedImageUploads) {
         showNotification('warning', catchCreatedResponse.message, { withTitle: true });
       } else {
-        showNotification('success', catchCreatedResponse.message, { withTitle: false });
+        showNotification('success', catchCreatedResponse.message, { withTitle: false, duration: 3000 });
       }
 
       // Update the catches in global state
@@ -530,6 +530,46 @@ export default function Page() {
   useEffect(() => {
     handleFormChange();
   }, [speciesValue, anglerName, bodyOfWaterValue, formData.date, formData.time]);
+
+  // For testing purposes
+  // const achievements: IAchievement[] = [
+  //   {
+  //     key: 'total_catches',
+  //     isOneTime: false,
+  //     currentTier: 4,
+  //     tiers: [
+  //       { tier: 1, dateUnlocked: null, bonus: false }
+  //     ],
+  //     progress: 1,
+  //     totalXP: 100,
+  //     userId: '123',
+  //     unlocked: true,
+  //   },
+    // {
+    //   key: 'total_catches',
+    //   isOneTime: false,
+    //   currentTier: 2,
+    //   tiers: [
+    //     { tier: 1, dateUnlocked: null, bonus: false }
+    //   ],
+    //   progress: 1,
+    //   totalXP: 100,
+    //   userId: '123',
+    //   unlocked: true,
+    // },
+    // {
+    //   key: 'total_catches',
+    //   isOneTime: false,
+    //   currentTier: 4,
+    //   tiers: [
+    //     { tier: 1, dateUnlocked: null, bonus: false }
+    //   ],
+    //   progress: 1,
+    //   totalXP: 100,
+    //   userId: '123',
+    //   unlocked: true,
+    // }
+  // ];
 
   return (
     <Container size="sm" p="md">

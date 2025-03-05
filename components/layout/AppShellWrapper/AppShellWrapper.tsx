@@ -14,6 +14,7 @@ import { HeaderActionsProvider } from '@/context/HeaderActionsContext';
 import { LoadingOverlayProvider } from '@/context/LoadingOverlayContext';
 import { theme } from '@/theme';
 import classes from './AppShellWrapper.module.css';
+import ConfettiEffect from '@/components/particleEffects/ConfettiEffect';
 
 export interface Page {
   path: string;
@@ -57,6 +58,7 @@ export default function AppShellWrapper({ children }: { children: any }) {
               root: { transform: isSmallScreen ? 'translateY(calc(-65px - env(safe-area-inset-bottom))' : 'none' },
             }}
           />
+          <ConfettiEffect/>
           <LoadingOverlayProvider>
             <HeaderActionsProvider>
               <AppShell header={{ height: { base: rem(45), md: rem(60) } }} footer={{ height: rem(60) }} padding="0">

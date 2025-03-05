@@ -81,10 +81,12 @@ function getNewUnlocks(oldAchievements: IAchievement[], newAchievements: IAchiev
   return newUnlocks;
 }
 
-function showAchievementNotifications(achievements: IAchievement[], t: any): void {
-  for (const ach of achievements) {
-    showAchievementNotification(ach, t);
-  }
+export function showAchievementNotifications(achievements: IAchievement[], t: any): void {
+  achievements.forEach((ach, index) => {
+    setTimeout(() => {
+      showAchievementNotification(ach, t);
+    }, index * 500);
+  });
 }
 
 export function getAchievementDescription(achievement: IAchievement, t: any): string {

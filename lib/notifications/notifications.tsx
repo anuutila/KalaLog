@@ -1,13 +1,24 @@
-import { IconCheck, IconExclamationMark, IconInfoSmall, IconTrophy, IconX } from '@tabler/icons-react';
-import { rem, Stack } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
-import { achievementConfigMap } from '@/achievements/achievementConfigs';
-import { AchievementColors } from '@/components/achievements/AchievementItem/AchievementItem';
+import { IconX, IconCheck, IconExclamationMark, IconInfoSmall, IconTrophy } from '@tabler/icons-react';
+import { rem, Stack } from '@mantine/core';
 import { IAchievement, IAchievementConfigOneTime, IAchievementOneTime, IAchievementTiered } from '../types/achievement';
 import { getAchievementDescription } from '../utils/achievementUtils';
 import classes from './achievementNotifications.module.css';
+import { confetti } from "@tsparticles/confetti";
+import { achievementConfigMap } from '@/achievements/achievementConfigs';
+import { AchievementColors } from '@/components/achievements/AchievementItem/AchievementItem';
 
 type NotificationType = 'success' | 'error' | 'warning' | 'info';
+
+export type Rarity = 1 | 2 | 3 | 4 | 5;
+
+const confettiColors: Record<Rarity, string[]> = {
+  1: ["#edf6fe", "#e2e8ed", "#c6cdd4", "#a8b2bb", "#8e9aa6"],
+  2: ["#85de94", "#61d374", "#4acd60", "#3cca55", "#2cb245"],
+  3: ["#9fd1fb", "#6db8f6", "#43a2f1", "#2894ef", "#128eef"],
+  4: ["#f4d4fd", "#e5a7f4", "#d577ed", "#c74fe6", "#bf35e2"],
+  5: ["#ffaf63", "#ff9736", "#ff8818", "#ff8005", "#ffcb99"]
+};
 
 enum AchievementNotificationBg {
   'rgb(36, 36, 36)',
@@ -68,14 +79,13 @@ export function showAchievementNotification(achievement: IAchievement, t: any) {
     color,
     icon: <IconTrophy color={iconColor} style={{ width: rem(30), height: rem(30) }} stroke={2} />,
     withCloseButton: true,
-    title: (
-      <>
-        <Stack gap={0}>
-          <div>{t('Notifications.NewAchievement')}</div>
-          <div>{t(`Achievements.${achievement.key}.Name`)}</div>
-        </Stack>
-      </>
-    ),
+    title: 
+    <>
+      <Stack gap={0}>
+        <div>{t('Notifications.NewAchievement')}</div>
+        <div>{t(`Achievements.${achievement.key}.Name`)}{!achievement.isOneTime ? ` - ${achievement.currentTier}` : ''}</div>
+      </Stack>
+    </>,
     message: getAchievementDescription(achievement, t),
     position: 'bottom-right',
     withBorder: true,
@@ -83,8 +93,11 @@ export function showAchievementNotification(achievement: IAchievement, t: any) {
     bg: bgColor,
     bd: `1px solid ${color}`,
     autoClose: 30000,
+    onClick: () => showConfettiEffect(1, rarity as Rarity),
     classNames: { root: classes.root, description: classes.description, icon: classes[`icon${rarity}`] },
   });
+
+  showConfettiEffect(3, rarity as Rarity);
 }
 
 function getAchNotificationColors(achievement: IAchievement): {
@@ -119,4 +132,92 @@ function getAchNotificationColors(achievement: IAchievement): {
   }
 
   return { color, bgColor, iconColor, rarity };
+}
+
+const defaults = {
+  spread: 360,
+  drift: 10,
+  ticks: 50,
+  gravity: 1,
+  decay: 0.85,
+  startVelocity: 30,
+};
+
+function shoot(position: { x: number; y: number }, colors: string[]) {
+  confetti('tsparticles2',{
+    ...defaults,
+    particleCount: 25,
+    scalar: 1,
+    shapes: ["star"],
+    position,
+    colors
+  });
+  confetti('tsparticles2',{
+    ...defaults,
+    particleCount: 10,
+    scalar: 0.75,
+    shapes: ["circle"],
+    position,
+    colors
+  });
+  confetti('tsparticles1',{
+    ...defaults,
+    particleCount: 25,
+    scalar: 1,
+    shapes: ["star"],
+    position,
+    colors
+  });
+  confetti('tsparticles2',{
+    ...defaults,
+    particleCount: 10,
+    scalar: 0.75,
+    shapes: ["circle"],
+    position,
+    colors
+  });
+  confetti('tsparticles1',{
+    ...defaults,
+    particleCount: 10,
+    scalar: 1,
+    shapes: ["star"],
+    position,
+    colors,
+    angle: 90,
+    spread: 45,
+    startVelocity: 80,
+  });
+}
+
+function generateRandomPosition() {
+  return {
+    x: Math.random() * (90 - 10) + 10, // x between 10 and 90
+    y: Math.random() * (45 - 10) + 10,  // y between 10 and 45
+  };
+}
+
+function showConfettiEffect(times: number, rarity: Rarity) {
+  const positions = [];
+  const xThreshold = 15; // minimum horizontal difference between consecutive shots
+  const yThreshold = 5;  // minimum vertical difference between consecutive shots
+
+  for (let i = 0; i < times; i++) {
+    let candidate = generateRandomPosition();
+    
+    // If not the first, ensure candidate isn't too close to the previous one.
+    if (positions.length > 0) {
+      const last = positions[positions.length - 1];
+      let attempts = 0;
+      while ((Math.abs(candidate.x - last.x) < xThreshold ||
+              Math.abs(candidate.y - last.y) < yThreshold) && attempts < 10) {
+        candidate = generateRandomPosition();
+        attempts++;
+      }
+    }
+    positions.push(candidate);
+    
+    setTimeout(() => {
+      shoot(candidate, confettiColors[rarity]);
+    }, i * 100);
+  }
 }

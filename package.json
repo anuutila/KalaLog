@@ -31,6 +31,7 @@
     "@mantine/notifications": "^7.15.2",
     "@next/bundle-analyzer": "^14.2.4",
     "@tabler/icons-react": "^3.6.0",
+    "@tsparticles/confetti": "^3.8.1",
     "@vercel/analytics": "^1.4.1",
     "@vercel/speed-insights": "^1.1.0",
     "ag-grid-react": "^32.3.3",

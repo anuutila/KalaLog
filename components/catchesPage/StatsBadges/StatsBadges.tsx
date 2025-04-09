@@ -13,28 +13,26 @@ enum FishColors {
   ahven = 'red',
   hauki = 'yellow',
   lahna = 'green',
-  särki = 'pink',
-  kiiski = 'cyan',
+  särki = 'orange',
+  kiiski = 'violet',
 }
 
 enum FishColorsRGB {
   blue = '116, 192, 252',
   red = '255, 168, 168',
   yellow = '255, 224, 102',
-  pink = '250, 162, 193',
   green = '140, 233, 154',
-  cyan = '102, 217, 232',
+  orange = '255, 192, 120',
+  violet = '177, 151, 252',
 }
 
 enum AdditionalColorsRGB {
-  orange = '255, 192, 120',
+  pink = '250, 162, 193',
   lime = '192, 235, 117',
   gray = '222, 226, 230',
-  pink = '250, 162, 193',
   indigo = '145, 167, 255',
-  violet = '177, 151, 252',
+  cyan = '102, 217, 232',
   teal = '99, 230, 190',
-  blue = '166, 192, 252',
 }
 
 enum AllColorsRGB {

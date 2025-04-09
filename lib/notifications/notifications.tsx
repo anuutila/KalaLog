@@ -17,7 +17,7 @@ const confettiColors: Record<Rarity, string[]> = {
   2: ["#85de94", "#61d374", "#4acd60", "#3cca55", "#2cb245"],
   3: ["#9fd1fb", "#6db8f6", "#43a2f1", "#2894ef", "#128eef"],
   4: ["#f4d4fd", "#e5a7f4", "#d577ed", "#c74fe6", "#bf35e2"],
-  5: ["#ffaf63", "#ff9736", "#ff8818", "#ff8005", "#ffcb99"]
+  5: ["#ffcb99", "#ffaf63", "#ff9736", "#ff8818", "#ff8005"]
 };
 
 enum AchievementNotificationBg {

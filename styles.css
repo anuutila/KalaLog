@@ -1,3 +1,11 @@
+* {
+  scrollbar-width: thin;
+}
+
+body {
+  overflow: hidden;
+}
+
 :root {
   --success-notification-color: var(--mantine-color-green-filled);
   --error-notification-color: var(--mantine-color-red-filled);

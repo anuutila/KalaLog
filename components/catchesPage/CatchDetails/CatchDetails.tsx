@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { IconPencil, IconTrash, IconX } from '@tabler/icons-react';
 import { useTranslations } from 'next-intl';
-import { ActionIcon, Box, Container, Group, Stack, Title } from '@mantine/core';
+import { ActionIcon, Box, Container, Group, Paper, Stack, Title } from '@mantine/core';
 import { useGlobalState } from '@/context/GlobalState';
 import { useHeaderActions } from '@/context/HeaderActionsContext';
 import { useLoadingOverlay } from '@/context/LoadingOverlayContext';
@@ -201,13 +201,14 @@ export default function CatchDetails({ selectedCatch, setSelectedCatch }: CatchD
   };
 
   return (
-    <Box
+    <Paper
       pos="fixed"
       top="var(--app-shell-header-offset)"
       bottom={{ base: 'calc(var(--app-shell-footer-offset) + env(safe-area-inset-bottom))', md: 0 }}
       left={0}
       w="100%"
       p="md"
+      radius={0}
       style={{
         backgroundColor: 'var(--mantine-color-body)',
         zIndex: 100,
@@ -216,9 +217,9 @@ export default function CatchDetails({ selectedCatch, setSelectedCatch }: CatchD
       className={disableScroll ? classes.noScroll : ''}
     >
       <Container p={0} size="sm">
-        <Stack gap="lg">
+        <Stack gap="sm">
           {/* Header */}
-          <Group>
+          <Group mb={4}>
             <Title c="white" order={2} p={0} mr="auto" pl={4}>
               {isInEditView ? t('CatchesPage.EditCatch') : `${t('Common.Catch')} #${selectedCatch.catchNumber}`}
             </Title>
@@ -275,7 +276,7 @@ export default function CatchDetails({ selectedCatch, setSelectedCatch }: CatchD
               {fullscreenImage && <FullscreenImage src={fullscreenImage} onClose={() => setFullscreenImage(null)} />}
 
               {/* Catch Details Grid */}
-              <Box p={0} pb="xl">
+              <Box p={0}>
                 <CatchDetailsGrid details={details} coordinates={selectedCatch.location.coordinates} />
               </Box>
             </>
@@ -290,6 +291,6 @@ export default function CatchDetails({ selectedCatch, setSelectedCatch }: CatchD
           )}
         </Stack>
       </Container>
-    </Box>
+    </Paper>
   );
 }

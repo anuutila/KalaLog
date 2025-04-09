@@ -63,8 +63,9 @@ export default function Page() {
   return (
     <Container
       size="sm"
-      pt="xl"
-      p="md"
+      pt="xl" 
+      pb="md" 
+      py="md"
       h="calc(100dvh - var(--app-shell-footer-offset, 0rem) - var(--app-shell-header-offset, 0rem) - env(safe-area-inset-bottom))"
     >
       <Center h="100%">

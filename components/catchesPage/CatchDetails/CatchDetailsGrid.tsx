@@ -33,7 +33,7 @@ const formatDate = (date: string): string => {
 
 export default function CatchDetailsGrid({ details, coordinates }: CatchDetailsGridProps) {
   return (
-    <Stack gap="lg">
+    <Stack gap="sm">
       <Fieldset variant="default" m={0} p="sm" className={classes.catch_details_fieldset}>
         <Grid>
           <Grid.Col span={6}>

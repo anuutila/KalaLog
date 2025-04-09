@@ -3,7 +3,7 @@
 import React from 'react';
 import { usePathname } from 'next/navigation';
 import { IconChartBar, IconCirclePlus, IconFish, IconUserCircle, TablerIcon } from '@tabler/icons-react';
-import { AppShell, Group, MantineProvider, rem } from '@mantine/core';
+import { AppShell, Group, MantineProvider, Paper, rem } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import { ModalsProvider } from '@mantine/modals';
 import { Notifications } from '@mantine/notifications';
@@ -49,6 +49,11 @@ export default function AppShellWrapper({ children }: { children: any }) {
   const pathname = usePathname();
   const isSmallScreen = useMediaQuery('(max-width: 64em)');
 
+  const mainPaddingBottom = 'calc(var(--app-shell-footer-offset, 0rem) + var(--app-shell-padding) + env(safe-area-inset-bottom))'
+  const additionalOffset = pathname.includes(pages[2].path) ? 'var(--app-shell-header-offset, 0rem)' : '0rem';
+  const mainBaseHeight = `calc(100dvh - var(--app-shell-footer-offset, 0rem) - var(--app-shell-header-offset, 0rem) - ${additionalOffset} - env(safe-area-inset-bottom))`;
+  const mainMdHeight = `calc(100dvh - var(--app-shell-header-offset, 0rem) - ${additionalOffset} - env(safe-area-inset-bottom))`;
+
   return (
     <GlobalStateProvider>
       <MantineProvider theme={theme} defaultColorScheme="dark" forceColorScheme="dark">
@@ -65,12 +70,22 @@ export default function AppShellWrapper({ children }: { children: any }) {
                 <LayoutHeader pages={pages} tabs={tabs} pathname={pathname} />
                 <AppShell.Main
                   style={{ color: 'var(--mantine-color-text)' }}
+                  h={0}
                   pb={{
-                    base: 'calc(var(--app-shell-footer-offset, 0rem) + var(--app-shell-padding) + env(safe-area-inset-bottom))',
+                    base: mainPaddingBottom,
                     md: 0,
                   }}
                 >
-                  {children}
+                  <Paper 
+                    h={{ 
+                      base: mainBaseHeight, 
+                      md: mainMdHeight
+                    }}
+                    mt={additionalOffset}
+                    style={{ overflowY: 'auto'}}
+                  >
+                    {children}
+                  </Paper>
                 </AppShell.Main>
                 <AppShell.Footer hiddenFrom="md" withBorder={false} className={classes.footer}>
                   <Group className={classes.tabs_group_footer}>

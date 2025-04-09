@@ -91,7 +91,7 @@ function prepareChartDataJs(catches: ICatch[], otherLabelString: string): {
       finalLabels.push(otherLabelString);
       finalCounts.push(otherCount);
       // Sort the details alphabetically
-      groupedItems.sort((a, b) => a.label.localeCompare(b.label));
+      groupedItems.sort((a, b) => b.count - a.count);
   }
 
   // Assign Colors

@@ -137,8 +137,11 @@
     "AlreadyHaveAccount": "Already have an account?",
     "Login": "Log in here"
   },
-  "StaticsPage": {
-    "WIP": "Statistics are still a work in progress..."
+  "StatisticsPage": {
+    "Overview": "Overview",
+    "Leaderboards": "Leaderboards",
+    "TotalCatches": "Total catches",
+    "SpeciesDistribution": "Species distribution"
   },
   "UserPage": {
     "WIP": "User pages are still a work in progress...",

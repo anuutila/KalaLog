@@ -1,0 +1,46 @@
+.tabsBar {
+  width: 100%;
+  height: var(--app-shell-header-height);
+  position: fixed;
+  top: var(--app-shell-header-height);
+  background-color: var(--header-background-color);
+  border-bottom: 1px solid var(--mantine-color-dark-8);
+  border-radius: 0;
+}
+
+.list {
+  height: var(--app-shell-header-height);
+  position: relative;
+  background-color: var(--header-background-color);
+  border-bottom: 1px solid var(--mantine-color-dark-8);
+}
+
+.indicator {
+  height: 3px !important;
+  background-color: var(--mantine-color-blue-6);
+  border-radius: var(--mantine-radius-md);
+  left: 0;
+  top: calc(var(--app-shell-header-height) - 3px);
+  position: absolute;
+  transition: transform 150ms ease, width 150ms ease;
+}
+
+.tab {
+  z-index: 1;
+  font-weight: 600;
+  font-size: var(--mantine-font-size-md);
+  transition: color 100ms ease;
+  color: var(--mantine-color-gray-7);
+
+  &[data-active] {
+    color: var(--mantine-color-black);
+  }
+
+  @mixin dark {
+    color: var(--mantine-color-dark-1);
+
+    &[data-active] {
+      color: var(--mantine-color-white);
+    }
+  }
+}

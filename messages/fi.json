@@ -137,8 +137,11 @@
     "AlreadyHaveAccount": "Onko sinulla jo käyttäjätili?",
     "Login": "Kirjaudu sisään tästä"
   },
-  "StaticsPage": {
-    "WIP": "Tilastot ovat vielä työn alla..."
+  "StatisticsPage": {
+    "Overview": "Yleiskatsaus",
+    "Leaderboards": "Tulostaulukot",
+    "TotalCatches": "Kokonaismäärä",
+    "SpeciesDistribution": "Lajijakauma"
   },
   "UserPage": {
     "WIP": "Käyttäjäsivut ovat vielä työn alla...",

@@ -1,4 +1,4 @@
-import { Chart as ChartJS, ArcElement, Tooltip, Legend, ChartData, ChartOptions, Plugin, ChartEvent, ActiveElement, Chart } from 'chart.js';
+import { Chart as ChartJS, ArcElement, Tooltip, Legend, ChartData, ChartOptions, Plugin, ChartEvent, ActiveElement, Chart, TooltipItem } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
@@ -23,11 +23,33 @@ enum ChartColorsRGB {
   gray = '#e9ecef',
 }
 
-function prepareChartDataJs(catches: any[]): { labels: string[]; counts: number[]; backgroundColors: string[] } {
+const OTHER_THRESHOLD_PERCENTAGE = 2.0; // Group species < 2% of total
+const OTHER_COLOR = ChartColorsRGB.gray;
+
+interface GroupedDetail {
+  label: string;
+  count: number;
+}
+
+function prepareChartDataJs(catches: ICatch[], otherLabelString: string): { 
+  labels: string[]; 
+  counts: number[]; 
+  backgroundColors: string[];
+  groupedDetails: GroupedDetail[];
+} {
   const speciesCount: Record<string, number> = {};
-  catches.forEach(({ species }) => {
-    speciesCount[species] = (speciesCount[species] || 0) + 1;
-  });
+    let totalCount = 0;
+    catches.forEach(({ species }) => {
+        if (species) {
+            const count = (speciesCount[species] || 0) + 1;
+            speciesCount[species] = count;
+            totalCount++;
+        }
+    });
+
+    if (totalCount === 0) {
+        return { labels: [], counts: [], backgroundColors: [], groupedDetails: [] };
+    }
 
   const fixedColorMap: Record<string, string> = {
     'Kuha': ChartColorsRGB.blue,
@@ -41,25 +63,57 @@ function prepareChartDataJs(catches: any[]): { labels: string[]; counts: number[
   const allEnumColors = Object.values(ChartColorsRGB);
   const fixedColorsUsed = new Set(Object.values(fixedColorMap));
   let remainingColors = allEnumColors.filter(color => !fixedColorsUsed.has(color));
+  if (remainingColors.length === 0) remainingColors = [...allEnumColors.filter(c => c !== OTHER_COLOR)];
 
-  const labels = Object.keys(speciesCount).sort((a, b) => speciesCount[b] - speciesCount[a]);
+  // Separate Species Above/Below Threshold & Collect "Other" Details
+  const labelsAboveThreshold: string[] = [];
+  let otherCount = 0;
+  const groupedItems: GroupedDetail[] = [];
+  const thresholdValue = totalCount * (OTHER_THRESHOLD_PERCENTAGE / 100);
 
-  let remainingColorIndex = 0;
-  const backgroundColors = labels.map(label => {
-    // Check if the species has a fixed color assigned
-    if (fixedColorMap[label]) {
-      return fixedColorMap[label];
-    } else {
-      // Assign the next available color from the remaining list
-      const color = remainingColors[remainingColorIndex % remainingColors.length];
-      remainingColorIndex++;
-      return color;
-    }
+  Object.entries(speciesCount).forEach(([species, count]) => {
+      if (count < thresholdValue && totalCount > 0) {
+          otherCount += count;
+          groupedItems.push({ label: species, count: count });
+      } else {
+          labelsAboveThreshold.push(species);
+      }
   });
 
-  const counts = labels.map(label => speciesCount[label]);
+  // Sort Labels Above Threshold by Count
+  labelsAboveThreshold.sort((a, b) => speciesCount[b] - speciesCount[a]);
 
-  return { labels, counts, backgroundColors };
+  // Prepare Final Labels & Counts (including "Other" if needed)
+  const finalLabels = [...labelsAboveThreshold];
+  const finalCounts = labelsAboveThreshold.map(label => speciesCount[label]);
+
+  if (otherCount > 0) {
+      finalLabels.push(otherLabelString);
+      finalCounts.push(otherCount);
+      // Sort the details alphabetically
+      groupedItems.sort((a, b) => a.label.localeCompare(b.label));
+  }
+
+  // Assign Colors
+  let remainingColorIndex = 0;
+  const finalBackgroundColors = finalLabels.map(label => {
+      if (label === otherLabelString) {
+          return OTHER_COLOR;
+      } else if (fixedColorMap[label]) {
+          return fixedColorMap[label];
+      } else {
+          const color = remainingColors[remainingColorIndex % remainingColors.length];
+          remainingColorIndex++;
+          return color;
+      }
+  });
+
+  return {
+      labels: finalLabels,
+      counts: finalCounts,
+      backgroundColors: finalBackgroundColors,
+      groupedDetails: groupedItems
+  };
 }
 
 const numFormatter = new Intl.NumberFormat("fi-FI");
@@ -80,10 +134,36 @@ interface SpeciesDonutChartProps {
 export default function SpeciesDonutChart({ catches }: SpeciesDonutChartProps) {
   const t = useTranslations();
   const tFish = useTranslations('Fish');
+  const translatedOtherLabel = t('Common.Other');
   const chartRef = useRef<ChartJS<'doughnut'>>(null);
-  const preparedData = useMemo(() => prepareChartDataJs(catches), [catches]);
+  const componentContainerRef = useRef<HTMLDivElement>(null);
+  const preparedData = useMemo(() => prepareChartDataJs(catches, translatedOtherLabel), [catches, translatedOtherLabel]);
   const [visibility, setVisibility] = useState<Record<number, boolean>>({});
   const [selectedSliceData, setSelectedSliceData] = useState<SelectedSliceData>(null);
+
+  Chart.defaults.font.family = '-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji';
+  Chart.defaults.font.size = 16;
+
+  useEffect(() => {
+    // Handler checks if the event target is outside the component's container
+    function handleInteractionOutside(event: MouseEvent | TouchEvent) {
+      if (
+        componentContainerRef.current &&
+        !componentContainerRef.current.contains(event.target as Node) // Check if target is outside container
+      ) {
+        // Interaction occurred outside - deselect any active slice
+        setSelectedSliceData(null);
+      }
+    }
+
+    document.addEventListener('mousedown', handleInteractionOutside);
+    document.addEventListener('touchstart', handleInteractionOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', handleInteractionOutside);
+      document.removeEventListener('touchstart', handleInteractionOutside);
+    };
+  }, []);
 
   useEffect(() => {
     const chart = chartRef.current;
@@ -257,6 +337,10 @@ export default function SpeciesDonutChart({ catches }: SpeciesDonutChartProps) {
       borderColor: '#1b1b1b',
       borderWidth: 5,
       borderRadius: 5,
+      groupedDetails: preparedData.groupedDetails,
+      animation: {
+        duration: 400,
+      }
     }]
   }), [preparedData]);
 
@@ -269,7 +353,53 @@ export default function SpeciesDonutChart({ catches }: SpeciesDonutChartProps) {
     },
     plugins: {
       legend: { display: false },
-      tooltip: { enabled: false },
+      tooltip: {
+        enabled: true,
+        // Filter: Only show tooltip for the "Other" slice
+        filter: function (tooltipItem: TooltipItem<'doughnut'>) {
+          // Check the label of the item being hovered
+          return tooltipItem.label === t('Common.Other');
+        },
+        callbacks: {
+          // Tooltip Title
+          title: function (context) {
+            if (context[0]?.label !== translatedOtherLabel) {
+              return '';
+            } else {
+             return translatedOtherLabel;
+            }
+          },
+          // Main label: Hide the default "Other: count" line
+          label: function (tooltipItem: TooltipItem<'doughnut'>) {
+            return ''; // Return empty string to hide default label line
+          },
+          // After Body: Add custom lines for each grouped item
+          afterBody: function (context) {
+            const tooltipItem = context[0];
+            if (!tooltipItem) return [];
+
+            // Access the custom details stored on the dataset
+            const details = (tooltipItem.dataset as any).groupedDetails as GroupedDetail[] | undefined;
+
+            if (!details || details.length === 0) {
+              return ['Empty'];
+            }
+
+            // Limit the number of items shown if desired (e.g., top 10)
+            // const maxItemsToShow = 10;
+            // const itemsToShow = details.slice(0, maxItemsToShow);
+            const itemsToShow = details; // Show all for now
+
+            const bodyLines = itemsToShow.map(item => {
+              const speciesName = tFish.has(item.label) ? tFish(item.label) : item.label;
+              const formattedCount = numFormatter.format(item.count);
+              return `  ${speciesName}: ${formattedCount}`; // Indent slightly
+            });
+
+            return bodyLines;
+          }
+        }
+      },
       centerTextPlugin: {
         selectedData: selectedSliceData,
         translationFunc: t,
@@ -278,12 +408,20 @@ export default function SpeciesDonutChart({ catches }: SpeciesDonutChartProps) {
       },
     },
     onClick: handleChartClick
-  }), [handleChartClick, selectedSliceData, t, numFormatter]);
+  }), [handleChartClick, selectedSliceData, t, tFish, numFormatter]);
 
   return (
     <Stack h={'100%'} align='stretch' justify='center' pos={'relative'} gap={'xs'} p={0} pb={'xs'}>
       <Box>
-        <div style={{ display: 'flex', width: '100%', height: '100%', maxWidth: 500, justifySelf: 'center' }}>
+        <div ref={componentContainerRef} 
+        style={{ 
+          display: 'flex', 
+          width: '100%', 
+          height: '100%', 
+          maxWidth: 500, 
+          justifySelf: 'center', 
+          userSelect: 'none'
+        }}>
           <Doughnut
             ref={chartRef}
             data={chartJsData}

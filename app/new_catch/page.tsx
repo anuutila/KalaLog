@@ -134,8 +134,7 @@ export default function Page() {
     onDropdownOpen: () => userCombobox.updateSelectedOptionIndex('active'),
   });
 
-  // The angler name is automatically filled in for users who do not have editor rights
-  useEffect(() => {
+  const fillAnglerNameForUsersWithoutEditorRights = useCallback(() => {
     if (jwtUserInfo?.role && !editorRoles.includes(jwtUserInfo?.role)) {
       setUserAutomaticallyLinked(true);
       setUserLinkingDone(true);
@@ -147,6 +146,11 @@ export default function Page() {
         lastName: jwtUserInfo.lastname,
       });
     }
+  }, [jwtUserInfo]);
+
+  // The angler name is automatically filled in for users who do not have editor rights
+  useEffect(() => {
+    fillAnglerNameForUsersWithoutEditorRights();
   }, [jwtUserInfo]);
 
   useEffect(() => {
@@ -403,6 +407,7 @@ export default function Page() {
       handleApiError(error, 'catch creation');
     } finally {
       setIsLoading(false);
+      fillAnglerNameForUsersWithoutEditorRights();
       hideLoading();
     }
   };

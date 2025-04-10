@@ -211,8 +211,8 @@ function formatChartJsData(
       hoverBackgroundColor: color,
       borderRadius: 3,
       stack: 'userStack',
-      borderColor: '#000',
-      borderWidth: 1,
+      borderColor: '#1b1b1b',
+      borderWidth: 2,
       pointStyle: 'circle',
       pointBorderWidth: 0,
       animation: {
@@ -344,6 +344,11 @@ export default function LeaderboardBarChart({ catches, userInfo, userDisplayName
         filter: function (tooltipItem) {
           const value = tooltipItem.parsed?.x;
           return value !== null && value !== undefined && value > 0;
+        },
+        itemSort: function(a, b) {
+          const valueA = a.parsed?.x ?? 0;
+          const valueB = b.parsed?.x ?? 0;
+          return valueB - valueA;
         },
       },
       datalabels: {

@@ -71,8 +71,8 @@ const yAxisLabelPlugin: Plugin<'bar', YAxisLabelPluginOptions> = {
     const chartArea = chart.chartArea;
 
     // Define drawing positions
-    const rankXPosition = chartArea.left - 80;
-    const nameXPosition = chartArea.left - 75;
+    const rankXPosition = chartArea.left - 75;
+    const nameXPosition = chartArea.left - 70;
     const defaultColor = '#e0e0e0';
     const highlightColor = '#FFFFFF';
     const defaultWeight = 'normal';
@@ -173,9 +173,19 @@ function processLeaderboardData(
     }
   }
 
-  const allSpecies = Array.from(allSpeciesSet).sort(); // Sort alphabetically for consistent dataset order
+  const globalSpeciesTotals: Record<string, number> = {};
+  catches.forEach(c => {
+    if (c?.species) {
+      globalSpeciesTotals[c.species] = (globalSpeciesTotals[c.species] || 0) + 1;
+    }
+  });
+  const allSpeciesSorted = Array.from(allSpeciesSet).sort((speciesA, speciesB) => {
+    const countA = globalSpeciesTotals[speciesA] || 0;
+    const countB = globalSpeciesTotals[speciesB] || 0;
+    return countA - countB;
+  });
 
-  return { rankedUsers: leaderboardUsers, allSpecies };
+  return { rankedUsers: leaderboardUsers, allSpecies: allSpeciesSorted };
 }
 
 function formatChartJsData(
@@ -198,6 +208,7 @@ function formatChartJsData(
       label: species,
       data: data,
       backgroundColor: color,
+      hoverBackgroundColor: color,
       borderRadius: 3,
       stack: 'userStack',
       borderColor: '#000',
@@ -318,7 +329,7 @@ export default function LeaderboardBarChart({ catches, userInfo, userDisplayName
     layout: {
       padding: {
         right: 25,
-        left: 100
+        left: 95
       }
     },
     plugins: {

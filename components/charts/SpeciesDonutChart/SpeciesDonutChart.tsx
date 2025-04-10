@@ -314,7 +314,7 @@ export default function SpeciesDonutChart({ catches }: SpeciesDonutChartProps) {
       hoverOffset: 50,
       borderColor: '#1b1b1b',
       borderWidth: 5,
-      borderRadius: 5,
+      borderRadius: 0,
       groupedDetails: preparedData.groupedDetails,
       animation: {
         duration: 400,

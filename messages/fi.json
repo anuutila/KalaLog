@@ -51,9 +51,10 @@
     "NewCatch": "Uusi saalis",
     "Catches": "Saaliit",
     "Stats": "Tilastot",
-    "Account": "Käyttäjä",
+    "Account": "Profiili",
     "Achievements": "Saavutukset",
-    "KalaLog": "KalaLog"
+    "KalaLog": "KalaLog",
+    "Community": "Yhteisö"
   },
   "NewCatchPage": {
     "CatchInfo": "Saaliin tiedot",
@@ -145,6 +146,10 @@
     "SpeciesDistribution": "Lajijakauma",
     "TopAnglers": "Huippukalastajat",
     "CatchCount": "Saaliiden määrä"
+  },
+  "CommunityPage": {
+    "Anglers": "Kalastajat",
+    "Events": "Tapahtumat"
   },
   "UserPage": {
     "WIP": "Käyttäjäsivut ovat vielä työn alla...",

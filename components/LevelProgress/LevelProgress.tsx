@@ -1,26 +1,9 @@
 import { Box, Group, Progress } from '@mantine/core';
 import LevelIcon from '../LevelIcon/LevelIcon';
-
-const LEVEL_BASE_CONSTANT = 100;
-
-function calculateLevel(totalXP: number): number {
-  // Level 1 if XP is less than 100, then level increases as XP increases.
-  return Math.floor(Math.sqrt(totalXP / LEVEL_BASE_CONSTANT)) + 1;
-}
-
-function xpForLevel(level: number): number {
-  return LEVEL_BASE_CONSTANT * level * level;
-}
+import { calculateLevel, progressToNextLevel } from '@/lib/utils/levelUtils';
 
 interface LevelProgressProps {
   totalXP: number;
-}
-
-function progressToNextLevel(totalXP: number, currentLevel: number): number {
-  const xpCurrent = xpForLevel(currentLevel - 1);
-  const xpNext = xpForLevel(currentLevel);
-  // Calculate fraction of progress between the current and next level
-  return (totalXP - xpCurrent) / (xpNext - xpCurrent);
 }
 
 export default function LevelProgress({ totalXP }: LevelProgressProps) {
@@ -29,7 +12,7 @@ export default function LevelProgress({ totalXP }: LevelProgressProps) {
 
   return (
     <Group align="center" gap={0} justify="center" pos="relative">
-      <LevelIcon level={calculateLevel(totalXP)} />
+      <LevelIcon level={calculateLevel(totalXP)} left={-60} absolutePos/>
       <Group gap="sm" wrap="nowrap" ml={30} w={125} align="center">
         <Box h="1.5rem" w="100%">
           <Progress.Root

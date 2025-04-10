@@ -14,8 +14,8 @@ export default function LeaderboardsTab({ catches, userInfo, userDisplayNameMap 
   const t = useTranslations();
 
   return (
-    <Stack gap="md" h={'max(100%, 550px)'}>
-      <Paper p={'md'} pr={10} w={'100%'} h={'100%'} bg={"var(--my-fieldset-background-color)"}>
+    <Stack gap="md" p={'md'} h={'max(100%, 550px)'}>
+      <Paper p={'md'} pr={10} w={'100%'} h={'100%'} radius={'lg'} bg={"var(--my-fieldset-background-color)"}>
           <Stack p={0} gap={'md'} h={'100%'}> 
             <Title order={3} c={'white'}>{t('StatisticsPage.TopAnglers')}</Title>
             <Paper flex={1} bg={'transparent'}>

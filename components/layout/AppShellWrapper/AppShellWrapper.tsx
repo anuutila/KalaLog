@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { usePathname } from 'next/navigation';
-import { IconChartBar, IconCirclePlus, IconFish, IconUserCircle, TablerIcon } from '@tabler/icons-react';
+import { IconChartBar, IconCirclePlus, IconFish, IconUserCircle, IconUsersGroup, TablerIcon } from '@tabler/icons-react';
 import { AppShell, Group, MantineProvider, Paper, rem } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
 import { ModalsProvider } from '@mantine/modals';
@@ -22,9 +22,10 @@ export interface Page {
 }
 
 const pages: Page[] = [
-  { path: '/new_catch', label: 'Pages.NewCatch' },
   { path: '/catches', label: 'Pages.Catches' },
   { path: '/statistics', label: 'Pages.Stats' },
+  { path: '/new_catch', label: 'Pages.NewCatch' },
+  { path: '/community', label: 'Pages.Community' },
   { path: '/user', label: 'Pages.Account' },
   { path: '/login', label: 'Pages.Account' },
   { path: '/signup', label: 'Pages.Account' },
@@ -39,9 +40,10 @@ export interface Tab {
 }
 
 const tabs: Tab[] = [
-  { value: 'new_catch', icon: IconCirclePlus, label: 'Pages.NewCatch', path: '/new_catch' },
   { value: 'catches', icon: IconFish, label: 'Pages.Catches', path: '/catches' },
   { value: 'statistics', icon: IconChartBar, label: 'Pages.Stats', path: '/statistics' },
+  { value: 'new_catch', icon: IconCirclePlus, label: 'Pages.NewCatch', path: '/new_catch' },
+  { value: 'community', icon: IconUsersGroup, label: 'Pages.Community', path: '/community' },
   { value: 'user', icon: IconUserCircle, label: 'Pages.Account', path: '/user' },
 ];
 
@@ -50,7 +52,7 @@ export default function AppShellWrapper({ children }: { children: any }) {
   const isSmallScreen = useMediaQuery('(max-width: 64em)');
 
   const mainPaddingBottom = 'calc(var(--app-shell-footer-offset, 0rem) + var(--app-shell-padding) + env(safe-area-inset-bottom))'
-  const additionalOffset = pathname.includes(pages[2].path) ? 'var(--app-shell-header-offset, 0rem)' : '0rem';
+  const additionalOffset = pathname.includes('statistics') || pathname.includes('community') ? 'var(--app-shell-header-offset, 0rem)' : '0rem';
   const mainBaseHeight = `calc(100dvh - var(--app-shell-footer-offset, 0rem) - var(--app-shell-header-offset, 0rem) - ${additionalOffset} - env(safe-area-inset-bottom))`;
   const mainMdHeight = `calc(100dvh - var(--app-shell-header-offset, 0rem) - ${additionalOffset} - env(safe-area-inset-bottom))`;
 

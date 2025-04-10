@@ -21,33 +21,33 @@ export default function Page() {
 
   return (
     <>
-    <Paper className={classes.tabsBar}>
-    <Center  w={'100%'}>
-      <Container size={'sm'} p={0} w={'100%'}>
-        <Tabs variant='none' value={value} onChange={setValue}>
-          <Tabs.List ref={setRootRef} className={classes.list}>
-            <Tabs.Tab value="1" ref={setControlRef('1')} className={classes.tab} flex={1}>
-              {t('StatisticsPage.Overview')}
-            </Tabs.Tab>
-            <Tabs.Tab value="2" ref={setControlRef('2')} className={classes.tab} flex={1}>
-              {t('StatisticsPage.Leaderboards')}
-            </Tabs.Tab>
-            <FloatingIndicator
-              target={value ? controlsRefs[value] : null}
-              parent={rootRef}
-              className={classes.indicator}
-            />
-          </Tabs.List>
-        </Tabs>
-      </Container>
-    </Center>
+      <Paper className={classes.tabsBar}>
+        <Center w={'100%'}>
+          <Container size={'sm'} p={0} w={'100%'}>
+            <Tabs variant='none' value={value} onChange={setValue}>
+              <Tabs.List ref={setRootRef} className={classes.list}>
+                <Tabs.Tab value="1" ref={setControlRef('1')} className={classes.tab} flex={1}>
+                  {t('StatisticsPage.Overview')}
+                </Tabs.Tab>
+                <Tabs.Tab value="2" ref={setControlRef('2')} className={classes.tab} flex={1}>
+                  {t('StatisticsPage.Leaderboards')}
+                </Tabs.Tab>
+                <FloatingIndicator
+                  target={value ? controlsRefs[value] : null}
+                  parent={rootRef}
+                  className={classes.indicator}
+                />
+              </Tabs.List>
+            </Tabs>
+          </Container>
+        </Center>
+      </Paper>
 
-    </Paper>
-      <Container size={'sm'} p={'md'} h={'100%'} className={classes.tabContainer}>
+      <Container size={'sm'} h={'100%'} p={0} className={classes.tabContainer}>
         {value === '1' ? (
           <OverviewTab catches={catches} />
         ) : (
-          <LeaderboardsTab catches={catches} userInfo={jwtUserInfo} userDisplayNameMap={displayNameMap}/>
+          <LeaderboardsTab catches={catches} userInfo={jwtUserInfo} userDisplayNameMap={displayNameMap} />
         )}
       </Container>
     </>

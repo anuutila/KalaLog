@@ -18,6 +18,6 @@ export async function getUserAchievements(userId: string): Promise<UserAchieveme
   return httpClient<UserAchievementsResponse>(`${ApiEndpoints.UserAchievements}?userId=${userId}`);
 }
 
-export async function getAllUserAchievements(userId: string): Promise<UserAchievementsResponse> {
+export async function getAllUserAchievements(): Promise<UserAchievementsResponse> {
   return httpClient<UserAchievementsResponse>(ApiEndpoints.Achievements);
 }

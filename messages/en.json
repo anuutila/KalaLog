@@ -51,9 +51,10 @@
     "NewCatch": "New catch",
     "Catches": "Catches",
     "Stats": "Statistics",
-    "Account": "Account",
+    "Account": "Profile",
     "Achievements": "Achievements",
-    "KalaLog": "KalaLog"
+    "KalaLog": "KalaLog",
+    "Community": "Community"
   },
   "NewCatchPage": {
     "CatchInfo": "Catch information",
@@ -145,6 +146,10 @@
     "SpeciesDistribution": "Species distribution",
     "TopAnglers": "Top Anglers",
     "CatchCount": "Catch count"
+  },
+  "CommunityPage": {
+    "Anglers": "Anglers",
+    "Events": "Events"
   },
   "UserPage": {
     "WIP": "User pages are still a work in progress...",

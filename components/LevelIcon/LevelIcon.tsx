@@ -69,34 +69,44 @@ const levelIcons: Record<number, React.ElementType> = {
 
 interface LevelIconProps {
   level: number;
+  numberSize?: number;
+  iconRosetteFilledSize?: number;
+  iconRosetteSize?: number;
   size?: number;
   color?: string;
   stroke?: number;
+  left?: number;
+  absolutePos?: boolean;
 }
 
 export default function LevelIcon({
   level,
-  size = 50,
+  numberSize = 50,
+  iconRosetteFilledSize = 60,
+  iconRosetteSize = 70,
+  size = 70,
   color = 'var(--mantine-color-white)',
   stroke = 2,
+  left = 0,
+  absolutePos = false,
 }: LevelIconProps) {
   // Clamp level between 0 and 29
   const clampedLevel = Math.max(0, Math.min(29, level));
   const IconComponent = levelIcons[clampedLevel];
 
   return (
-    <Box pos="absolute" h={70} w={70}>
-      <Box pos="absolute" top={0} left={-60} style={{ zIndex: 1 }} h={70} w={70}>
+    <Box pos={absolutePos ? 'absolute' : 'relative'} h={size} w={size}>
+      <Box pos="absolute" top={0} left={left} style={{ zIndex: 1 }} h={size} w={size}>
         <Center w="100%" h="100%">
-          <IconRosetteFilled color="var(--mantine-primary-color-filled)" size={60} stroke={1} />
+          <IconRosetteFilled color="var(--mantine-primary-color-filled)" size={iconRosetteFilledSize} stroke={1} />
         </Center>
       </Box>
-      <Box pos="absolute" top={0} left={-60} style={{ zIndex: 2 }}>
-        <IconRosette size={70} color="var(--mantine-color-body)" stroke={1} />
+      <Box pos="absolute" top={0} left={left} style={{ zIndex: 2 }}>
+        <IconRosette size={iconRosetteSize} color="var(--mantine-color-body)" stroke={1} />
       </Box>
-      <Box pos="absolute" top={0} left={-60} style={{ zIndex: 3 }} h={70} w={70}>
+      <Box pos="absolute" top={0} left={left} style={{ zIndex: 3 }} h={size} w={size}>
         <Center w="100%" h="100%">
-          <IconComponent size={size} color={color} stroke={stroke} />
+          <IconComponent size={numberSize} color={color} stroke={stroke} />
         </Center>
       </Box>
       {/* <Box pos={'absolute'} top={0} left={-60} style={{ zIndex: 2 }} h={70} w={70}>

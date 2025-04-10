@@ -6,9 +6,11 @@ import { useState } from 'react';
 import classes from './page.module.css';
 import OverviewTab from '@/components/statisticsPage/OverviewTab/OverviewTab';
 import LeaderboardsTab from '@/components/statisticsPage/LeaderboardsTab/LeaderboardsTab';
+import { useGlobalState } from '@/context/GlobalState';
 
 export default function Page() {
   const t = useTranslations();
+  const { catches, jwtUserInfo, displayNameMap } = useGlobalState();
   const [rootRef, setRootRef] = useState<HTMLDivElement | null>(null);
   const [value, setValue] = useState<string | null>('1');
   const [controlsRefs, setControlsRefs] = useState<Record<string, HTMLButtonElement | null>>({});
@@ -41,11 +43,11 @@ export default function Page() {
     </Center>
 
     </Paper>
-      <Container size={'sm'} p={'md'} className={classes.tabContainer}>
+      <Container size={'sm'} p={'md'} h={'100%'} className={classes.tabContainer}>
         {value === '1' ? (
-          <OverviewTab />
+          <OverviewTab catches={catches} />
         ) : (
-          <LeaderboardsTab />
+          <LeaderboardsTab catches={catches} userInfo={jwtUserInfo} userDisplayNameMap={displayNameMap}/>
         )}
       </Container>
     </>

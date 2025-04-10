@@ -142,7 +142,9 @@
     "Overview": "Yleiskatsaus",
     "Leaderboards": "Tulostaulukot",
     "TotalCatches": "Kokonaismäärä",
-    "SpeciesDistribution": "Lajijakauma"
+    "SpeciesDistribution": "Lajijakauma",
+    "TopAnglers": "Huippukalastajat",
+    "CatchCount": "Saaliiden määrä"
   },
   "UserPage": {
     "WIP": "Käyttäjäsivut ovat vielä työn alla...",

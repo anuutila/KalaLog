@@ -142,7 +142,9 @@
     "Overview": "Overview",
     "Leaderboards": "Leaderboards",
     "TotalCatches": "Total catches",
-    "SpeciesDistribution": "Species distribution"
+    "SpeciesDistribution": "Species distribution",
+    "TopAnglers": "Top Anglers",
+    "CatchCount": "Catch count"
   },
   "UserPage": {
     "WIP": "User pages are still a work in progress...",

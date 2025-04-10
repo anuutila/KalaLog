@@ -1,11 +1,14 @@
 import SpeciesDonutChart from "@/components/charts/SpeciesDonutChart/SpeciesDonutChart";
-import { useGlobalState } from "@/context/GlobalState";
+import { ICatch } from "@/lib/types/catch";
 import { Paper, Stack, Text, Title } from "@mantine/core";
 import { useTranslations } from "next-intl";
 
-export default function OverviewTab() {
+interface OverviewTabProps {
+  catches: ICatch[];
+}
+
+export default function OverviewTab({ catches }: OverviewTabProps) {
   const t = useTranslations();
-  const { catches } = useGlobalState();
 
   return (
       <Stack gap="md">

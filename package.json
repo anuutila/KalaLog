@@ -38,6 +38,7 @@
     "bcryptjs": "^2.4.3",
     "browser-image-compression": "^2.0.2",
     "chart.js": "^4.4.8",
+    "chartjs-plugin-datalabels": "^2.2.0",
     "cloudinary": "^2.5.1",
     "dayjs": "^1.11.13",
     "embla-carousel-react": "^7.1.0",

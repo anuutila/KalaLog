@@ -9,7 +9,6 @@ import { handleError } from '@/lib/utils/handleError';
 
 export async function GET(): Promise<NextResponse<AllAchievementsResponse | ErrorResponse>> {
   try {
-    await requireRole(allRoles);
     await dbConnect();
 
     console.log('Fetching all user achievements...');

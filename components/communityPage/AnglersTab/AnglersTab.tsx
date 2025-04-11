@@ -11,7 +11,7 @@ export default function AnglersTab({ userInfos, loadingUsers }: AnglersTabProps)
   return (
     <Stack gap="sm" p={'md'}>
       {loadingUsers
-        ? Array.from({ length: 10 }).map((_, index) => <Skeleton key={index} height={84} radius="lg" />)
+        ? Array.from({ length: 6 }).map((_, index) => <Skeleton key={index} height={84} radius="lg" />)
         : userInfos.map((user) => (
           <Paper p={'sm'} pr={4} radius={'lg'} bg={"var(--my-fieldset-background-color)"} key={user.id}>
             <Group pos={'relative'}>

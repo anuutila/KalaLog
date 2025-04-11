@@ -264,7 +264,9 @@
     }
   },
   "Notifications": {
-    "NewAchievement": "Uusi saavutus avattu!"
+    "NewAchievement": "Uusi saavutus avattu!",
+    "LinkCopiedTitle": "Linkki kopioitu!",
+    "LinkCopiedMessage": "Linkki saaliiseen #{catchNumber} on nyt kopioitu leikepöydälle!"
   },
   "Locales": {
     "en": "Englanti 🇬🇧",

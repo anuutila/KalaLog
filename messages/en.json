@@ -264,7 +264,9 @@
     }
   },
   "Notifications": {
-    "NewAchievement": "New achievement unlocked!"
+    "NewAchievement": "New achievement unlocked!",
+    "LinkCopiedTitle": "Link Copied!",
+    "LinkCopiedMessage": "Link to Catch #{catchNumber} is now on your clipboard!"
   },
   "Locales": {
     "en": "English 🇬🇧",

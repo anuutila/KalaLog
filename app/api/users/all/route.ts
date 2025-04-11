@@ -11,9 +11,6 @@ export async function GET(): Promise<NextResponse> {
   try {
     await dbConnect();
 
-    // Check if the user has the required role
-    const response: AuthorizationResponse = await requireRole(allRoles);
-
     const users = await User.find({})
       .select('id firstName lastName username role') // Only fetch necessary fields
       .lean();

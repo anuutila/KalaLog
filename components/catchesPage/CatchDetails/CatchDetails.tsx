@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { IconPencil, IconTrash, IconX } from '@tabler/icons-react';
+import { IconCheck, IconPencil, IconShare, IconTrash, IconX } from '@tabler/icons-react';
 import { useTranslations } from 'next-intl';
-import { ActionIcon, Box, Container, Group, Paper, Stack, Title } from '@mantine/core';
+import { ActionIcon, Box, Container, CopyButton, Group, Paper, Stack, Title, Tooltip } from '@mantine/core';
 import { useGlobalState } from '@/context/GlobalState';
 import { useHeaderActions } from '@/context/HeaderActionsContext';
 import { useLoadingOverlay } from '@/context/LoadingOverlayContext';
@@ -61,6 +61,10 @@ export default function CatchDetails({ selectedCatch, setSelectedCatch }: CatchD
   const [disableScroll, setDisableScroll] = useState(false);
   const [isInEditView, setIsInEditView] = useState(false);
   const [imagesToShow, setImagesToShow] = useState<string[]>([]);
+
+  const urlToCopy = typeof window !== 'undefined'
+    ? `${window.location.origin}/catches?catchNumber=${selectedCatch.catchNumber}`
+    : '';
 
   const canViewImages = useMemo(() => {
     if (!isLoggedIn || !jwtUserInfo) {
@@ -219,13 +223,37 @@ export default function CatchDetails({ selectedCatch, setSelectedCatch }: CatchD
       <Container p={0} size="sm">
         <Stack gap="sm">
           {/* Header */}
-          <Group mb={4}>
+            <Group mb={4}>
             <Title c="white" order={2} p={0} mr="auto" pl={4}>
               {isInEditView ? t('CatchesPage.EditCatch') : `${t('Common.Catch')} #${selectedCatch.catchNumber}`}
             </Title>
 
-            {/* Close, Edit, Delete Buttons */}
+            {/* Copy link, Edit, Delete, Close Buttons */}
             <Group gap="xs" align="center">
+              {/* Copy Link Button */}
+              <CopyButton value={urlToCopy} timeout={4000}>
+                {({ copied, copy }) => (
+                  <Tooltip label={copied ? 'Link Copied!' : 'Copy shareable link'} withArrow position="bottom">
+                    <ActionIcon
+                      size={'lg'}
+                      variant="light"
+                      color={copied ? 'teal' : 'cyan'}
+                      style={{ transition: 'background-color 100ms ease, color 300ms ease'}}
+                      onClick={() => {
+                        copy();
+                        showNotification(
+                          'success', 
+                          t('Notifications.LinkCopiedMessage', { catchNumber: selectedCatch.catchNumber}),
+                          { withTitle: true, title: 'Link Copied!' }
+                        );
+                      }}
+                      aria-label="Copy shareable link"
+                    >
+                      {copied ? <IconCheck size={20} /> : <IconShare size={20} />}
+                    </ActionIcon>
+                  </Tooltip>
+                )}
+              </CopyButton>
               {/* Edit Button */}
               {!isInEditView && (
                 <ActionIcon size="lg" variant="light" color="blue" onClick={openConfirmEditModal} disabled={!canEdit}>

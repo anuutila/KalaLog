@@ -11,8 +11,8 @@ interface StatsBadgesProps {
 enum FishColors {
   kuha = 'blue',
   ahven = 'red',
-  hauki = 'yellow',
-  lahna = 'green',
+  hauki = 'green',
+  lahna = 'yellow',
   särki = 'orange',
   kiiski = 'violet',
 }

@@ -188,7 +188,7 @@ export default function CatchDetailsGrid({ details, coordinates }: CatchDetailsG
             <Box h={20} w={20} pt={2}>
               <IconMessage size={20} color="var(--mantine-primary-color-5)" />
             </Box>
-            <Text fs="italic" fw={500}>{`"${details.comment.data}"`}</Text>
+            <Text fs="italic" fw={500}>{`${details.comment.data}`}</Text>
           </Group>
         </Fieldset>
       )}

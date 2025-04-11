@@ -16,8 +16,8 @@ export enum ChartColorsRGB {
 export const fixedColorMap: Record<string, string> = {
   'Kuha': ChartColorsRGB.blue,
   'Ahven': ChartColorsRGB.red,
-  'Hauki': ChartColorsRGB.yellow,
-  'Lahna': ChartColorsRGB.green,
+  'Hauki': ChartColorsRGB.green,
+  'Lahna': ChartColorsRGB.yellow,
   'Särki': ChartColorsRGB.violet,
   'Kiiski': ChartColorsRGB.orange,
 };

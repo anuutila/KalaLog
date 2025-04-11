@@ -10,7 +10,7 @@ import { ColDef, GridReadyEvent } from 'ag-grid-community';
 
 import './page.css';
 
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { ICatch } from '@lib/types/catch';
 import { IconAdjustments } from '@tabler/icons-react';
 import { useLocale, useTranslations } from 'next-intl';
@@ -37,6 +37,7 @@ import { useGlobalState } from '@/context/GlobalState';
 import { useHeaderActions } from '@/context/HeaderActionsContext';
 import { DEFAULT_BODY_OF_WATER } from '@/lib/constants/constants';
 import { CatchUtils } from '@/lib/utils/catchUtils';
+import { showNotification } from '@/lib/notifications/notifications';
 
 const currentYear = new Date().getFullYear().toString();
 
@@ -61,6 +62,7 @@ const updateQueryParams = (selectedCatch: ICatch | null, router: ReturnType<type
 export default function CatchesPage() {
   const locale = useLocale();
   const t = useTranslations();
+  const searchParams = useSearchParams();
   const gridRef = useRef<AgGridReact<ICatch>>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
@@ -97,17 +99,23 @@ export default function CatchesPage() {
   });
 
   useEffect(() => {
-    if (catches.length > 0) {
-      const params = new URLSearchParams(window.location.search);
-      const catchNumber = params.get('catchNumber');
-      if (catchNumber) {
-        const catchData = catches.find((catchItem) => catchItem.catchNumber.toString() === catchNumber);
-        if (catchData) {
-          setSelectedCatch(catchData);
+    if (!loadingCatches && catches.length > 0 && !catchDetailsOpen) {
+      const catchNumberParam = searchParams.get('catchNumber');
+
+      if (catchNumberParam) {
+        const catchNum = parseInt(catchNumberParam, 10);
+        if (!isNaN(catchNum)) {
+          const catchToOpen = catches.find(c => c.catchNumber === catchNum);
+          if (catchToOpen) {
+            setSelectedCatch(catchToOpen);
+          } else {
+            const message = `Catch #${catchNum} not found.`;
+            showNotification('error', message, { withTitle: true });
+          }
         }
       }
     }
-  }, [catches]);
+  }, [searchParams, catches, loadingCatches]);
 
   useEffect(() => {
     const newSpeciesColWidth = imageIconsEnabled ? SpeciesColWidths.WithIcon : SpeciesColWidths.NoIcon;

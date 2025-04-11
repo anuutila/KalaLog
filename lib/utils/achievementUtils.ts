@@ -31,10 +31,10 @@ export async function recalculateUserAchievements(
     }
 
     const updateResponse: AchievementsUpdatedResponse = await updateAchievements(updates, userId);
-    console.log(updateResponse.message);
+    // console.log(updateResponse.message);
 
     const newAchievements = getNewUnlocks(currentAchievements, updates);
-    console.log(`${newAchievements.length} new achievements unlocked: `, newAchievements);
+    // console.log(`${newAchievements.length} new achievements unlocked: `, newAchievements);
 
     if (newAchievements.length > 0 && showNotifications && t) {
       showAchievementNotifications(newAchievements, t);

@@ -51,14 +51,6 @@ enum LocationColWidths {
   NoIcon = 120,
 }
 
-const updateQueryParams = (selectedCatch: ICatch | null, router: ReturnType<typeof useRouter>) => {
-  if (selectedCatch) {
-    router.push(`?catchNumber=${selectedCatch.catchNumber}`, { scroll: false });
-  } else {
-    router.push('/', { scroll: false });
-  }
-};
-
 export default function CatchesPage() {
   const locale = useLocale();
   const t = useTranslations();

@@ -63,6 +63,7 @@ export default function CatchesPage() {
   const locale = useLocale();
   const t = useTranslations();
   const searchParams = useSearchParams();
+  const initialParamLoadDone = useRef(false);
   const gridRef = useRef<AgGridReact<ICatch>>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
@@ -99,7 +100,7 @@ export default function CatchesPage() {
   });
 
   useEffect(() => {
-    if (!loadingCatches && catches.length > 0 && !catchDetailsOpen) {
+    if (!loadingCatches && catches.length > 0 && !initialParamLoadDone.current) {
       const catchNumberParam = searchParams.get('catchNumber');
 
       if (catchNumberParam) {
@@ -107,15 +108,36 @@ export default function CatchesPage() {
         if (!isNaN(catchNum)) {
           const catchToOpen = catches.find(c => c.catchNumber === catchNum);
           if (catchToOpen) {
-            setSelectedCatch(catchToOpen);
+            if (selectedCatch?.id !== catchToOpen.id) {
+              setSelectedCatch(catchToOpen);
+            }
           } else {
             const message = `Catch #${catchNum} not found.`;
             showNotification('error', message, { withTitle: true });
           }
         }
       }
+      initialParamLoadDone.current = true;
     }
   }, [searchParams, catches, loadingCatches]);
+
+  useEffect(() => {
+    const isOpen = !!selectedCatch;
+    setCatchDetailsOpen(isOpen);
+
+    if (initialParamLoadDone.current) {
+        console.log("State Sync: Updating URL for selectedCatch", selectedCatch);
+        if (isOpen && selectedCatch) {
+             if (searchParams.get('catchNumber') !== String(selectedCatch.catchNumber)) {
+                 router.push(`/catches?catchNumber=${selectedCatch.catchNumber}`, { scroll: false });
+             }
+        } else {
+            if (searchParams.has('catchNumber')) {
+                router.push('/catches', { scroll: false });
+            }
+        }
+    }
+  }, [selectedCatch, searchParams, router]);
 
   useEffect(() => {
     const newSpeciesColWidth = imageIconsEnabled ? SpeciesColWidths.WithIcon : SpeciesColWidths.NoIcon;
@@ -365,11 +387,6 @@ export default function CatchesPage() {
       setLocationIconsEnabled(false);
     }, 50);
   };
-
-  useEffect(() => {
-    setCatchDetailsOpen(!!selectedCatch); // Automatically open or close based on selectedCatch
-    updateQueryParams(selectedCatch, router); // Update query params based on selectedCatch
-  }, [selectedCatch]);
 
   const selectAllOption = getSelectAllOption(t('Common.SelectAll'), visibleColumns, colDefs);
   const columnOptions = getColumnOptions(colDefs, visibleColumns, fieldToDisplayLabelMap, t);

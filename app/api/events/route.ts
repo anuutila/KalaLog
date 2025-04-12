@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongo/dbConnect';
 import Event from '@/lib/mongo/models/event';
+import '@/lib/mongo/models/user';
 import { IEvent, IEventSchema, PopulatedUserDetails, PopulatedEvent, CreateEventInputSchema } from '@/lib/types/event';
 import { ErrorResponse, EventCreatedResponse, EventsResponse } from '@/lib/types/responses';
 import { requireRole } from '@/lib/utils/authorization';

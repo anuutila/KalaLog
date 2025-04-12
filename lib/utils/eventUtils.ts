@@ -10,7 +10,7 @@ export const calculateEventStats = (event: IEvent, allCatches: ICatch[]) => {
 
   const relevantCatches = allCatches.filter(c => {
       const catchDate = dayjs(c.date);
-      const isParticipant = participantIds.has(c.caughtBy.userId ?? '');
+      const isParticipant = participantIds.has(c.caughtBy.userId ?? '') || event.unregisteredParticipants?.includes(c.caughtBy.name);
       const isInDateRange = !catchDate.isBefore(eventStartDate) && !catchDate.isAfter(eventEndDate);
       return isParticipant && isInDateRange;
   });

@@ -43,6 +43,7 @@ export async function GET(): Promise<NextResponse<EventsResponse | ErrorResponse
           firstName: p.firstName ?? '',
           lastName: p.lastName ?? '',
         } : null),
+        unregisteredParticipants: event.unregisteredParticipants ?? [],
         bodiesOfWater: event.bodiesOfWater,
         createdAt: event.createdAt,
         updatedAt: event.updatedAt,
@@ -76,6 +77,7 @@ export async function POST(req: NextRequest): Promise<NextResponse<EventCreatedR
     const eventToSave = {
       ...validatedInput,
       participants: validatedInput.participants.map(id => new Types.ObjectId(id)),
+      unregisteredParticipants: validatedInput.unregisteredParticipants ?? [],
       createdBy: new Types.ObjectId(userId), // Use authenticated user ID
     };
 
@@ -110,6 +112,7 @@ export async function POST(req: NextRequest): Promise<NextResponse<EventCreatedR
         firstName: p.firstName ?? '',
         lastName: p.lastName ?? '',
       } : null),
+      unregisteredParticipants: validatedInput.unregisteredParticipants ?? [],
       bodiesOfWater: populatedEvent.bodiesOfWater,
       createdAt: populatedEvent.createdAt,
       updatedAt: populatedEvent.updatedAt,

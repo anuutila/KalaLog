@@ -13,6 +13,7 @@ const BaseEventSchema = z.object({
   startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid start date format (YYYY-MM-DD)'),
   endDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid end date format (YYYY-MM-DD)'),
   participants: z.array(PopulatedUserSchema),
+  unregisteredParticipants: z.array(z.string().min(1, "Participant name cannot be empty")).optional(),
   bodiesOfWater: z.array(z.string().min(1, "Body of water name cannot be empty"))
     .min(1, "At least one body of water is required"),
   createdBy: PopulatedUserSchema,
@@ -40,9 +41,13 @@ export const CreateEventInputSchema = BaseEventSchema.omit({
   updatedAt: true,
   createdBy: true,
   participants: true,
+  unregisteredParticipants: true,
 }).extend({
-  participants: z.array(z.string().regex(/^[a-f\d]{24}$/i, 'Invalid user ID'))
-    .min(1, 'At least one participant is required'),
+  participants: z.array(z.string().regex(/^[a-f\d]{24}$/i, 'Invalid user ID')),
+  unregisteredParticipants: z.array(z.string().min(1, "Participant name cannot be empty")).optional()
+}).refine(data => data.participants.length > 0 || (data.unregisteredParticipants && data.unregisteredParticipants.length > 0), {
+  message: "At least one registered or unregistered participant is required",
+  path: ["participants"],
 });
 
 // Infer the type for the input data structure
@@ -62,6 +67,7 @@ export type PopulatedEvent = {
   startDate?: string;
   endDate?: string;
   participants?: PopulatedUserDetails[];
+  unregisteredParticipants?: string[];
   createdBy?: PopulatedUserDetails;
   bodiesOfWater?: string[];
   createdAt?: Date;

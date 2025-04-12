@@ -38,10 +38,10 @@ export default function CreateEventForm({ users, catches, onSuccessAction, onCan
   const [isFormValid, setIsFormValid] = useState(false);
 
   // Format user data for MultiSelect
-  const userSelectData: Record<string, { username: string; id: string }> = users.reduce((acc, user,) => {
-    acc[`${user.firstName} ${user.lastName ?? ''}`] = { username: user.username, id: user.id ?? '' };
+  const userSelectData: Record<string, { username: string | undefined; id: string | undefined }> = users.reduce((acc, user,) => {
+    acc[`${user.firstName}${user.lastName ? ' ' : ''}${user.lastName ?? ''}`] = { username: user.username ?? '', id: user.id ?? '' };
     return acc;
-  }, {} as Record<string, { username: string; id: string }>);
+  }, {} as Record<string, { username: string | undefined; id: string | undefined }>);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,6 +49,9 @@ export default function CreateEventForm({ users, catches, onSuccessAction, onCan
     const participantIds = participants
      .map(name => userSelectData[name]?.id)
      .filter((id): id is string => !!id);
+
+    const unregisteredParticipants = participants
+      .filter(name => !userSelectData[name].username && !userSelectData[name].id);
 
     // Basic Client-side validation
     if (!name || startDate === '' || endDate === '' || participants.length === 0 || bodiesOfWater.length === 0) {
@@ -65,6 +68,7 @@ export default function CreateEventForm({ users, catches, onSuccessAction, onCan
       startDate: startDate,
       endDate: endDate,
       participants: participantIds,
+      unregisteredParticipants: unregisteredParticipants.length > 0 ? unregisteredParticipants : undefined,
       bodiesOfWater,
     };
 
@@ -82,10 +86,13 @@ export default function CreateEventForm({ users, catches, onSuccessAction, onCan
     }
   };
 
-  const handleFormChange = (currentParticipantsValue: string[]) => {
+  const handleFormChange = (name: string, startDate: string, endDate: string, participants: string[], bodiesOfWater: string[]) => {
+    console.log('Form changed:', { name, startDate, endDate, participants, bodiesOfWater });
     setIsFormValid(
-      (formRef.current?.checkValidity() ?? false) 
-      && currentParticipantsValue.length > 0 
+      name.length > 0
+      && startDate.length > 0
+      && endDate.length > 0
+      && participants.length > 0 
       && bodiesOfWater.length > 0
     );
   };
@@ -139,7 +146,7 @@ export default function CreateEventForm({ users, catches, onSuccessAction, onCan
             </Group>
           </Group>
 
-          <form onSubmit={handleSubmit} ref={formRef} onChange={() => handleFormChange(participants)}>
+          <form onSubmit={handleSubmit} ref={formRef}>
             <Fieldset disabled={loading} variant="default" radius="md" pt="md">
               <Stack>
                 <TextInput
@@ -149,7 +156,10 @@ export default function CreateEventForm({ users, catches, onSuccessAction, onCan
                   label={tForm('Name')}
                   placeholder={tForm('Placeholders.Name')}
                   value={name}
-                  onChange={(event) => setName(event.currentTarget.value)}
+                  onChange={(event) => {
+                    setName(event.currentTarget.value);
+                    handleFormChange(event.currentTarget.value, startDate, endDate, participants, bodiesOfWater);
+                  }}
                   required
                   data-autofocus
                   leftSection={<IconLabel size={20} />}
@@ -160,7 +170,10 @@ export default function CreateEventForm({ users, catches, onSuccessAction, onCan
                   type="date"
                   name="event start date"
                   value={startDate}
-                  onChange={(event) => setStartDate(event.currentTarget.value)}
+                  onChange={(event) => {
+                    setStartDate(event.currentTarget.value);
+                    handleFormChange(name, event.currentTarget.value, endDate, participants, bodiesOfWater);
+                  }}
                   label={tForm('StartDate')}
                   placeholder={tForm('Placeholders.StartDate')}
                   required
@@ -172,7 +185,10 @@ export default function CreateEventForm({ users, catches, onSuccessAction, onCan
                   type="date"
                   name="event start date"
                   value={endDate}
-                  onChange={(event) => setEndDate(event.currentTarget.value)}
+                  onChange={(event) => {
+                    setEndDate(event.currentTarget.value);
+                    handleFormChange(name, startDate, event.currentTarget.value, participants, bodiesOfWater);
+                  }}
                   label={tForm('EndDate')}
                   placeholder={tForm('Placeholders.EndDate')}
                   min={startDate || undefined} // Prevent end date before start date
@@ -189,7 +205,10 @@ export default function CreateEventForm({ users, catches, onSuccessAction, onCan
                   data={Object.keys(userSelectData)}
                   value={participants}
                   renderOption={renderMultiSelectOption}
-                  onChange={(value) => {setParticipants(value); handleFormChange(value)}}
+                  onChange={(value) => {
+                    setParticipants(value); 
+                    handleFormChange(name, startDate, endDate, value, bodiesOfWater);
+                  }}
                   searchable
                   required
                   hidePickedOptions
@@ -202,7 +221,10 @@ export default function CreateEventForm({ users, catches, onSuccessAction, onCan
                   label={tForm('BodyOfWater')}
                   placeholder={tForm('Placeholders.BodyOfWater')}
                   value={bodiesOfWater}
-                  onChange={setBodiesOfWater}
+                  onChange={(value) => {
+                    setBodiesOfWater(value); 
+                    handleFormChange(name, startDate, endDate, participants, value);
+                  }}
                   clearable
                   required
                   data={CatchUtils.getUniqueBodiesOfWater(catches).map(item => item.bodyOfWater)}

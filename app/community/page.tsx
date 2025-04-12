@@ -14,6 +14,8 @@ import { IAchievement } from '@/lib/types/achievement';
 import { calculateLevel } from '@/lib/utils/levelUtils';
 import EventsTab from '@/components/communityPage/EventsTab/EventsTab';
 import { usePathname, useRouter } from 'next/navigation';
+import { CatchUtils } from '@/lib/utils/catchUtils';
+import { useGlobalState } from '@/context/GlobalState';
 
 const TABS_CONFIG = [
   { value: 'anglers', labelKey: 'CommunityPage.Anglers' },
@@ -23,11 +25,11 @@ const TABS_CONFIG = [
 const DEFAULT_TAB_VALUE = TABS_CONFIG[0].value;
 
 export interface CommunityPageUserInfo {
-  id: string | null;
-  username: string;
+  id?: string | null;
+  username?: string;
   firstName: string;
-  lastName: string;
-  role: UserRole;
+  lastName?: string;
+  role?: UserRole;
   level?: number;
 }
 
@@ -35,7 +37,9 @@ export default function Page() {
   const t = useTranslations();
   const router = useRouter();
   const pathname = usePathname();
-  const [userInfos, setUserInfos] = useState<CommunityPageUserInfo[]>([]);
+  const { catches } = useGlobalState();
+  const [anglersUserInfos, setAnglersUserInfos] = useState<CommunityPageUserInfo[]>([]);
+  const [eventsUserInfos, setEventsUserInfos] = useState<CommunityPageUserInfo[]>([]);
   const [achievements, setAchievements] = useState<IAchievement[]>([]);
   const [loadingUsers, setLoadingUsers] = useState<boolean>(false);
   const [rootRef, setRootRef] = useState<HTMLElement | null>(null);
@@ -96,7 +100,7 @@ export default function Page() {
     try {
       const usersResponse: AllUsersResponse = await getAllUsers();
       const usersData = usersResponse?.data?.users;
-      setUserInfos(usersData);
+      setAnglersUserInfos(usersData);
       return usersData;
     } catch (error) {
       handleApiError(error, 'fetching users');
@@ -107,11 +111,22 @@ export default function Page() {
   useEffect(() => {
     const fetchDataAndProcess = async () => {
       setLoadingUsers(true);
+      if (catches.length === 0) {
+        return;
+      }
+
       try {
         const [fetchedUsers, fetchedAchievements] = await Promise.all([
           fetchAllUsers(),
           fetchAllAchievements()
         ]);
+
+        const unregisteredUsers: CommunityPageUserInfo[] = CatchUtils.getUniqueAnglers(catches)
+          .filter((user) => !user.userId)
+          .map((user) => ({ firstName: user.name }));
+
+        const eventsUserInfos = [...fetchedUsers, ...unregisteredUsers];
+        setEventsUserInfos(eventsUserInfos);
 
         const usersWithLevelInfo = fetchedUsers
           .map((user) => {
@@ -123,7 +138,9 @@ export default function Page() {
             return a.firstName.localeCompare(b.firstName);
           });
 
-        setUserInfos(usersWithLevelInfo);
+        
+
+        setAnglersUserInfos(usersWithLevelInfo);
       } catch (error) {
         console.error("Failed to fetch data:", error);
       } finally {
@@ -132,7 +149,7 @@ export default function Page() {
     };
 
     fetchDataAndProcess();
-  }, []);
+  }, [catches]);
 
   return (
     <>
@@ -167,10 +184,10 @@ export default function Page() {
 
       <Container size={'sm'} h={'100%'} p={0} className={classes.tabContainer}>
         {activeTab === TABS_CONFIG[0].value && (
-          <AnglersTab userInfos={userInfos} loadingUsers={loadingUsers} />
+          <AnglersTab userInfos={anglersUserInfos} loadingUsers={loadingUsers} />
         )}
         {activeTab === TABS_CONFIG[1].value && (
-          <EventsTab allUsers={userInfos}/>
+          <EventsTab allUsers={eventsUserInfos}/>
         )}
       </Container>
     </>

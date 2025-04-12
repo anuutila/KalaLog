@@ -24,14 +24,14 @@ export const authorize = async (
       throw new CustomError('Unauthorized. Missing JWT token.', 401);
     }
 
-    const decoded = jwt.verify(token, JWT_SECRET) as JwtPayload & { role: string; username: string };
+    const decoded = jwt.verify(token, JWT_SECRET) as JwtPayload & { role: string; username: string; userid: string };
 
     if (!decoded.role || !isUserRole(decoded.role) || !authorizedRoles.includes(decoded.role)) {
       throw new CustomError('Authorization failed. Insufficient permissions', 403);
     }
 
     return NextResponse.json<AuthorizationResponse>(
-      { message: 'User succesfully authorized', data: { role: decoded.role, username: decoded.username } },
+      { message: 'User succesfully authorized', data: { role: decoded.role, username: decoded.username, id: decoded.userid } },
       { status: 200 }
     );
   } catch (error) {

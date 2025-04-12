@@ -123,10 +123,13 @@ export default function EventsTab({ allUsers }: EventsTabProps) {
           ? Array.from({ length: 6 }).map((_, index) => <Skeleton key={index} height={120} radius="lg" />)
           : events.map((event) => {
             const stats = calculateEventStats(event, catches);
-            const participantNames = event.participants.sort()
+            const participantNames = event.participants
               .map(p => p ? `${p.firstName} ${p.lastName}` : 'Unknown User');
+            const unregisteredNames = event.unregisteredParticipants || [];
+            const allParticipantNames = [...participantNames, ...unregisteredNames].sort();
+
             let maxAvatarsVisible = 4
-            if (participantNames.length > maxAvatarsVisible) {
+            if (allParticipantNames.length > maxAvatarsVisible) {
               maxAvatarsVisible -= 1;
             }
 
@@ -162,7 +165,7 @@ export default function EventsTab({ allUsers }: EventsTabProps) {
                         </Group>
                       </Stack>
                       <AvatarGroup>
-                        {participantNames.slice(0, maxAvatarsVisible).map(participant => {
+                        {allParticipantNames.slice(0, maxAvatarsVisible).map(participant => {
                           const color = nameToColor(participant);
                           const borderColor = darken(`var(--mantine-color-${color}-light-color)`, 0.5);
                           return (
@@ -188,9 +191,9 @@ export default function EventsTab({ allUsers }: EventsTabProps) {
                             </Tooltip>
                           );
                         })}
-                        {participantNames.length > maxAvatarsVisible &&
+                        {allParticipantNames.length > maxAvatarsVisible &&
                           <Tooltip
-                            label={tooltipLabelContent(participantNames.slice(maxAvatarsVisible))}
+                            label={tooltipLabelContent(allParticipantNames.slice(maxAvatarsVisible))}
                             withArrow
                             arrowSize={8}
                             position="top"
@@ -207,7 +210,7 @@ export default function EventsTab({ allUsers }: EventsTabProps) {
                                 boxSizing: 'content-box'
                               }}
                             >
-                              +{participantNames.length - maxAvatarsVisible}
+                              +{allParticipantNames.length - maxAvatarsVisible}
                             </Avatar>
                           </Tooltip>
                         }
@@ -278,7 +281,7 @@ export default function EventsTab({ allUsers }: EventsTabProps) {
       </Stack>
 
       {canCreateEvents && !showCreateForm && !showEventDetails && (
-        <Affix bottom={{ base: 'calc(var(--app-shell-footer-offset) + env(safe-area-inset-bottom) + 20px)', md: 0 }} right={20} zIndex={400}>
+        <Affix bottom={{ base: 'calc(var(--app-shell-footer-offset) + env(safe-area-inset-bottom) + 20px)', md: 0 }} right={20} zIndex={350}>
           <Tooltip label={tCommunity('CreateButtonTooltip')} position="left" withArrow>
             <ActionIcon
               size="56"

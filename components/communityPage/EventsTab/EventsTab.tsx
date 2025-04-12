@@ -40,7 +40,12 @@ export default function EventsTab({ allUsers }: EventsTabProps) {
     fetchData(); // Refresh event list
   };
 
-  const openEventDetails = useEffect(() => {
+  const onCloseEventDetails = () => {
+    handleCloseEventDetails();
+    setSelectedEvent(null);
+  }
+
+  useEffect(() => {
     if (selectedEvent) {
       handleOpenEventDetails();
     }
@@ -275,7 +280,7 @@ export default function EventsTab({ allUsers }: EventsTabProps) {
         {showEventDetails && (
           <EventDetails
             event={selectedEvent}
-            onCloseAction={handleCloseEventDetails}
+            onCloseAction={onCloseEventDetails}
           />
         )}
       </Stack>

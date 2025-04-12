@@ -62,7 +62,7 @@ export default function CatchesPage() {
   const { setActions } = useHeaderActions();
   const { catches, catchesError, loadingCatches, displayNameMap } = useGlobalState();
 
-  const [filteredCatches, setFilteredCatches] = useState<ICatch[]>([]);
+  const [filteredCatches, setFilteredCatches] = useState<ICatch[] | null>(null);
   const [uniqueYears, setUniqueYears] = useState<string[]>([]);
   const [uniqueBodiesOfWater, setUniqueBodiesOfWater] = useState<string[]>([]);
   const [rowCount, setRowCount] = useState<number>(0);

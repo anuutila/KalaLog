@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { TablerIcon } from '@tabler/icons-react';
+import { IconFish, TablerIcon } from '@tabler/icons-react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@mantine/core';
 import classes from './CustomTab.module.css';
@@ -26,7 +26,7 @@ export default function CustomTab({ icon: Icon, path, label, isActive }: CustomT
       >
         <div className={classes.icon_label_container}>
           <div>
-            <Icon className={classes.icon} />
+            <Icon className={Icon === IconFish ? classes.iconFish : classes.icon} />
           </div>
           <span className={classes.label}>{t(label)}</span>
         </div>

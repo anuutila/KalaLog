@@ -398,265 +398,263 @@ export default function CatchEditForm({
   }, [speciesValue, anglerName, bodyOfWaterValue, formData.date, formData.time]);
 
   return (
-    <Container size="sm" p="0" maw="100%">
-      <form onSubmit={handleSubmit} ref={formRef}>
-        <Fieldset disabled={isLoading} variant="default" radius="md" pt="md">
-          <Stack gap="lg">
-            <Autocomplete
+    <form onSubmit={handleSubmit} ref={formRef}>
+      <Fieldset disabled={isLoading} variant="default" radius="md" pt="md">
+        <Stack gap="lg">
+          <Autocomplete
+            size="md"
+            type="text"
+            name="species"
+            value={speciesValue}
+            label={tNewCatch('Species')}
+            placeholder={tNewCatch('Species')}
+            required
+            onChange={handleSpeciesChange}
+            onFocus={() => setSpeciesDropdownOpened(true)}
+            onBlur={() => setSpeciesDropdownOpened(false)}
+            rightSection={speciesRightSection}
+            data={speciesOptions}
+            defaultDropdownOpened={false}
+            leftSection={<IconFish size={20} />}
+            leftSectionPointerEvents="none"
+          />
+          <Group grow gap="lg">
+            <NumberInput
               size="md"
-              type="text"
-              name="species"
-              value={speciesValue}
-              label={tNewCatch('Species')}
-              placeholder={tNewCatch('Species')}
+              name="length"
+              label={t('Common.Length')}
+              step={0.01}
+              min={0}
+              max={999}
+              placeholder="cm"
+              suffix=" cm"
+              value={lengthValue}
+              onChange={setLengthValue}
+              leftSection={<IconRuler2 size={20} />}
+              leftSectionPointerEvents="none"
+            />
+            <NumberInput
+              size="md"
+              name="weight"
+              label={t('Common.Weight')}
+              step={0.01}
+              min={0}
+              max={999}
+              placeholder="kg"
+              suffix=" kg"
+              value={weightValue}
+              onChange={setWeightValue}
+              leftSection={<IconWeight size={20} />}
+              leftSectionPointerEvents="none"
+            />
+          </Group>
+          <Autocomplete
+            size="md"
+            type="text"
+            label={t('Common.Lure')}
+            placeholder={tNewCatch('Placeholders.Lure')}
+            name="lure"
+            value={lureValue}
+            onChange={handleLureChange}
+            onFocus={() => setLuresDropdownOpened(true)}
+            onBlur={() => setLuresDropdownOpened(false)}
+            rightSection={lureRightSection}
+            data={lureOptions}
+            leftSection={<IconFishHook size={20} />}
+            leftSectionPointerEvents="none"
+          />
+          <Autocomplete
+            size="md"
+            type="text"
+            name="bodyOfWater"
+            label={t('Common.BodyOfWater')}
+            placeholder={tNewCatch('Placeholders.BodyOfWater')}
+            value={bodyOfWaterValue}
+            onChange={handleBodyOfWaterChange}
+            onFocus={() => setBodiesOfWaterDropdownOpened(true)}
+            onBlur={() => setBodiesOfWaterDropdownOpened(false)}
+            rightSection={bodyOfWaterRightSection}
+            data={bodyOfWaterOptions}
+            defaultDropdownOpened={false}
+            leftSection={<IconRipple size={20} />}
+            leftSectionPointerEvents="none"
+            required
+          />
+          <Autocomplete
+            size="md"
+            type="text"
+            name="spot"
+            label={t('Common.Spot')}
+            placeholder={tNewCatch('Placeholders.Spot')}
+            value={spotValue}
+            onChange={handleSpotChange}
+            onFocus={() => setSpotsDropdownOpened(true)}
+            onBlur={() => setSpotsDropdownOpened(false)}
+            rightSection={spotRightSection}
+            data={spotOptions}
+            defaultDropdownOpened={false}
+            leftSection={<IconMap size={20} />}
+            leftSectionPointerEvents="none"
+          />
+          <TextInput
+            size="md"
+            type="text"
+            name="coordinates"
+            label={tNewCatch('Coordinates')}
+            placeholder="N, E"
+            value={formData.location.coordinates ?? ''}
+            onChange={handleChange}
+            pattern="^([-+]?\d{1,3}\.\d{1,12},\s*[-+]?\d{1,3}\.\d{1,12})?$" // GPS coordinates pattern
+            leftSection={<IconMapPin size={20} />}
+            leftSectionPointerEvents="none"
+          />
+          <Group grow>
+            <TextInput
+              size="md"
+              type="date"
+              name="date"
+              label={t('Common.Date')}
+              value={formData.date}
+              onChange={handleChange}
               required
-              onChange={handleSpeciesChange}
-              onFocus={() => setSpeciesDropdownOpened(true)}
-              onBlur={() => setSpeciesDropdownOpened(false)}
-              rightSection={speciesRightSection}
-              data={speciesOptions}
-              defaultDropdownOpened={false}
-              leftSection={<IconFish size={20} />}
-              leftSectionPointerEvents="none"
-            />
-            <Group grow gap="lg">
-              <NumberInput
-                size="md"
-                name="length"
-                label={t('Common.Length')}
-                step={0.01}
-                min={0}
-                max={999}
-                placeholder="cm"
-                suffix=" cm"
-                value={lengthValue}
-                onChange={setLengthValue}
-                leftSection={<IconRuler2 size={20} />}
-                leftSectionPointerEvents="none"
-              />
-              <NumberInput
-                size="md"
-                name="weight"
-                label={t('Common.Weight')}
-                step={0.01}
-                min={0}
-                max={999}
-                placeholder="kg"
-                suffix=" kg"
-                value={weightValue}
-                onChange={setWeightValue}
-                leftSection={<IconWeight size={20} />}
-                leftSectionPointerEvents="none"
-              />
-            </Group>
-            <Autocomplete
-              size="md"
-              type="text"
-              label={t('Common.Lure')}
-              placeholder={tNewCatch('Placeholders.Lure')}
-              name="lure"
-              value={lureValue}
-              onChange={handleLureChange}
-              onFocus={() => setLuresDropdownOpened(true)}
-              onBlur={() => setLuresDropdownOpened(false)}
-              rightSection={lureRightSection}
-              data={lureOptions}
-              leftSection={<IconFishHook size={20} />}
-              leftSectionPointerEvents="none"
-            />
-            <Autocomplete
-              size="md"
-              type="text"
-              name="bodyOfWater"
-              label={t('Common.BodyOfWater')}
-              placeholder={tNewCatch('Placeholders.BodyOfWater')}
-              value={bodyOfWaterValue}
-              onChange={handleBodyOfWaterChange}
-              onFocus={() => setBodiesOfWaterDropdownOpened(true)}
-              onBlur={() => setBodiesOfWaterDropdownOpened(false)}
-              rightSection={bodyOfWaterRightSection}
-              data={bodyOfWaterOptions}
-              defaultDropdownOpened={false}
-              leftSection={<IconRipple size={20} />}
-              leftSectionPointerEvents="none"
-              required
-            />
-            <Autocomplete
-              size="md"
-              type="text"
-              name="spot"
-              label={t('Common.Spot')}
-              placeholder={tNewCatch('Placeholders.Spot')}
-              value={spotValue}
-              onChange={handleSpotChange}
-              onFocus={() => setSpotsDropdownOpened(true)}
-              onBlur={() => setSpotsDropdownOpened(false)}
-              rightSection={spotRightSection}
-              data={spotOptions}
-              defaultDropdownOpened={false}
-              leftSection={<IconMap size={20} />}
+              leftSection={<IconCalendar size={20} />}
               leftSectionPointerEvents="none"
             />
             <TextInput
               size="md"
-              type="text"
-              name="coordinates"
-              label={tNewCatch('Coordinates')}
-              placeholder="N, E"
-              value={formData.location.coordinates ?? ''}
+              type="time"
+              name="time"
+              label={t('Common.Time')}
+              value={formData.time}
               onChange={handleChange}
-              pattern="^([-+]?\d{1,3}\.\d{1,12},\s*[-+]?\d{1,3}\.\d{1,12})?$" // GPS coordinates pattern
-              leftSection={<IconMapPin size={20} />}
+              required
+              leftSection={<IconClock size={20} />}
               leftSectionPointerEvents="none"
             />
-            <Group grow>
-              <TextInput
-                size="md"
-                type="date"
-                name="date"
-                label={t('Common.Date')}
-                value={formData.date}
-                onChange={handleChange}
-                required
-                leftSection={<IconCalendar size={20} />}
-                leftSectionPointerEvents="none"
-              />
-              <TextInput
-                size="md"
-                type="time"
-                name="time"
-                label={t('Common.Time')}
-                value={formData.time}
-                onChange={handleChange}
-                required
-                leftSection={<IconClock size={20} />}
-                leftSectionPointerEvents="none"
-              />
-            </Group>
-            <Autocomplete
-              size="md"
-              type="text"
-              name="caughtBy"
-              label={tNewCatch('CaughtBy')}
-              placeholder={tNewCatch('Placeholders.CaughtBy')}
-              value={anglerName}
-              required
-              onChange={handleAnglerChange}
-              onOptionSubmit={(val) => linkUser(val)}
-              onFocus={() => setAnglersDropdownOpened(true)}
-              onBlur={() => {
-                setAnglersDropdownOpened(false);
-                if (!userLinkingDone) {
-                  linkUser(anglerName);
+          </Group>
+          <Autocomplete
+            size="md"
+            type="text"
+            name="caughtBy"
+            label={tNewCatch('CaughtBy')}
+            placeholder={tNewCatch('Placeholders.CaughtBy')}
+            value={anglerName}
+            required
+            onChange={handleAnglerChange}
+            onOptionSubmit={(val) => linkUser(val)}
+            onFocus={() => setAnglersDropdownOpened(true)}
+            onBlur={() => {
+              setAnglersDropdownOpened(false);
+              if (!userLinkingDone) {
+                linkUser(anglerName);
+              }
+            }}
+            rightSection={anglersRightSection}
+            data={anglerOptions}
+            defaultDropdownOpened={false}
+            leftSection={<IconUser size={20} />}
+            leftSectionPointerEvents="none"
+            disabled={userAutomaticallyLinked}
+          />
+
+          {showUserLinkingDropdown && (
+            <Combobox
+              store={userCombobox}
+              onOptionSubmit={(val) => {
+                if (val === '0') {
+                  setLinkedUser(undefined);
+                  setUserLinkingDone(true);
+                  userCombobox.closeDropdown();
+                } else {
+                  const user = matchingUsers.find((user) => user.username === val);
+                  setLinkedUser(user);
+                  setUserLinkingDone(true);
+                  userCombobox.closeDropdown();
                 }
               }}
-              rightSection={anglersRightSection}
-              data={anglerOptions}
-              defaultDropdownOpened={false}
-              leftSection={<IconUser size={20} />}
-              leftSectionPointerEvents="none"
-              disabled={userAutomaticallyLinked}
-            />
-
-            {showUserLinkingDropdown && (
-              <Combobox
-                store={userCombobox}
-                onOptionSubmit={(val) => {
-                  if (val === '0') {
-                    setLinkedUser(undefined);
-                    setUserLinkingDone(true);
-                    userCombobox.closeDropdown();
-                  } else {
-                    const user = matchingUsers.find((user) => user.username === val);
-                    setLinkedUser(user);
-                    setUserLinkingDone(true);
-                    userCombobox.closeDropdown();
-                  }
-                }}
-                size="md"
-              >
-                <Combobox.Target>
-                  <InputBase
-                    label={tNewCatch('SelectUser')}
-                    component="button"
-                    type="button"
-                    pointer
-                    rightSection={<Combobox.Chevron />}
-                    rightSectionPointerEvents="none"
-                    onClick={() => userCombobox.toggleDropdown()}
-                    size="md"
-                    leftSection={<IconUserQuestion size={20} />}
-                    leftSectionPointerEvents="none"
-                    required
-                  >
-                    {linkedUser ? (
-                      `${linkedUser?.firstName} ${linkedUser?.lastName} (${linkedUser?.username})`
-                    ) : linkedUser === null ? (
-                      <Input.Placeholder>Valitse oikea käyttäjä</Input.Placeholder>
-                    ) : (
-                      'Ei käyttäjätiliä'
-                    )}
-                  </InputBase>
-                </Combobox.Target>
-
-                <Combobox.Dropdown>
-                  <Combobox.Options>
-                    {matchingUsers.map((user) => (
-                      <Combobox.Option key={user.id} value={user.username}>
-                        {user.firstName} {user.lastName} ({user.username})
-                      </Combobox.Option>
-                    ))}
-                    <Combobox.Option value="0">{tNewCatch('NoUser')}</Combobox.Option>
-                  </Combobox.Options>
-                </Combobox.Dropdown>
-              </Combobox>
-            )}
-
-            <TextInput
               size="md"
-              type="text"
-              name="comment"
-              label={t('Common.Comment')}
-              placeholder={tNewCatch('Placeholders.Comment')}
-              leftSection={<IconMessage size={20} />}
-              leftSectionPointerEvents="none"
-              value={formData.comment ?? ''}
-              onChange={handleChange}
-            />
+            >
+              <Combobox.Target>
+                <InputBase
+                  label={tNewCatch('SelectUser')}
+                  component="button"
+                  type="button"
+                  pointer
+                  rightSection={<Combobox.Chevron />}
+                  rightSectionPointerEvents="none"
+                  onClick={() => userCombobox.toggleDropdown()}
+                  size="md"
+                  leftSection={<IconUserQuestion size={20} />}
+                  leftSectionPointerEvents="none"
+                  required
+                >
+                  {linkedUser ? (
+                    `${linkedUser?.firstName} ${linkedUser?.lastName} (${linkedUser?.username})`
+                  ) : linkedUser === null ? (
+                    <Input.Placeholder>Valitse oikea käyttäjä</Input.Placeholder>
+                  ) : (
+                    'Ei käyttäjätiliä'
+                  )}
+                </InputBase>
+              </Combobox.Target>
 
-            <ImageUploadForm
-              catchData={catchData}
-              setFullscreenImage={setFullscreenImage}
-              setAddedImages={setAddedImages}
-              setDeletedImages={setDeletedImages}
-            />
+              <Combobox.Dropdown>
+                <Combobox.Options>
+                  {matchingUsers.map((user) => (
+                    <Combobox.Option key={user.id} value={user.username}>
+                      {user.firstName} {user.lastName} ({user.username})
+                    </Combobox.Option>
+                  ))}
+                  <Combobox.Option value="0">{tNewCatch('NoUser')}</Combobox.Option>
+                </Combobox.Options>
+              </Combobox.Dropdown>
+            </Combobox>
+          )}
 
-            {fullscreenImage && <FullscreenImage src={fullscreenImage} onClose={() => setFullscreenImage(null)} />}
+          <TextInput
+            size="md"
+            type="text"
+            name="comment"
+            label={t('Common.Comment')}
+            placeholder={tNewCatch('Placeholders.Comment')}
+            leftSection={<IconMessage size={20} />}
+            leftSectionPointerEvents="none"
+            value={formData.comment ?? ''}
+            onChange={handleChange}
+          />
 
-            <Group mt="xs" mb="xs" grow>
-              <Button
-                size="md"
-                variant="default"
-                onClick={() => openCancelEditModal()}
-                leftSection={<IconEraser size={20} />}
-              >
-                {t('Common.Cancel')}
-              </Button>
-              <Button
-                size="md"
-                type="submit"
-                loading={isLoading || isLinkingUser}
-                loaderProps={{ type: 'dots' }}
-                leftSection={<IconEdit size={20} />}
-                disabled={!isFormValid || !userLinkingDone}
-                classNames={{ root: isLinkingUser ? classes.submitButtonDisabledLoading : '' }}
-              >
-                {t('Common.Save')}
-              </Button>
-            </Group>
-          </Stack>
-        </Fieldset>
-      </form>
-    </Container>
+          <ImageUploadForm
+            catchData={catchData}
+            setFullscreenImage={setFullscreenImage}
+            setAddedImages={setAddedImages}
+            setDeletedImages={setDeletedImages}
+          />
+
+          {fullscreenImage && <FullscreenImage src={fullscreenImage} onClose={() => setFullscreenImage(null)} />}
+
+          <Group mt="xs" mb="xs" grow>
+            <Button
+              size="md"
+              variant="default"
+              onClick={() => openCancelEditModal()}
+              leftSection={<IconEraser size={20} />}
+            >
+              {t('Common.Cancel')}
+            </Button>
+            <Button
+              size="md"
+              type="submit"
+              loading={isLoading || isLinkingUser}
+              loaderProps={{ type: 'dots' }}
+              leftSection={<IconEdit size={20} />}
+              disabled={!isFormValid || !userLinkingDone}
+              classNames={{ root: isLinkingUser ? classes.submitButtonDisabledLoading : '' }}
+            >
+              {t('Common.Save')}
+            </Button>
+          </Group>
+        </Stack>
+      </Fieldset>
+    </form>
   );
 }

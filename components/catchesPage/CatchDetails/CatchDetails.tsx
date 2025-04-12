@@ -223,7 +223,7 @@ export default function CatchDetails({ selectedCatch, setSelectedCatch }: CatchD
       <Container p={0} size="sm">
         <Stack gap="sm">
           {/* Header */}
-            <Group mb={4}>
+          <Group mb={4}>
             <Title c="white" order={2} p={0} mr="auto" pl={4}>
               {isInEditView ? t('CatchesPage.EditCatch') : `${t('Common.Catch')} #${selectedCatch.catchNumber}`}
             </Title>
@@ -231,29 +231,36 @@ export default function CatchDetails({ selectedCatch, setSelectedCatch }: CatchD
             {/* Copy link, Edit, Delete, Close Buttons */}
             <Group gap="xs" align="center">
               {/* Copy Link Button */}
-              <CopyButton value={urlToCopy} timeout={4000}>
-                {({ copied, copy }) => (
-                  <Tooltip label={copied ? 'Link Copied!' : 'Copy shareable link'} withArrow position="bottom">
-                    <ActionIcon
-                      size={'lg'}
-                      variant="light"
-                      color={copied ? 'teal' : 'cyan'}
-                      style={{ transition: 'background-color 100ms ease, color 300ms ease'}}
-                      onClick={() => {
-                        copy();
-                        showNotification(
-                          'success', 
-                          t('Notifications.LinkCopiedMessage', { catchNumber: selectedCatch.catchNumber}),
-                          { withTitle: true, title: 'Link Copied!' }
-                        );
-                      }}
-                      aria-label="Copy shareable link"
+              {!isInEditView && (
+                <CopyButton value={urlToCopy} timeout={4000}>
+                  {({ copied, copy }) => (
+                    <Tooltip 
+                      label={copied ? t('Tooltips.LinkCopied') : t('Tooltips.CopyLink')} 
+                      withArrow 
+                      position="bottom"
+                      events={{ focus: true, hover: true, touch: false }}
                     >
-                      {copied ? <IconCheck size={20} /> : <IconShare size={20} />}
-                    </ActionIcon>
-                  </Tooltip>
-                )}
-              </CopyButton>
+                      <ActionIcon
+                        size={'lg'}
+                        variant="light"
+                        color={copied ? 'teal' : 'cyan'}
+                        style={{ transition: 'background-color 100ms ease, color 300ms ease' }}
+                        onClick={() => {
+                          copy();
+                          showNotification(
+                            'success',
+                            t('Notifications.LinkCopiedMessage', { catchNumber: selectedCatch.catchNumber }),
+                            { withTitle: true, title: t('Notifications.LinkCopiedTitle') }
+                          );
+                        }}
+                        aria-label="Copy shareable link"
+                      >
+                        {copied ? <IconCheck size={20} /> : <IconShare size={20} />}
+                      </ActionIcon>
+                    </Tooltip>
+                  )}
+                </CopyButton>
+              )}
               {/* Edit Button */}
               {!isInEditView && (
                 <ActionIcon size="lg" variant="light" color="blue" onClick={openConfirmEditModal} disabled={!canEdit}>
@@ -281,8 +288,8 @@ export default function CatchDetails({ selectedCatch, setSelectedCatch }: CatchD
                   isInEditView
                     ? () => openCancelEditModal()
                     : () => {
-                        setSelectedCatch(null);
-                      }
+                      setSelectedCatch(null);
+                    }
                 }
               >
                 <IconX size={20} />

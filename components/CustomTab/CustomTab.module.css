@@ -17,7 +17,7 @@
     /*border-top: rem(2.5) solid var(--mantine-primary-color-5) !important;  Blue top border when active */
     color: var(--mantine-color-white) !important; /* Text color when active */
 
-    .icon {
+    .icon, .iconFish {
       color: var(--mantine-primary-color-5) !important; /* Icon color when active */
     }
 
@@ -42,6 +42,15 @@
     font-weight: 200;
     stroke-width: 1.5;
     color: var(--mantine-color-gray-6); /* Default icon color */
+  }
+
+  .iconFish {
+    width: rem(36);
+    height: rem(36);
+    margin-bottom: 0px;
+    font-weight: 200;
+    stroke-width: 1.5;
+    color: var(--mantine-color-gray-6);
   }
 
   .label {
@@ -85,7 +94,7 @@
       padding: 0 var(--mantine-spacing-md);
     }
 
-    .icon {
+    .icon, .iconFish {
       width: rem(30);
       height: rem(30);
       margin-bottom: 0px;

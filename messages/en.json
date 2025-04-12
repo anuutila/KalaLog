@@ -287,6 +287,10 @@
     "LinkCopiedTitle": "Link Copied!",
     "LinkCopiedMessage": "Link to Catch #{catchNumber} is now on your clipboard!"
   },
+  "Tooltips": {
+    "CopyLink": "Copy shareable link",
+    "LinkCopied": "Link Copied!"
+  },
   "Locales": {
     "en": "English 🇬🇧",
     "fi": "Finnish 🇫🇮"

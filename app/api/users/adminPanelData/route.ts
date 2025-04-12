@@ -35,7 +35,7 @@ export async function GET(): Promise<NextResponse> {
       role: user.role,
     }));
 
-    console.log('Admin panel user data:', formattedUsers);
+    // console.log('Admin panel user data:', formattedUsers);
 
     return NextResponse.json({ message: 'Users retrieved successfully', users: formattedUsers }, { status: 200 });
   } catch (error: unknown) {

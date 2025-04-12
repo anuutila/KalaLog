@@ -1,7 +1,7 @@
 import { RefObject } from 'react';
 import { IconCalendarFilled, IconMapPinFilled } from '@tabler/icons-react';
 import { useTranslations } from 'next-intl';
-import { Badge, Box, Group, ScrollArea, Stack, Title } from '@mantine/core';
+import { Badge, Box, Group, ScrollArea, Skeleton, Stack, Title } from '@mantine/core';
 import StatsBadges from '@/components/catchesPage/StatsBadges/StatsBadges';
 import { ICatch } from '@/lib/types/catch';
 import classes from './CatchesOverview.module.css';
@@ -12,7 +12,7 @@ interface CatchesOverviewProps {
   uniqueBodiesOfWater: string[];
   selectedBodyOfWater: string | null;
   rowCount: number;
-  filteredCatches: ICatch[];
+  filteredCatches: ICatch[] | null;
   scrollRef: RefObject<HTMLDivElement>;
 }
 
@@ -39,7 +39,14 @@ export default function CatchesOverview({
           <IconMapPinFilled size={24} color="rgba(255,255,255,0.35)" stroke={1.5} />
         </Box>
         <Title c="white" order={2} p={0}>
-          {bodyOfWaterTitle ?? '. . . . . . .'}
+          {bodyOfWaterTitle ??
+            <Group
+              h={'calc(var(--mantine-h2-line-height)*var(--mantine-h2-font-size))'}
+              gap={'sm'}
+            >
+              {Array.from({ length: 6 }).map((_, index) => <Skeleton key={index} height={10} mx={0} circle />)}
+            </Group>
+          }
         </Title>
       </Group>
       <Group align="center" mb="md" ml="md" gap="xs" h="100%">
@@ -47,13 +54,22 @@ export default function CatchesOverview({
           <IconCalendarFilled size={24} color="rgba(255,255,255,0.35)" stroke={1.5} />
         </Box>
         <Title c="white" order={3} p={0}>
-          {yearTitle ?? '. . . .'}
+          {yearTitle ??
+            <Group
+              h={'calc(var(--mantine-h3-line-height)*var(--mantine-h3-font-size))'}
+              gap={'xs'}
+            >
+              {Array.from({ length: 4 }).map((_, index) => <Skeleton key={index} height={8} mx={0} circle />)}
+            </Group>
+          }
         </Title>
       </Group>
       <Box style={{ position: 'relative' }}>
         <ScrollArea viewportRef={scrollRef} type="never">
           <Group gap="sm" wrap="nowrap" pl="md" pr={30}>
-            <Badge
+            {filteredCatches 
+              ? (<>
+              <Badge
               size="lg"
               classNames={{ root: classes.badge }}
               variant="light"
@@ -63,6 +79,11 @@ export default function CatchesOverview({
               pt={1}
             />
             <StatsBadges filteredCatches={filteredCatches} />
+            </>)
+              : (Array.from({ length: 4 }).map((_, index) => (
+                <Skeleton key={index} height={28} w={90} mx={0} circle/>
+              )))
+            }
           </Group>
         </ScrollArea>
 

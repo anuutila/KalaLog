@@ -27,8 +27,6 @@ export async function GET(): Promise<NextResponse> {
       role: user.role,
     }));
 
-    console.log('Admin panel user data:', formattedUsers);
-
     return NextResponse.json({ message: 'Users retrieved successfully', data: { users: formattedUsers } }, { status: 200 });
   } catch (error: unknown) {
     return handleError(error, 'Unable to fetch users');

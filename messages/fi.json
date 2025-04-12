@@ -287,6 +287,10 @@
     "LinkCopiedTitle": "Linkki kopioitu!",
     "LinkCopiedMessage": "Linkki saaliiseen #{catchNumber} on nyt kopioitu leikepöydälle!"
   },
+  "Tooltips": {
+    "CopyLink": "Kopioi jaettava linkki",
+    "LinkCopied": "Linkki kopioitu!"
+  },
   "Locales": {
     "en": "Englanti 🇬🇧",
     "fi": "Suomi 🇫🇮"

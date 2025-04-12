@@ -1,5 +1,6 @@
 import { IAchievement } from './achievement';
 import { ICatch } from './catch';
+import { IEvent } from './event';
 import { JwtUserInfo } from './jwtUserInfo';
 import { UserRole } from './user';
 
@@ -58,7 +59,7 @@ export type ImageDeletionResponse = Required<BaseResponse<ImageDeletionResponseD
 
 export type SignedImageURLsResponse = Required<BaseResponse<string[]>>;
 
-export type AuthorizationResponse = Required<BaseResponse<{ role: UserRole; username: string }>>;
+export type AuthorizationResponse = Required<BaseResponse<{ role: UserRole; username: string; id: string }>>;
 
 export type LogoutResponse = BaseResponse;
 
@@ -92,6 +93,10 @@ export type UserAchievementsResponse = Required<BaseResponse<IAchievement[]>>;
 export type AchievementsUpdatedResponse = Required<BaseResponse<{ count: number }>>;
 
 export type UserCatchesLinkedResponse = Required<BaseResponse<{ count: number; linkedName: string }>>;
+
+export type EventCreatedResponse = Required<BaseResponse<IEvent>>;
+
+export type EventsResponse = Required<BaseResponse<IEvent[]>>;
 
 // Common error response type
 export interface ErrorResponse {

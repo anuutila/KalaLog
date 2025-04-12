@@ -149,7 +149,26 @@
   },
   "CommunityPage": {
     "Anglers": "Kalastajat",
-    "Events": "Tapahtumat"
+    "Events": "Tapahtumat",
+    "NewEvent": "Uusi tapahtuma",
+    "CreateEvent": "Luo",
+    "CreateButtonTooltip": "Luo uusi tapahtuma",
+    "FishCount": "Kalaa",
+    "EditEvent": "Muokkaa tapahtumaa",
+    "EventForm": {
+      "Name": "Tapahtuman nimi",
+      "StartDate": "Alkamispäivämäärä",
+      "EndDate": "Loppumispäivämäärä",
+      "Participants": "Osallistujat",
+      "BodyOfWater": "Vesialue",
+      "Placeholders": {
+        "Name": "Esim. Haukikisa 2025",
+        "StartDate": "Alkamispäivämäärä",
+        "EndDate": "Loppumispäivämäärä",
+        "Participants": "Valitse osallistujat",
+        "BodyOfWater": "Kirjoita vesialueen nimi ja paina enter"
+      } 
+    }
   },
   "UserPage": {
     "WIP": "Käyttäjäsivut ovat vielä työn alla...",

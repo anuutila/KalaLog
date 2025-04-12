@@ -1,5 +1,6 @@
 import imageCompression, { Options } from 'browser-image-compression';
 import { ICatch } from '../types/catch';
+import { MantineColor } from '@mantine/core';
 
 export function sortByDate(catches: ICatch[]): ICatch[] {
   return catches.sort((a, b) => {
@@ -91,3 +92,16 @@ export function extractNextImageIndex(urls: string[]): number {
   });
   return Math.max(...indexes) + 1;
 }
+
+// Generate a random color based on the name
+export function nameToColor(name: string): MantineColor {
+  const availableColors: MantineColor[] = [
+    'red', 'pink', 'grape', 'violet', 'indigo', 'blue', 'cyan', 'teal', 'lime', 'green', 'yellow', 'orange'
+  ];
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) {
+    hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const index = Math.abs(hash % availableColors.length);
+  return availableColors[index];
+};

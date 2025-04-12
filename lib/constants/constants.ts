@@ -13,6 +13,7 @@ export enum ApiEndpoints {
   Achievements = '/api/achievements',
   UserAchievements = '/api/user/achievements',
   AllUsers = '/api/users/all',
+  Events = '/api/events',
 }
 
 export const DEFAULT_BODY_OF_WATER = 'Nerkoonjärvi';

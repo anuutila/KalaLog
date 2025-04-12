@@ -1,6 +1,6 @@
 'use client';
 
-import { Combobox, createTheme } from '@mantine/core';
+import { Combobox, createTheme, MultiSelect, TagsInput } from '@mantine/core';
 
 export const theme = createTheme({
   cursorType: 'pointer',
@@ -17,6 +17,16 @@ export const theme = createTheme({
       },
     },
     TextInput: {
+      classNames: {
+        input: 'mantine-custom-input',
+      },
+    },
+    MultiSelect: {
+      classNames: {
+        input: 'mantine-custom-input',
+      },
+    },
+    TagsInput: {
       classNames: {
         input: 'mantine-custom-input',
       },

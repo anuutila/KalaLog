@@ -170,7 +170,7 @@ export default function Page() {
           <AnglersTab userInfos={userInfos} loadingUsers={loadingUsers} />
         )}
         {activeTab === TABS_CONFIG[1].value && (
-          <EventsTab />
+          <EventsTab allUsers={userInfos}/>
         )}
       </Container>
     </>

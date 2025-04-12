@@ -18,7 +18,7 @@ import {
   IconUserQuestion,
   IconWeight,
 } from '@tabler/icons-react';
-import { DateTime } from 'luxon';
+import dayjs from 'dayjs';
 import { useTranslations } from 'next-intl';
 import {
   Alert,
@@ -73,8 +73,8 @@ export default function Page() {
       spot: null,
       coordinates: null,
     },
-    date: DateTime.now().toFormat('yyyy-MM-dd'),
-    time: DateTime.now().toFormat('HH:mm'),
+    date: dayjs().format('YYYY-MM-DD'),
+    time: dayjs().format('HH:mm'),
     caughtBy: { name: '', username: null, userId: null },
     createdBy: null,
     comment: null,
@@ -380,8 +380,8 @@ export default function Page() {
         weight: undefined,
         lure: null,
         location: { bodyOfWater: '', spot: null, coordinates: null },
-        date: DateTime.now().toFormat('yyyy-MM-dd'),
-        time: DateTime.now().toFormat('HH:mm'),
+        date: dayjs().format('YYYY-MM-DD'),
+        time: dayjs().format('HH:mm'),
         caughtBy: { name: '', username: null, userId: null },
         comment: null,
       });

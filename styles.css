@@ -40,7 +40,7 @@ fieldset {
   background-color: var(--my-fieldset-background-color) !important;
 }
 
-.mantine-custom-input:not(:focus) {
+.mantine-custom-input:not(:focus):not(:focus-within) {
   border: 1px solid transparent;
 }
 

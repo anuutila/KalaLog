@@ -149,7 +149,26 @@
   },
   "CommunityPage": {
     "Anglers": "Anglers",
-    "Events": "Events"
+    "Events": "Events",
+    "NewEvent": "New event",
+    "CreateEvent": "Create",
+    "CreateButtonTooltip": "Create New Event",
+    "FishCount": "Fish",
+    "EditEvent": "Edit event",
+    "EventForm": {
+      "Name": "Event Name",
+      "StartDate": "Start Date",
+      "EndDate": "End Date",
+      "Participants": "Participants",
+      "BodyOfWater": "Body of Water",
+      "Placeholders": {
+        "Name": "E.g. Pike Competition 2025",
+        "StartDate": "Start date",
+        "EndDate": "End date",
+        "Participants": "Select participants",
+        "BodyOfWater": "Type a name and press enter"
+      } 
+    }
   },
   "UserPage": {
     "WIP": "User pages are still a work in progress...",

@@ -14,6 +14,7 @@ import { LogoutResponse } from '@/lib/types/responses';
 import { UserRole } from '@/lib/types/user';
 import { handleApiError } from '@/lib/utils/handleApiError';
 import { logout } from '@/services/api/authservice';
+import { nameToColor } from '@/lib/utils/utils';
 
 export default function Page() {
   const { isLoggedIn, jwtUserInfo, achievements, setIsLoggedIn, setJwtUserInfo } = useGlobalState();
@@ -76,7 +77,7 @@ export default function Page() {
                 radius="100%"
                 size={150}
                 name={`${jwtUserInfo?.firstname} ${jwtUserInfo?.lastname ?? ''}`}
-                color="initials"
+                color={nameToColor(`${jwtUserInfo?.firstname} ${jwtUserInfo?.lastname ?? ''}`)}
               />
               <Box style={{ transform: 'translateY(-25%) translateX(-0%)' }}>
                 <LevelProgress totalXP={totalXP ?? 0} />

@@ -125,7 +125,7 @@ export default function EventsTab({ allUsers }: EventsTabProps) {
       <Stack gap={14} pt={'md'} px={'md'} pb={100}>
 
         {loadingEvents
-          ? Array.from({ length: 6 }).map((_, index) => <Skeleton key={index} height={120} radius="lg" />)
+          ? <Stack gap={14} pt={60}>{Array.from({ length: 6 }).map((_, index) => <Skeleton key={index} height={142} radius="lg" />)}</Stack>
           : events.map((event) => {
             const stats = calculateEventStats(event, catches);
             const participantNames = event.participants

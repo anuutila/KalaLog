@@ -5,13 +5,17 @@ import { useTranslations } from 'next-intl';
 import { ICatch } from '@/lib/types/catch';
 import CustomHtmlLegend from './CustomHtmlLegend';
 import { Box, Stack } from '@mantine/core';
-import { ChartColorsRGB, fixedColorMap } from '../chartConstants';
+import { ChartColorsDimmedRGBA, ChartColorsRGBA, fixedColorMap, fixedColorMapDimmed } from '../chartConstants';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 ChartJS.register(ArcElement, Tooltip, Legend, ChartDataLabels);
 
 const OTHER_THRESHOLD_PERCENTAGE = 2.0; // Group species < 2% of total
-const OTHER_COLOR = ChartColorsRGB.gray;
+const OTHER_BG_COLOR = ChartColorsDimmedRGBA.gray;
+const OTHER_BORDER_COLOR = ChartColorsRGBA.gray;
+
+const SPACER_ANGLE_DEGREES = 5.0;
+const INITIAL_SPACER_VALUE = 1
 
 interface GroupedDetail {
   label: string;
@@ -22,6 +26,8 @@ function prepareChartDataJs(catches: ICatch[], otherLabelString: string): {
   labels: string[];
   counts: number[];
   backgroundColors: string[];
+  borderColors: string[];
+  borderHoverColors: string[];
   groupedDetails: GroupedDetail[];
 } {
   const speciesCount: Record<string, number> = {};
@@ -35,13 +41,18 @@ function prepareChartDataJs(catches: ICatch[], otherLabelString: string): {
   });
 
   if (totalCount === 0) {
-    return { labels: [], counts: [], backgroundColors: [], groupedDetails: [] };
+    return { labels: [], counts: [], backgroundColors: [], borderColors: [], borderHoverColors: [], groupedDetails: [] };
   }
 
-  const allEnumColors = Object.values(ChartColorsRGB);
-  const fixedColorsUsed = new Set(Object.values(fixedColorMap));
-  let remainingColors = allEnumColors.filter(color => !fixedColorsUsed.has(color));
-  if (remainingColors.length === 0) remainingColors = [...allEnumColors.filter(c => c !== OTHER_COLOR)];
+  const allBgColors = Object.values(ChartColorsDimmedRGBA);
+  const allBorderColors = Object.values(ChartColorsRGBA);
+  const fixedBgColorsUsed = new Set(Object.values(fixedColorMapDimmed));
+  const fixedBorderColorsUsed = new Set(Object.values(fixedColorMap));
+  let remainingBgColors = allBgColors.filter(color => !fixedBgColorsUsed.has(color));
+  let remainingBorderColors = allBorderColors.filter(color => !fixedBorderColorsUsed.has(color));
+
+  if (remainingBgColors.length === 0) remainingBgColors = [...allBgColors.filter(c => c !== OTHER_BG_COLOR)];
+  if (remainingBorderColors.length === 0) remainingBorderColors = [...allBorderColors.filter(c => c !== OTHER_BORDER_COLOR)];
 
   // Separate Species Above/Below Threshold & Collect "Other" Details
   const labelsAboveThreshold: string[] = [];
@@ -50,47 +61,65 @@ function prepareChartDataJs(catches: ICatch[], otherLabelString: string): {
   const thresholdValue = totalCount * (OTHER_THRESHOLD_PERCENTAGE / 100);
 
   Object.entries(speciesCount).forEach(([species, count]) => {
-      if (count < thresholdValue && totalCount > 0) {
-          otherCount += count;
-          groupedItems.push({ label: species, count: count });
-      } else {
-          labelsAboveThreshold.push(species);
-      }
+    if (count < thresholdValue && totalCount > 0) {
+      otherCount += count;
+      groupedItems.push({ label: species, count: count });
+    } else {
+      labelsAboveThreshold.push(species);
+    }
   });
 
   // Sort Labels Above Threshold by Count
   labelsAboveThreshold.sort((a, b) => speciesCount[b] - speciesCount[a]);
 
-  // Prepare Final Labels & Counts (including "Other" if needed)
-  const finalLabels = [...labelsAboveThreshold];
-  const finalCounts = labelsAboveThreshold.map(label => speciesCount[label]);
+  const finalLabels: string[] = [];
+  const finalCounts: number[] = [];
+  const finalBackgroundColors: string[] = [];
+  const finalBorderColors: string[] = [];
+  const finalBorderHoverColors: string[] = [];
 
-  if (otherCount > 0) {
-      finalLabels.push(otherLabelString);
-      finalCounts.push(otherCount);
-      // Sort the details alphabetically
-      groupedItems.sort((a, b) => b.count - a.count);
+  // Interleave data with spacer segments
+  for (let i = 0; i < labelsAboveThreshold.length; i++) {
+    const label = labelsAboveThreshold[i];
+    const count = speciesCount[label];
+
+    finalLabels.push(label);
+    finalCounts.push(count);
+    finalBackgroundColors.push(fixedColorMapDimmed[label] || remainingBgColors[i % remainingBgColors.length]);
+    finalBorderColors.push(fixedColorMap[label] || remainingBorderColors[i % remainingBorderColors.length]);
+    finalBorderHoverColors.push('white');
+
+    // Add spacer segment
+    finalLabels.push('');
+    finalCounts.push(INITIAL_SPACER_VALUE); // Small value for spacer
+    finalBackgroundColors.push('rgba(0,0,0,0)'); // Transparent
+    finalBorderColors.push('rgba(0,0,0,0)'); // Transparent
+    finalBorderHoverColors.push('rgba(0,0,0,0)'); // Transparent
   }
 
-  // Assign Colors
-  let remainingColorIndex = 0;
-  const finalBackgroundColors = finalLabels.map(label => {
-      if (label === otherLabelString) {
-          return OTHER_COLOR;
-      } else if (fixedColorMap[label]) {
-          return fixedColorMap[label];
-      } else {
-          const color = remainingColors[remainingColorIndex % remainingColors.length];
-          remainingColorIndex++;
-          return color;
-      }
-  });
+  // Handle "Other" category if present
+  if (otherCount > 0) {
+    finalLabels.push(otherLabelString);
+    finalCounts.push(otherCount);
+    finalBackgroundColors.push(OTHER_BG_COLOR);
+    finalBorderColors.push(OTHER_BORDER_COLOR);
+    finalBorderHoverColors.push('white');
+
+    // Add spacer after "Other"
+    finalLabels.push('');
+    finalCounts.push(INITIAL_SPACER_VALUE);
+    finalBackgroundColors.push('rgba(0,0,0,0)');
+    finalBorderColors.push('rgba(0,0,0,0)');
+    finalBorderHoverColors.push('rgba(0,0,0,0)');
+  }
 
   return {
-      labels: finalLabels,
-      counts: finalCounts,
-      backgroundColors: finalBackgroundColors,
-      groupedDetails: groupedItems
+    labels: finalLabels,
+    counts: finalCounts,
+    backgroundColors: finalBackgroundColors,
+    borderColors: finalBorderColors,
+    borderHoverColors: finalBorderHoverColors,
+    groupedDetails: groupedItems
   };
 }
 
@@ -173,8 +202,8 @@ export default function SpeciesDonutChart({ catches }: SpeciesDonutChartProps) {
             }
           });
         } else {
-           // Handle cases where data might be missing, maybe deselect?
-           setSelectedSliceData(null);
+          // Handle cases where data might be missing, maybe deselect?
+          setSelectedSliceData(null);
         }
       } else {
         // Clicked outside slices, deselect
@@ -184,29 +213,113 @@ export default function SpeciesDonutChart({ catches }: SpeciesDonutChartProps) {
     []
   );
 
-  const handleLegendItemClick = useCallback((index: number) => {
+  const handleLegendItemClick = (index: number) => {
     const chart = chartRef.current;
-    if (!chart) {
-      console.error("Chart instance not ready for legend interaction.");
-      return;
+    if (!chart) return;
+
+    const labels = chart.data.labels || [];
+    // Ensure we are clicking a data arc
+    const isDataArc = index < labels.length && labels[index] !== '';
+    if (!isDataArc) {
+        console.warn("Legend click on unexpected index or spacer:", index);
+        return;
     }
 
-    // Toggle data visibility using Chart.js API
+    const spacerIndex = index + 1;
+    const hasFollowingSpacer = spacerIndex < labels.length && labels[spacerIndex] === '';
+
+    // Toggle visibilities
     chart.toggleDataVisibility(index);
-    // IMPORTANT: Update the chart to reflect the change
+    if (hasFollowingSpacer) {
+        chart.toggleDataVisibility(spacerIndex);
+    }
+
+    // Trigger chart update - the plugin will run before this completes
     chart.update();
 
-    // Update React state to match the chart's new visibility state
+    // Update React state for legend UI styling
     setVisibility(prev => ({
-      ...prev,
-      [index]: chart.getDataVisibility(index) // Get the definitive state from the chart
+        ...prev,
+        [index]: chart.getDataVisibility(index)
     }));
 
-    // Also reset the center text selection when legend is clicked,
-    // as the context (total vs selection) has changed.
+    // Reset center text selection
     setSelectedSliceData(null);
+};
 
-  }, []);
+  const calculateSpacerValue = useCallback((chart: Chart<'doughnut'> | null): number => {
+    if (!chart || !chart.data.datasets || !chart.data.datasets[0]?.data) {
+      return 0.001; // Minimal value if chart/data not ready
+    }
+
+    const dataset = chart.data.datasets[0];
+    const data = dataset.data;
+    const labels = chart.data.labels || [];
+    const totalCircumferenceDegrees = chart.config.options?.circumference || 360;
+
+    let totalVisibleDataValue = 0;
+    let visibleDataArcCount = 0;
+
+    for (let i = 0; i < data.length; i++) {
+      if (labels[i] !== '' && chart.getDataVisibility(i)) { // Check NOT spacer AND visible
+        const value = data[i];
+        if (typeof value === 'number') {
+          totalVisibleDataValue += value;
+          visibleDataArcCount++;
+        }
+      }
+    }
+
+    if (visibleDataArcCount === 0 || totalVisibleDataValue <= 0) {
+      return 0.001;
+    }
+
+    const totalSpacerAngle = visibleDataArcCount * SPACER_ANGLE_DEGREES;
+
+    if (totalSpacerAngle >= totalCircumferenceDegrees) {
+      console.warn("Total spacer angle exceeds chart circumference!");
+      return 0.001;
+    }
+
+    const totalDataAngle = totalCircumferenceDegrees - totalSpacerAngle;
+
+    // Ensure totalDataAngle is positive to avoid division by zero or negative numbers
+    if (totalDataAngle <= 0) {
+      console.warn("Total data angle is zero or negative after accounting for spacers!");
+      return 0.001;
+    }
+
+    const valuePerDegree = totalVisibleDataValue / totalDataAngle;
+    const spacerValue = SPACER_ANGLE_DEGREES * valuePerDegree;
+
+    return Math.max(spacerValue, 0.001);
+  }, []); 
+
+  const dynamicSpacerPlugin: Plugin<'doughnut'> = useMemo(() => ({
+    id: 'dynamicSpacerPlugin',
+    beforeUpdate: (chart) => {
+      const typedChart = chart as Chart<'doughnut'>;
+      if (!typedChart.data.datasets || !typedChart.data.datasets[0]?.data) {
+        return;
+      }
+
+      const calculatedSpacerValue = calculateSpacerValue(typedChart);
+
+      const data = typedChart.data.datasets[0].data;
+      const labels = typedChart.data.labels || [];
+
+      // Update the data array directly for all spacer elements
+      for (let i = 0; i < data.length; i++) {
+        if (labels[i] === '') {
+          if (Math.abs((data[i] as number) - calculatedSpacerValue) > 0.0001) {
+            data[i] = calculatedSpacerValue;
+            // No need to track 'changed' or call update,
+            // the plugin runs *during* the update process.
+          }
+        }
+      }
+    }
+  }), [calculateSpacerValue]);
 
   const getItemVisibility = useCallback(
     (index: number): boolean => {
@@ -223,7 +336,7 @@ export default function SpeciesDonutChart({ catches }: SpeciesDonutChartProps) {
       const currentT = options?.translationFunc ?? ((key: string) => key);
       const currentTFish = options?.fishTranslationFunc ?? ((key: string) => key);
       const currentFormatter = options?.formatter ?? new Intl.NumberFormat();
-  
+
       // --- Standard Drawing Setup ---
       const { ctx } = chart;
       const typedChart = chart as Chart<'doughnut', number[], string>;
@@ -232,18 +345,18 @@ export default function SpeciesDonutChart({ catches }: SpeciesDonutChartProps) {
       if (width <= 0 || height <= 0) return;
       const centerX = left + width / 2;
       const centerY = top + height / 2;
-  
+
       ctx.save();
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-  
+
       let topText = '';
       let bottomText = '';
       let displayData: SelectedSliceData = null;
-  
+
       // --- Determine what data to display (Hover > Selected > Total logic) ---
       const activeElements = typedChart.getActiveElements();
-  
+
       if (activeElements.length > 0) {
         // 1. Priority: Hovered Element
         const { index, datasetIndex } = activeElements[0];
@@ -256,49 +369,55 @@ export default function SpeciesDonutChart({ catches }: SpeciesDonutChartProps) {
         // 2. Fallback: Selected Element (from options.selectedData)
         displayData = currentSelectedData;
       }
-  
+
       // --- Draw Text (Using your specific styles/translations) ---
       if (displayData) {
         // Draw Selected/Hovered Data
         topText = tFish.has(displayData.label) ? currentTFish(displayData.label) : displayData.label;
         bottomText = currentFormatter.format(displayData.value);
-  
+
         // Style for Species Label (Top)
         ctx.font = 'bold 22px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji';
         ctx.fillStyle = '#ffffff';
         ctx.fillText(topText, centerX, centerY - 15);
-  
+
         // Style for Species Count Text (Bottom)
         ctx.font = 'bold 32px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji';
         ctx.fillStyle = '#ffffff';
         ctx.fillText(bottomText, centerX, centerY + 20);
-  
+
       } else {
         // Draw Total Text
         let visibleTotal = 0;
         const dataPoints = typedChart.data.datasets[0]?.data;
+        const labels = typedChart.data.labels || [];
+
         if (Array.isArray(dataPoints)) {
           dataPoints.forEach((_, index) => {
-            if (typedChart.getDataVisibility(index)) {
-              visibleTotal += dataPoints[index] as number;
+            // Check visibility AND if it's NOT a spacer
+            if (labels[index] !== '' && typedChart.getDataVisibility(index)) {
+              const value = dataPoints[index];
+              if (typeof value === 'number') {
+                visibleTotal += value; // Only add actual data values
+              }
             }
           });
         }
-  
+
         topText = currentT('Common.Total');
         bottomText = currentFormatter.format(visibleTotal);
-  
+
         // Style for "Total" Label (Top)
         ctx.font = 'bold 22px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji';
         ctx.fillStyle = '#ffffff';
         ctx.fillText(topText, centerX, centerY - 15);
-  
+
         // Style for Total Count (Bottom) 
         ctx.font = 'bold 32px -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji';
         ctx.fillStyle = '#ffffff';
         ctx.fillText(bottomText, centerX, centerY + 20);
       }
-  
+
       ctx.restore();
     }
   };
@@ -308,13 +427,18 @@ export default function SpeciesDonutChart({ catches }: SpeciesDonutChartProps) {
     datasets: [{
       data: preparedData.counts,
       backgroundColor: preparedData.backgroundColors,
-      hoverBackgroundColor: preparedData.backgroundColors,
+      borderColor: preparedData.borderColors,
+      hoverBackgroundColor: preparedData.borderColors,
       hoverBorderWidth: 3,
-      hoverBorderColor: 'white',
+      hoverBorderColor: preparedData.borderHoverColors,
+      hoverBorderDashOffset: 10,
       hoverOffset: 50,
-      borderColor: '#1b1b1b',
-      borderWidth: 5,
-      borderRadius: 0,
+      borderWidth: 3,
+      cutout: '60%',
+      // spacing: 20,
+      borderRadius: 5,
+      borderJoinStyle: 'round',
+      borderAlign: 'center',
       groupedDetails: preparedData.groupedDetails,
       animation: {
         duration: 400,
@@ -344,7 +468,7 @@ export default function SpeciesDonutChart({ catches }: SpeciesDonutChartProps) {
             if (context[0]?.label !== translatedOtherLabel) {
               return '';
             } else {
-             return translatedOtherLabel;
+              return translatedOtherLabel;
             }
           },
           // Main label: Hide the default "Other: count" line
@@ -394,26 +518,26 @@ export default function SpeciesDonutChart({ catches }: SpeciesDonutChartProps) {
   return (
     <Stack h={'100%'} align='stretch' justify='center' pos={'relative'} gap={'xs'} p={0} pb={'xs'}>
       <Box>
-        <div ref={componentContainerRef} 
-        style={{ 
-          display: 'flex', 
-          width: '100%', 
-          height: '100%', 
-          maxWidth: 500, 
-          justifySelf: 'center', 
-          userSelect: 'none'
-        }}>
+        <div ref={componentContainerRef}
+          style={{
+            display: 'flex',
+            width: '100%',
+            height: '100%',
+            maxWidth: 500,
+            justifySelf: 'center',
+            userSelect: 'none'
+          }}>
           <Doughnut
             ref={chartRef}
             data={chartJsData}
             options={chartOptions}
-            plugins={[centerTextPluginDefinition]}
+            plugins={[centerTextPluginDefinition, dynamicSpacerPlugin]}
           />
         </div>
       </Box>
       <CustomHtmlLegend
         labels={preparedData.labels}
-        colors={preparedData.backgroundColors}
+        colors={preparedData.borderColors}
         onItemClick={handleLegendItemClick}
         getItemVisibility={getItemVisibility}
       />

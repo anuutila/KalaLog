@@ -13,7 +13,7 @@ import {
   Plugin
 } from 'chart.js';
 import Chart from 'chartjs-plugin-datalabels';
-import { ChartColorsRGB, fixedColorMap } from '../chartConstants';
+import { BarChartBgColors, ChartColorsDimmedRGBA, ChartColorsRGBA, fixedBarChartBgColorMap, fixedColorMap, fixedColorMapDimmed } from '../chartConstants';
 import { JwtUserInfo } from '@/lib/types/jwtUserInfo';
 import { useTranslations } from 'next-intl';
 import { useMemo } from 'react';
@@ -30,10 +30,13 @@ ChartJS.register(
   Chart
 );
 
-const allEnumColors = Object.values(ChartColorsRGB);
-const fixedColorsUsedSet = new Set(Object.values(fixedColorMap));
-const remainingColors = allEnumColors.filter(color => !fixedColorsUsedSet.has(color));
-if (remainingColors.length === 0) remainingColors.push(...allEnumColors);
+const allBgColors = Object.values(BarChartBgColors);
+const allBorderColors = Object.values(ChartColorsRGBA);
+const fixedBgColorsUsed = new Set(Object.values(fixedBarChartBgColorMap));
+const fixedBorderColorsUsed = new Set(Object.values(fixedColorMap));
+const remainingBgColors = allBgColors.filter(color => !fixedBgColorsUsed.has(color));
+const remainingBorderColors = allBorderColors.filter(color => !fixedBorderColorsUsed.has(color));
+const usedNonFixedColors: string[] = [];
 
 interface AggregatedUser {
   displayName: string;
@@ -111,7 +114,7 @@ const yAxisLabelPlugin: Plugin<'bar', YAxisLabelPluginOptions> = {
 
       // Draw User Name
       ctx.font = `${currentWeight} ${fontSize}px ${fontFamily}`;
-      ctx.textAlign = 'left'; 
+      ctx.textAlign = 'left';
       const displayName = label.length > 9 ? label.substring(0, 6) + '...' : label;
       ctx.fillText(displayName, nameXPosition, yPosition);
 
@@ -195,11 +198,16 @@ function formatChartJsData(
   const yAxisLabels = rankedUsers.map(u => u.displayName);
   const totalValues = rankedUsers.map(u => u.totalCatches);
 
+
+
   let remainingColorIndex = 0;
   const datasets: ChartDataset<'bar'>[] = allSpecies.map((species) => {
-    let color = fixedColorMap[species];
-    if (!color) {
-      color = remainingColors[remainingColorIndex % remainingColors.length];
+    let bgColor = fixedBarChartBgColorMap[species];
+    let borderColor = fixedColorMap[species];
+    if (!bgColor) {
+      bgColor = remainingBgColors[remainingColorIndex % remainingBgColors.length];
+      borderColor = remainingBorderColors[remainingColorIndex % remainingBorderColors.length];
+      usedNonFixedColors.push(borderColor);
       remainingColorIndex++;
     }
     const data = rankedUsers.map(user => user.speciesCounts[species] || 0);
@@ -207,12 +215,15 @@ function formatChartJsData(
     return {
       label: species,
       data: data,
-      backgroundColor: color,
-      hoverBackgroundColor: color,
-      borderRadius: 3,
+      backgroundColor: bgColor,
+      hoverBackgroundColor: borderColor,
+      hoverBorderColor: 'white',
+      borderRadius: 5,
+      borderSkipped: 'middle',
       stack: 'userStack',
-      borderColor: '#1b1b1b',
-      borderWidth: 2,
+      borderColor: borderColor,
+      borderWidth: 3,
+      hoverBorderWidth: 4,
       pointStyle: 'circle',
       pointBorderWidth: 0,
       animation: {
@@ -276,7 +287,7 @@ export default function LeaderboardBarChart({ catches, userInfo, userDisplayName
       mode: 'index', // Important: Interactions trigger based on the data index (the user bar)
     },
     hoverBorderColor: '#ffffff',
-    hoverBorderWidth: 2,
+    hoverBorderWidth: 3,
     font: {
       family: '-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif',
     },
@@ -341,15 +352,31 @@ export default function LeaderboardBarChart({ catches, userInfo, userDisplayName
         mode: 'index',
         intersect: true,
         usePointStyle: true,
+        caretPadding: 25,
         filter: function (tooltipItem) {
           const value = tooltipItem.parsed?.x;
           return value !== null && value !== undefined && value > 0;
         },
-        itemSort: function(a, b) {
+        itemSort: function (a, b) {
           const valueA = a.parsed?.x ?? 0;
           const valueB = b.parsed?.x ?? 0;
           return valueB - valueA;
         },
+        callbacks: {
+          labelColor: function (tooltipItem) {
+            const species = tooltipItem.dataset.label;
+            let color = fixedColorMap[species ?? ''];
+            if (!color) {
+              color = usedNonFixedColors[tooltipItem.datasetIndex % usedNonFixedColors.length] || ChartColorsDimmedRGBA.gray;
+            }
+            return {
+              borderColor: color,
+              backgroundColor: color,
+              borderWidth: 2,
+              borderRadius: 5,
+            };
+          }
+        }
       },
       datalabels: {
         anchor: 'end',
@@ -386,9 +413,9 @@ export default function LeaderboardBarChart({ catches, userInfo, userDisplayName
       {/* <Select data={['totalCatches', 'otherMetric']} value={selectedMetric} onChange={setSelectedMetric} /> */}
 
       {chartData.labels && chartData.labels.length > 0 ? (
-        <Bar 
-          options={chartOptions} 
-          data={chartData} 
+        <Bar
+          options={chartOptions}
+          data={chartData}
           plugins={[yAxisLabelPlugin]}
         />
       ) : (

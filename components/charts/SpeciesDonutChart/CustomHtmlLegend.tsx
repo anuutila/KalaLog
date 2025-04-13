@@ -20,29 +20,32 @@ export default function CustomHtmlLegend({
 
   return (
     <Group justify="center" gap="xs">
-      {labels.map((label, index) => {
-        const isVisible = getItemVisibility(index);
-        const dotColor = colors[index % colors.length];
+      {labels
+        .map((label, index) => ({ label, index }))
+        .filter(item => item.label !== '')
+        .map(({ label, index }) => {
+          const isVisible = getItemVisibility(index);
+          const dotColor = colors[index % colors.length];
 
-        return (
-          <Badge
-            key={`${label}-${index}`}
-            variant='dot'
-            size='lg'
-            color={dotColor}
-            classNames={{ root: classes.badgeRoot }}
-            style={{
-              cursor: 'pointer',
-              userSelect: 'none',
-              opacity: isVisible ? 1 : 0.4, // Dim if hidden
-              transition: 'opacity 0.2s ease-in-out',
-            }}
-            onClick={() => onItemClick(index)}
-          >
-            {tFish.has(label) ? tFish(label) : label}
-          </Badge>
-        );
-      })}
+          return (
+            <Badge
+              key={`${label}-${index}`}
+              variant='dot'
+              size='lg'
+              color={dotColor}
+              classNames={{ root: classes.badgeRoot }}
+              style={{
+                cursor: 'pointer',
+                userSelect: 'none',
+                opacity: isVisible ? 1 : 0.4, // Dim if hidden
+                transition: 'opacity 0.2s ease-in-out',
+              }}
+              onClick={() => onItemClick(index)}
+            >
+              {tFish.has(label) ? tFish(label) : label}
+            </Badge>
+          );
+        })}
       {/* Pagination Controls Here */}
       {/* <Group> <Button>Prev</Button> <Button>Next</Button> </Group> */}
     </Group>

@@ -16,7 +16,7 @@ body,
   --error-notification-color: var(--mantine-color-red-filled);
   --info-notification-color: var(--mantine-color-blue-filled);
   --warning-notification-color: var(--mantine-color-orange-filled);
-  --my-fieldset-background-color: #1b1b1b;
+  --my-ui-item-background-color: #1b1b1b;
 
   --header-background-color: var(--mantine-color-dark-9);
   --footer-background-color: var(--mantine-color-dark-9);
@@ -42,7 +42,7 @@ fieldset {
   border: 0 !important;
   border-radius: var(--mantine-radius-lg) !important;
   padding: var(--mantine-spacing-lg) !important;
-  background-color: var(--my-fieldset-background-color) !important;
+  background-color: var(--my-ui-item-background-color) !important;
 }
 
 .mantine-custom-input:not(:focus):not(:focus-within) {

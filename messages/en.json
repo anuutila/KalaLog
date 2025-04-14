@@ -179,9 +179,19 @@
   },
   "AchievementsPage": {
     "Title": "Achievements",
+    "LevelProgress": "Level progress",
+    "AchievementStars": "Achievement stars",
+    "TotalStars": "Total stars",
     "Tier": "Tier",
     "NextTier": "Next tier:",
-    "Locked": "Locked"
+    "Unknown": "Unknown",
+    "Rarities": {
+      "Common": "Common",
+      "Uncommon": "Uncommon",
+      "Rare": "Rare",
+      "Epic": "Epic",
+      "Legendary": "Legendary"
+    }
   },
   "Achievements": {
     "tiny_catch": {

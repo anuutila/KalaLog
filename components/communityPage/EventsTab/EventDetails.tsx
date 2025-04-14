@@ -39,7 +39,7 @@ export default function EventDetails({ event, onCloseAction }: EventDetailsProps
               </ActionIcon>
             </Group>
           </Group>
-          <Paper radius={'lg'} bg={"var(--my-fieldset-background-color)"} p={'md'} shadow="md">
+          <Paper radius={'lg'} bg={"var(--my-ui-item-background-color)"} p={'md'} shadow="md">
             <Text fz={'md'}>Event Details Coming Soon...</Text>
           </Paper>
         </Stack>

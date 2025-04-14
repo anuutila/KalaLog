@@ -52,7 +52,7 @@ export default function CatchImageCarousel({ images, isFallbackImage, setFullscr
                   h={{ base: 300, md: 500 }}
                   fallbackSrc="/no-image-placeholder.png"
                   style={{
-                    backgroundColor: 'var(--my-fieldset-background-color)',
+                    backgroundColor: 'var(--my-ui-item-background-color)',
                   }}
                 />
               </Box>
@@ -67,7 +67,7 @@ export default function CatchImageCarousel({ images, isFallbackImage, setFullscr
                 h={{ base: 300, md: 500 }}
                 fallbackSrc="/no-image-placeholder.png"
                 style={{
-                  backgroundColor: 'var(--my-fieldset-background-color)',
+                  backgroundColor: 'var(--my-ui-item-background-color)',
                 }}
               />
             </Box>

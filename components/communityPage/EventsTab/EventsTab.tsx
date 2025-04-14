@@ -164,7 +164,7 @@ export default function EventsTab({ allUsers }: EventsTabProps) {
                 <Paper
                   p={'md'}
                   radius={'lg'}
-                  bg={'var(--my-fieldset-background-color)'}
+                  bg={'var(--my-ui-item-background-color)'}
                   shadow="md"
                   pos={'relative'}>
                   <Stack>
@@ -197,7 +197,7 @@ export default function EventsTab({ allUsers }: EventsTabProps) {
                                 color={color}
                                 style={{
                                   border: `3px solid ${borderColor}`,
-                                  outline: '2px solid var(--my-fieldset-background-color)',
+                                  outline: '2px solid var(--my-ui-item-background-color)',
                                   outlineOffset: '-1px',
                                   boxSizing: 'content-box'
                                 }}
@@ -219,7 +219,7 @@ export default function EventsTab({ allUsers }: EventsTabProps) {
                               color="gray"
                               style={{
                                 border: `3px solid ${borderColorGray}`,
-                                outline: '2px solid var(--my-fieldset-background-color)',
+                                outline: '2px solid var(--my-ui-item-background-color)',
                                 outlineOffset: '-1px',
                                 boxSizing: 'content-box'
                               }}

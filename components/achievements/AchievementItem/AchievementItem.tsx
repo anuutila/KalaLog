@@ -268,7 +268,7 @@ export default function AchievementItem({ achievementConfig, userAchievement }: 
                 </Text>
               )
             ) : (
-              <Text fz="sm">{t('AchievementsPage.Locked')}</Text>
+              <Text fz="sm">{t('AchievementsPage.Unknown')}</Text>
             )}
           </Box>
 

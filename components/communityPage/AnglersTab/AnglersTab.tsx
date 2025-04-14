@@ -14,7 +14,7 @@ export default function AnglersTab({ userInfos, loadingUsers }: AnglersTabProps)
       {loadingUsers
         ? Array.from({ length: 7 }).map((_, index) => <Skeleton key={index} height={84} radius="lg" />)
         : userInfos.map((user) => (
-          <Paper p={'sm'} pr={4} radius={'lg'} bg={"var(--my-fieldset-background-color)"} key={user.id} shadow="md">
+          <Paper p={'sm'} pr={4} radius={'lg'} bg={"var(--my-ui-item-background-color)"} key={user.id} shadow="md">
             <Group pos={'relative'}>
               <Avatar
                 radius="100%"

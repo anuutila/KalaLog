@@ -179,9 +179,19 @@
   },
   "AchievementsPage": {
     "Title": "Saavutukset",
+    "LevelProgress": "Tason edistyminen",
+    "AchievementStars": "Saavutustähdet",
+    "TotalStars": "Tähtiä yhteensä",
     "Tier": "Taso",
     "NextTier": "Seuraava taso:",
-    "Locked": "Lukossa"
+    "Unknown": "Tuntematon",
+    "Rarities": {
+      "Common": "Yleinen",
+      "Uncommon": "Epätavallinen",
+      "Rare": "Harvinainen",
+      "Epic": "Eeppinen",
+      "Legendary": " Legendaarinen"
+    }
   },
   "Achievements": {
     "tiny_catch": {

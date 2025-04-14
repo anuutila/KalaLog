@@ -193,6 +193,11 @@ export default function SpeciesDonutChart({ catches }: SpeciesDonutChartProps) {
           const label = chart.data.labels[index] as string;
           const value = chart.data.datasets[datasetIndex].data[index] as number;
 
+          if (label === '') {
+            setSelectedSliceData(null); // Ignore spacer clicks
+            return;
+          }
+
           // Use functional update for safety, avoids needing selectedSliceData in deps
           setSelectedSliceData(prevSelectedData => {
             if (prevSelectedData?.label === label && prevSelectedData?.value === value) {
@@ -371,7 +376,7 @@ export default function SpeciesDonutChart({ catches }: SpeciesDonutChartProps) {
       }
 
       // --- Draw Text (Using your specific styles/translations) ---
-      if (displayData) {
+      if (displayData && displayData.label !== '') {
         // Draw Selected/Hovered Data
         topText = tFish.has(displayData.label) ? currentTFish(displayData.label) : displayData.label;
         bottomText = currentFormatter.format(displayData.value);

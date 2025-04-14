@@ -125,7 +125,16 @@ export default function EventsTab({ allUsers }: EventsTabProps) {
       <Stack gap={14} pt={'md'} px={'md'} pb={100}>
 
         {loadingEvents
-          ? <Stack gap={14} pt={60}>{Array.from({ length: 6 }).map((_, index) => <Skeleton key={index} height={142} radius="lg" />)}</Stack>
+          ? <Stack gap={14}>
+              <Group
+                h={'calc(var(--mantine-h1-line-height)*var(--mantine-h1-font-size))'}
+                gap={8}
+                pl={4}
+              >
+                {Array.from({ length: 4 }).map((_, index) => <Skeleton key={index} height={14} mx={0} circle />)}
+              </Group>
+              {Array.from({ length: 6 }).map((_, index) => <Skeleton key={index} height={142} radius="lg" />)}
+            </Stack>
           : events.map((event) => {
             const stats = calculateEventStats(event, catches);
             const participantNames = event.participants
@@ -148,7 +157,7 @@ export default function EventsTab({ allUsers }: EventsTabProps) {
             return (
               <Stack gap={'xs'} key={event.id}>
                 {renderYearTitle &&
-                  <Title mt={6} ml={4} order={1} c={'white'}>
+                  <Title ml={4} order={1} c={'white'}>
                     {currentEventYear}
                   </Title>
                 }

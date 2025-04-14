@@ -115,7 +115,7 @@ export default function CreateEventForm({ users, catches, onSuccessAction, onCan
       top="calc(var(--app-shell-header-offset)*2)"
       bottom={{ base: 'calc(var(--app-shell-footer-offset) + env(safe-area-inset-bottom))', md: 0 }}
       left={0}
-      w="100%"
+      right={0}
       p="md"
       radius={0}
       style={{

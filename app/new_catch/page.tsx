@@ -32,6 +32,7 @@ import {
   Input,
   InputBase,
   NumberInput,
+  Paper,
   rem,
   Stack,
   Textarea,
@@ -577,7 +578,20 @@ export default function Page() {
   // ];
 
   return (
-    <Container size="sm" p="md">
+    <Paper
+      // This fixed positioning is necessary to avoid the layout from braking on mobile devices when the keyboard is open
+      pos="fixed"
+      top="var(--app-shell-header-offset)"
+      bottom={{ base: 'calc(var(--app-shell-footer-offset) + env(safe-area-inset-bottom))', md: 0 }}
+      left={0}
+      right={0}
+      p={'md'}
+      radius={0}
+      style={{
+        overflowY: 'auto',
+      }}
+    >
+    <Container size="sm" p={0}>
       <Title c="white" order={2} mb="md" pl={4}>
         {tNewCatch('CatchInfo')}
       </Title>
@@ -873,5 +887,6 @@ export default function Page() {
         </Fieldset>
       </form>
     </Container>
+    </Paper>
   );
 }

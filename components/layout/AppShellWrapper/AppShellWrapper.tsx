@@ -47,6 +47,17 @@ const tabs: Tab[] = [
   { value: 'user', icon: IconUserCircle, label: 'Pages.Account', path: '/user' },
 ];
 
+const SvgGradients = () => (
+  <svg width="0" height="0" style={{ position: 'absolute', overflow: 'hidden' }}>
+    <defs>
+      <linearGradient id="icon-gradient-fill" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stopColor="var(--mantine-color-orange-4)" />
+        <stop offset="100%" stopColor="var(--mantine-color-orange-4)" />
+      </linearGradient>
+    </defs>
+  </svg>
+);
+
 export default function AppShellWrapper({ children }: { children: any }) {
   const pathname = usePathname();
   const isSmallScreen = useMediaQuery('(max-width: 64em)');
@@ -66,6 +77,7 @@ export default function AppShellWrapper({ children }: { children: any }) {
             }}
           />
           <ConfettiEffect/>
+          <SvgGradients />
           <LoadingOverlayProvider>
             <HeaderActionsProvider>
               <AppShell header={{ height: { base: rem(45), md: rem(60) } }} footer={{ height: rem(60) }} padding="0">

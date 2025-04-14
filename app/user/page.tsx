@@ -80,7 +80,7 @@ export default function Page() {
                 color={nameToColor(`${jwtUserInfo?.firstname} ${jwtUserInfo?.lastname ?? ''}`)}
               />
               <Box style={{ transform: 'translateY(-25%) translateX(-0%)' }}>
-                <LevelProgress totalXP={totalXP ?? 0} />
+                <LevelProgress totalXP={totalXP ?? 0} progressLabel={false} width={125} iconLeftOffset={-60}/>
                 <Center mt="lg">
                   <Title order={1} c="white">
                     {jwtUserInfo?.firstname} {jwtUserInfo?.lastname}

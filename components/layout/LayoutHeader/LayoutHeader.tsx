@@ -1,15 +1,19 @@
 import React from 'react';
 import { useTranslations } from 'next-intl';
-import { AppShell, Container, Group, Text, Title } from '@mantine/core';
+import { AppShell, Box, Container, Group, Text, Title } from '@mantine/core';
 import LanguageSwitcher from '@/components/LanguageSwitcher/LanguageSwitcher';
 import { Page, Tab } from '@/components/layout/AppShellWrapper/AppShellWrapper';
 import { useHeaderActions } from '@/context/HeaderActionsContext';
 import CustomTab from '../../CustomTab/CustomTab';
 import classes from './LayoutHeader.module.css';
+import { getPageLabelKey } from '@/lib/utils/utils';
 
 export default function LayoutHeader({ pages, tabs, pathname }: { pages: Page[]; tabs: Tab[]; pathname: string }) {
   const t = useTranslations();
-  const { actions, actionsDisabled } = useHeaderActions();
+  const { actions, actionsDisabled, pageTitle } = useHeaderActions();
+
+  const defaultLabelKey = getPageLabelKey(pathname);
+  const titleToDisplay = pageTitle || t(defaultLabelKey);
 
   return (
     <AppShell.Header withBorder={false} className={classes.header} bg="var(--header-background-color)" w="100%">
@@ -33,24 +37,30 @@ export default function LayoutHeader({ pages, tabs, pathname }: { pages: Page[];
               h="100%"
               pl="var(--mantine-spacing-xs)"
               pr="var(--mantine-spacing-xs)"
-              grow
               align="center"
               c="white"
+              gap={0}
             >
-              <Group justify="start">
-                {React.isValidElement(actions) &&
-                  React.cloneElement(actions as React.ReactElement<{ disabled?: boolean }>, {
-                    disabled: actionsDisabled,
-                  })}
-              </Group>
-              <Group justify="center">
-                <Text inherit fw={600}>
-                  {t(pages.find((page) => page.path === pathname)?.label ?? 'Pages.KalaLog')}
-                </Text>
-              </Group>
-              <Group justify="end">
-                <LanguageSwitcher />
-              </Group>
+              <Box flex={1}>
+                <Group justify="start">
+                  {React.isValidElement(actions) &&
+                    React.cloneElement(actions as React.ReactElement<{ disabled?: boolean }>, {
+                      disabled: actionsDisabled,
+                    })}
+                </Group>
+              </Box>
+              <Box flex={3}>
+                <Group justify="center" >
+                  <Text inherit fw={600} style={{ textAlign: 'center' }}>
+                    {titleToDisplay}
+                  </Text>
+                </Group>
+              </Box>
+              <Box flex={1}>
+                <Group justify="end">
+                  <LanguageSwitcher />
+                </Group>
+              </Box>
             </Group>
             <Group visibleFrom="md" classNames={{ root: classes.tabs_group_header }}>
               {tabs.map((tab) => (

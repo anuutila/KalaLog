@@ -7,7 +7,7 @@ import {
   IconClock,
   IconFish,
   IconFishHook,
-  IconInfoCircle,
+  IconAlertCircle,
   IconMap2,
   IconMapPin,
   IconMessage,
@@ -606,7 +606,7 @@ export default function Page() {
           color="red"
           radius="lg"
           title={tNewCatch('AlertTitle')}
-          icon={<IconInfoCircle />}
+          icon={<IconAlertCircle />}
           mb="md"
         >
           {jwtUserInfo?.role === UserRole.VIEWER ? tNewCatch('AlertText1') : tNewCatch('AlertText2')}

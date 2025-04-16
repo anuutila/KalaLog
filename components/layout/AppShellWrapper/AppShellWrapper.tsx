@@ -60,7 +60,7 @@ const SvgGradients = () => (
 
 export default function AppShellWrapper({ children }: { children: any }) {
   const pathname = usePathname();
-  const isSmallScreen = useMediaQuery('(max-width: 64em)');
+  const isSmallScreen = useMediaQuery('(max-width: 64em)');  
 
   const mainPaddingBottom = 'calc(var(--app-shell-footer-offset, 0rem) + var(--app-shell-padding) + env(safe-area-inset-bottom))'
   const additionalOffset = pathname.includes('statistics') || pathname.includes('community') ? 'var(--app-shell-header-offset, 0rem)' : '0rem';
@@ -97,6 +97,7 @@ export default function AppShellWrapper({ children }: { children: any }) {
                     }}
                     mt={additionalOffset}
                     style={{ overflowY: 'auto'}}
+                    radius={0}
                   >
                     {children}
                   </Paper>

@@ -223,7 +223,7 @@ export const logDetailsAchievements: IAchievementConfig[] = [
     key: 'add_comment',
     category: ['comments'],
     isOneTime: true,
-    xp: 50,
+    xp: 100,
     condition: { comment: true },
     progressBar: false,
     rarity: 1,

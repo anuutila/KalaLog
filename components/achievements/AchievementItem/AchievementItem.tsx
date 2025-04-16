@@ -22,6 +22,7 @@ export enum AchievementColors {
 interface AchievementItemProps {
   achievementConfig: IAchievementConfig;
   userAchievement?: IAchievement;
+  isOwnProfile?: boolean;
 }
 
 interface StarInfo {
@@ -159,9 +160,8 @@ function ProgressDisplay({
             </Text>
           )}
           <Text fz={12} lh={1} fw="bold" className={classes.nowrap}>
-            {`${userAchievement?.progress || 0} / ${
-              tieredConfig.baseTiers[filledStars > 4 ? Math.min(filledStars - 1, 4) : filledStars]?.threshold
-            }`}
+            {`${userAchievement?.progress || 0} / ${tieredConfig.baseTiers[filledStars > 4 ? Math.min(filledStars - 1, 4) : filledStars]?.threshold
+              }`}
           </Text>
         </Group>
       );
@@ -176,9 +176,8 @@ function ProgressDisplay({
             {(userAchievement as IAchievementTiered).currentTier < baseTiersCount ? t('AchievementsPage.NextTier') : ''}
           </Text>
           <Text fz={12} lh={1} fw="bold" className={classes.nowrap}>
-            {`${userAchievement?.progress || 0} / ${
-              tieredConfig.baseTiers[filledStars >= 4 ? Math.min(filledStars - 1, 4) : filledStars]?.threshold
-            }`}
+            {`${userAchievement?.progress || 0} / ${tieredConfig.baseTiers[filledStars >= 4 ? Math.min(filledStars - 1, 4) : filledStars]?.threshold
+              }`}
           </Text>
         </Group>
       );
@@ -197,7 +196,7 @@ function ProgressDisplay({
   return null;
 }
 
-export default function AchievementItem({ achievementConfig, userAchievement }: AchievementItemProps) {
+export default function AchievementItem({ achievementConfig, userAchievement, isOwnProfile = true }: AchievementItemProps) {
   const t = useTranslations();
   const tA = useTranslations('Achievements');
 
@@ -251,70 +250,72 @@ export default function AchievementItem({ achievementConfig, userAchievement }: 
             </Group>
           </Group>
 
-          <Box>
-            {starInfo.isUnlocked ? (
-              starInfo.isOneTime ? (
-                <Text fz="sm">{tA(`${achievementConfig.key}.Description`)}</Text>
-              ) : (
-                <Text fz="sm">
-                  {(achievementConfig as IAchievementConfigTiered).baseTiers[0].threshold === 1 &&
-                  (userAchievement as IAchievementTiered).currentTier === 1
-                    ? tA(`${achievementConfig.key}.DescSingular`)
-                    : tA(`${achievementConfig.key}.Description`, {
+            <Box>
+              {starInfo.isUnlocked ? (
+                starInfo.isOneTime ? (
+                  <Text fz="sm">{tA(`${achievementConfig.key}.Description`)}</Text>
+                ) : (
+                  <Text fz="sm">
+                    {(achievementConfig as IAchievementConfigTiered).baseTiers[0].threshold === 1 &&
+                      (userAchievement as IAchievementTiered).currentTier === 1
+                      ? tA(`${achievementConfig.key}.DescSingular`)
+                      : tA(`${achievementConfig.key}.Description`, {
                         value: (achievementConfig as IAchievementConfigTiered).baseTiers[
                           Math.max(0, Math.min(starInfo.filledStars - 1, 4))
                         ]?.threshold,
                       })}
-                </Text>
-              )
-            ) : (
-              <Text fz="sm">{t('AchievementsPage.Unknown')}</Text>
-            )}
-          </Box>
+                  </Text>
+                )
+              ) : (
+                <Text fz="sm">{t('AchievementsPage.Unknown')}</Text>
+              )}
+            </Box>
 
-          <Group wrap="nowrap" mt="xs">
-            <Group wrap="nowrap" gap={4}>
-              <ProgressDisplay
-                achievementConfig={achievementConfig}
-                starInfo={starInfo}
-                userAchievement={userAchievement}
-                t={t}
-                tA={tA}
-              />
-            </Group>
-            <Stack h="100%" w="100%" pt={2}>
-              {achievementConfig.progressBar !== false &&
-                !(
-                  starInfo.isUnlocked &&
-                  !starInfo.isOneTime &&
-                  (userAchievement as IAchievementTiered)?.currentTier >= 5 &&
-                  !(achievementConfig as IAchievementConfigTiered).dynamicBonus
-                ) && (
-                  <Progress.Root size="md">
-                    {userAchievement && (
-                      <Progress.Section
-                        color={progressBarColor}
-                        value={
-                          (userAchievement.progress /
-                            (starInfo.isOneTime
-                              ? (achievementConfig as IAchievementConfigOneTime).threshold ?? 1
-                              : (achievementConfig as IAchievementConfigTiered).baseTiers[starInfo.filledStars]
+          {isOwnProfile && (
+            <Group wrap="nowrap" mt="xs">
+              <Group wrap="nowrap" gap={4}>
+                <ProgressDisplay
+                  achievementConfig={achievementConfig}
+                  starInfo={starInfo}
+                  userAchievement={userAchievement}
+                  t={t}
+                  tA={tA}
+                />
+              </Group>
+              <Stack h="100%" w="100%" pt={2}>
+                {achievementConfig.progressBar !== false &&
+                  !(
+                    starInfo.isUnlocked &&
+                    !starInfo.isOneTime &&
+                    (userAchievement as IAchievementTiered)?.currentTier >= 5 &&
+                    !(achievementConfig as IAchievementConfigTiered).dynamicBonus
+                  ) && (
+                    <Progress.Root size="md">
+                      {userAchievement && (
+                        <Progress.Section
+                          color={progressBarColor}
+                          value={
+                            (userAchievement.progress /
+                              (starInfo.isOneTime
+                                ? (achievementConfig as IAchievementConfigOneTime).threshold ?? 1
+                                : (achievementConfig as IAchievementConfigTiered).baseTiers[starInfo.filledStars]
                                   ?.threshold)) *
                             100 || 0
-                        }
-                      />
-                    )}
-                  </Progress.Root>
-                )}
-            </Stack>
-            {starInfo.filledStars < 5 && !(starInfo.isUnlocked && starInfo.isOneTime) && (
-              <Text fz={12} lh={1} fw="bold" className={classes.nowrap}>
-                {!starInfo.isOneTime
-                  ? `${(achievementConfig as IAchievementConfigTiered).baseTiers[starInfo.filledStars]?.xp} XP`
-                  : `${(achievementConfig as IAchievementConfigOneTime).xp} XP`}
-              </Text>
-            )}
-          </Group>
+                          }
+                        />
+                      )}
+                    </Progress.Root>
+                  )}
+              </Stack>
+              {starInfo.filledStars < 5 && !(starInfo.isUnlocked && starInfo.isOneTime) && (
+                <Text fz={12} lh={1} fw="bold" className={classes.nowrap}>
+                  {!starInfo.isOneTime
+                    ? `${(achievementConfig as IAchievementConfigTiered).baseTiers[starInfo.filledStars]?.xp} XP`
+                    : `${(achievementConfig as IAchievementConfigOneTime).xp} XP`}
+                </Text>
+              )}
+            </Group>
+          )}
         </Box>
       </Box>
     </Paper>

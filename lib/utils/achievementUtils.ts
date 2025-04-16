@@ -1,11 +1,24 @@
-import { achievementConfigMap } from '@/achievements/achievementConfigs';
+import { achievementConfigMap, allAchievements } from '@/achievements/achievementConfigs';
 import { achievementEvaluators } from '@/achievements/achievementEvaluators';
 import { getUserAchievements, updateAchievements } from '@/services/api/achievementService';
 import { showAchievementNotification } from '../notifications/notifications';
-import { IAchievement, IAchievementConfigTiered, IAchievementTiered } from '../types/achievement';
+import { IAchievement, IAchievementConfig, IAchievementConfigOneTime, IAchievementConfigTiered, IAchievementTiered } from '../types/achievement';
 import { ICatch } from '../types/catch';
 import { AchievementsUpdatedResponse, UserAchievementsResponse } from '../types/responses';
 import { handleApiError } from './handleApiError';
+
+export type StarRarityCounts = { 1: number; 2: number; 3: number; 4: number; 5: number };
+
+export interface UserAchievementStats {
+  totalStars: number;
+  byRarity: StarRarityCounts;
+  totalXP: number;
+}
+
+interface PossibleAchievementStats {
+  totalStars: number;
+  byRarity: StarRarityCounts;
+}
 
 export async function recalculateUserAchievements(
   userId: string,
@@ -89,6 +102,24 @@ export function showAchievementNotifications(achievements: IAchievement[], t: an
   });
 }
 
+export function sortAchievements(achDict: Record<string, IAchievement>): IAchievementConfig[] {
+  const unlockedAchievements = allAchievements
+    .filter((config) => !!achDict[config.key] && achDict[config.key].unlocked !== false)
+    .sort((a, b) => {
+      const achA = achDict[a.key];
+      const achB = achDict[b.key];
+      const rarityA = a.isOneTime ? a.rarity : (achA && !achA.isOneTime ? (achA as IAchievementTiered).currentTier : 0);
+      const rarityB = b.isOneTime ? b.rarity : (achB && !achB.isOneTime ? (achB as IAchievementTiered).currentTier : 0);
+      return rarityB - rarityA;
+    });
+
+  const lockedAchievements = allAchievements.filter(
+    (config) => !achDict[config.key] || achDict[config.key].unlocked === false
+  );
+  const sorted = [...unlockedAchievements, ...lockedAchievements];
+  return sorted;
+}
+
 export function getAchievementDescription(achievement: IAchievement, t: any): string {
   if (achievement.isOneTime) {
     return t(`Achievements.${achievement.key}.Description`);
@@ -105,4 +136,86 @@ export function getAchievementDescription(achievement: IAchievement, t: any): st
   const index = Math.max(0, Math.min(achievement.currentTier - 1, 4));
   const thresholdValue = tieredAchConfig.baseTiers[index]?.threshold;
   return t(`Achievements.${tieredAchConfig.key}.Description`, { value: thresholdValue });
+}
+
+export function calculateTotalXP(achievementsData: IAchievement[]): number {
+  const xpAmount = achievementsData.reduce((acc, ach) => acc + ach.totalXP, 0);
+  return xpAmount;
+}
+
+export function calculateUserAchievementStats(achievementsData: IAchievement[]): UserAchievementStats {
+  let currentUserStarsTotal = 0;
+  let currentTotalXP = 0;
+  const userStarsByRarity: StarRarityCounts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+
+  achievementsData.forEach((ach) => {
+    const config = achievementConfigMap[ach.key];
+    if (!config) {
+      console.warn(`Config not found for user achievement key: ${ach.key}`);
+      return;
+    }
+
+    currentTotalXP += ach.totalXP;
+
+    if (ach.isOneTime) {
+      if (ach.unlocked) {
+        currentUserStarsTotal += 1;
+        const oneTimeConfig = config as IAchievementConfigOneTime;
+        const rarity = oneTimeConfig.rarity;
+        if (rarity >= 1 && rarity <= 5) {
+          userStarsByRarity[rarity as keyof StarRarityCounts] += 1;
+        } else {
+          console.warn(`Invalid rarity (${rarity}) for one-time ach: ${ach.key}`);
+        }
+      }
+    } else {
+      const tieredAch = ach as IAchievementTiered;
+      currentUserStarsTotal += tieredAch.currentTier;
+      for (let tier = 1; tier <= tieredAch.currentTier; tier++) {
+        if (tier >= 1 && tier <= 5) {
+          userStarsByRarity[tier as keyof StarRarityCounts] += 1;
+        }
+      }
+    }
+  });
+
+  return {
+    totalStars: currentUserStarsTotal,
+    byRarity: userStarsByRarity,
+    totalXP: currentTotalXP
+  };
+}
+
+
+export function calculateTotalPossibleStars(): PossibleAchievementStats {
+  let possibleStarsTotal = 0;
+  const totalStarsByRarity: StarRarityCounts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+
+  allAchievements.forEach((config) => {
+    if (config.isOneTime) {
+      possibleStarsTotal += 1;
+      const oneTimeConfig = config as IAchievementConfigOneTime;
+      const rarity = oneTimeConfig.rarity;
+      if (rarity >= 1 && rarity <= 5) {
+        totalStarsByRarity[rarity as keyof StarRarityCounts] += 1;
+      } else {
+        console.warn(`Invalid rarity (${rarity}) for one-time config: ${config.key}`);
+      }
+    } else {
+      const tieredConfig = config as IAchievementConfigTiered;
+      const numberOfTiers = tieredConfig.baseTiers.length;
+      possibleStarsTotal += numberOfTiers;
+      tieredConfig.baseTiers.forEach((_tierConfig, index) => {
+        const tierNumber = index + 1;
+        if (tierNumber >= 1 && tierNumber <= 5) {
+          totalStarsByRarity[tierNumber as keyof StarRarityCounts] += 1;
+        }
+      });
+    }
+  });
+
+  return {
+    totalStars: possibleStarsTotal,
+    byRarity: totalStarsByRarity
+  };
 }

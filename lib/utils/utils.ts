@@ -105,3 +105,32 @@ export function nameToColor(name: string): MantineColor {
   const index = Math.abs(hash % availableColors.length);
   return availableColors[index];
 };
+
+export function getPageLabelKey(pathname: string | null): string {
+  if (!pathname) {
+    return 'Pages.KalaLog';
+  }
+
+  const staticPages: Record<string, string> = {
+    '/catches': 'Pages.Catches',
+    '/statistics': 'Pages.Stats',
+    '/new_catch': 'Pages.NewCatch',
+    '/community': 'Pages.Community',
+    '/login': 'Pages.Account',
+    '/signup': 'Pages.Account',
+  };
+
+  if (staticPages[pathname]) {
+    return staticPages[pathname];
+  }
+
+  if (pathname.startsWith('/user/') && pathname.includes('/achievements')) {
+    return 'Pages.Achievements';
+  }
+
+  if (pathname.startsWith('/user/')) {
+    return 'Pages.Account';
+  }
+
+  return 'Pages.KalaLog';
+};

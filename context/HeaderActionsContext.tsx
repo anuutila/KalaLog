@@ -5,6 +5,8 @@ interface HeaderActionsState {
   setActions: React.Dispatch<React.SetStateAction<React.ReactNode>>;
   actionsDisabled: boolean;
   setActionsDisabled: React.Dispatch<React.SetStateAction<boolean>>;
+  pageTitle: string | null;
+  setPageTitle: (title: string | null) => void;
 }
 
 const HeaderActionsContext = createContext<HeaderActionsState | undefined>(undefined);
@@ -12,9 +14,10 @@ const HeaderActionsContext = createContext<HeaderActionsState | undefined>(undef
 export const HeaderActionsProvider = ({ children }: { children: React.ReactNode }) => {
   const [actions, setActions] = useState<React.ReactNode>(null);
   const [actionsDisabled, setActionsDisabled] = useState<boolean>(false);
+  const [pageTitle, setPageTitle] = useState<string | null>(null);
 
   return (
-    <HeaderActionsContext.Provider value={{ actions, setActions, actionsDisabled, setActionsDisabled }}>
+    <HeaderActionsContext.Provider value={{ actions, setActions, actionsDisabled, setActionsDisabled, pageTitle, setPageTitle }}>
       {children}
     </HeaderActionsContext.Provider>
   );

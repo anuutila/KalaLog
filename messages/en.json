@@ -2,12 +2,12 @@
   "Common": {
     "Catch": "Catch",
     "Species": "Species",
-    "FishSpecies": "Fish species",
+    "FishSpecies": "Fish Species",
     "Picture": "Picture",
     "Length": "Length",
     "Weight": "Weight",
     "Lure": "Lure",
-    "BodyOfWater": "Body of water",
+    "BodyOfWater": "Body of Water",
     "Spot": "Spot",
     "Coordinates": "Coordinates",
     "Time": "Time",
@@ -22,7 +22,7 @@
     "Delete": "Delete",
     "Ok": "Ok",
     "Close": "Close",
-    "SelectAll": "Select all",
+    "SelectAll": "Select All",
     "Total": "Total",
     "Others": "others",
     "Other": "Other",
@@ -48,7 +48,7 @@
     "Zander": "Kuha"
   },
   "Pages": {
-    "NewCatch": "New catch",
+    "NewCatch": "New Catch",
     "Catches": "Catches",
     "Stats": "Statistics",
     "Account": "Profile",
@@ -57,17 +57,17 @@
     "Community": "Community"
   },
   "NewCatchPage": {
-    "CatchInfo": "Catch information",
+    "CatchInfo": "Catch Information",
     "AlertTitle": "Attention!",
     "AlertText1": "You do not have the necessary rights to add a new catch.",
     "AlertText2": "Log in to add a new catch.",
-    "Species": "Fish species",
+    "Species": "Fish Species",
     "Coordinates": "Coordinates",
     "GPSCoordinates": "GPS coordinates",
     "CaughtBy": "Angler",
     "SelectUser": "Select user",
     "NoUser": "No user account",
-    "AddPicture": "Add picture",
+    "AddPicture": "Add Picture",
     "AddPictureInfo": "Add pictures of the catch",
     "AddPictureInfo2": "Maximum picture size 10MB",
     "Pictures": "Pictures",
@@ -82,37 +82,37 @@
   },
   "CatchesPage": {
     "TableSettings": {
-      "Button": "Table settings",
-      "Title": "Table settings",
-      "Columns": "Show columns",
-      "BodyOfWater": "Select body of water",
-      "AllBodiesOfWater": "All bodies of water",
-      "Year": "Select year",
+      "Button": "Table Settings",
+      "Title": "Table Settings",
+      "Columns": "Show Columns",
+      "BodyOfWater": "Select Body of Water",
+      "AllBodiesOfWater": "All Bodies of Water",
+      "Year": "Select Year",
       "AllYears": "All years",
-      "Filters": "Show filters",
-      "ImageIcons": "Show camera icons",
+      "Filters": "Show Filters",
+      "ImageIcons": "Show Camera Icons",
       "ImageIconsInfo": "Show a camera icon in the species column if one or more pictures have been added to the catch.",
       "LocationIcons": "Show location icons",
       "LocationIconsInfo": "Show a location icon in the location column if precise coordinates have been added to the catch.",
-      "Restore": "Restore defaults"
+      "Restore": "Restore Defaults"
     },
     "Table": {
       "NoData": "No catches to display."
     },
-    "EditCatch": "Edit catch"
+    "EditCatch": "Edit Catch"
   },
   "Modals": {
     "EditCatch": {
-      "Title": "Edit catch",
+      "Title": "Edit Catch",
       "Content": "Do you want to edit the catch information?"
     },
     "CancelEdit": {
-      "Title": "Cancel edit",
+      "Title": "Cancel Edit",
       "Content": "Are you sure you want to cancel editing the catch? All unsaved changes will be lost.",
       "Continue": "Continue editing"
     },
     "DeleteCatch": {
-      "Title": "Delete catch",
+      "Title": "Delete Catch",
       "Content": "Are you sure you want to delete this catch? Type 'DELETE' in the field below to confirm the deletion.",
       "Placeholder": "Type 'DELETE' to confirm",
       "ConfirmationText": "DELETE"
@@ -120,7 +120,7 @@
   },
   "LoginPage": {
     "Title": "Log in",
-    "UsernameOrEmail": "Username or email",
+    "UsernameOrEmail": "Username or Email",
     "Password": "Password",
     "Login": "Log in",
     "NoAccount": "Don't have an account yet?",
@@ -129,11 +129,11 @@
   "SignupPage": {
     "Title": "Sign up",
     "Username": "Username",
-    "FirstName": "First name",
-    "LastName": "Last name",
+    "FirstName": "First Name",
+    "LastName": "Last Name",
     "Email": "Email",
     "Password": "Password",
-    "ConfirmPassword": "Confirm password",
+    "ConfirmPassword": "Confirm Password",
     "PasswordMismatch": "Passwords do not match",
     "Signup": "Sign up",
     "AlreadyHaveAccount": "Already have an account?",
@@ -142,10 +142,10 @@
   "StatisticsPage": {
     "Overview": "Overview",
     "Leaderboards": "Leaderboards",
-    "TotalCatches": "Total catches",
-    "SpeciesDistribution": "Species distribution",
+    "TotalCatches": "Total Catches",
+    "SpeciesDistribution": "Species Distribution",
     "TopAnglers": "Top Anglers",
-    "CatchCount": "Catch count"
+    "CatchCount": "Catch Count"
   },
   "CommunityPage": {
     "Anglers": "Anglers",
@@ -171,16 +171,22 @@
     }
   },
   "UserPage": {
-    "WIP": "User pages are still a work in progress...",
-    "Title": "Hello, {name}!",
+    "MyTitle": "My Profile",
+    "UserTitle": "{name}'s Profile",
+    "TotalCatches": "Total Catches",
+    "PersonalBests": "Personal Bests",
     "Achievements": "Achievements",
+    "Stars": "Stars",
     "Logout": "Log out",
-    "AdminPanel": "Admin panel"
+    "AdminPanel": "Admin panel",
+    "ProfileNotFound": "Profile not found"
   },
   "AchievementsPage": {
+    "MyTitle": "My Achievements",
+    "UserTitle": "{name}'s Achievements",
     "Title": "Achievements",
-    "LevelProgress": "Level progress",
-    "AchievementStars": "Achievement stars",
+    "LevelProgress": "Level Progress",
+    "AchievementStars": "Achievement Stars",
     "TotalStars": "Total stars",
     "Tier": "Tier",
     "NextTier": "Next tier:",

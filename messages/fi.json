@@ -171,13 +171,19 @@
     }
   },
   "UserPage": {
-    "WIP": "Käyttäjäsivut ovat vielä työn alla...",
-    "Title": "Hei, {name}!",
+    "MyTitle": "Oma profiili",
+    "UserTitle": "Käyttäjän {name} profiili",
+    "TotalCatches": "Saaliit yhteensä",
+    "PersonalBests": "Ennätykset",
     "Achievements": "Saavutukset",
+    "Stars": "Tähdet",
     "Logout": "Kirjaudu ulos",
-    "AdminPanel": "Admin paneeli"
+    "AdminPanel": "Admin paneeli",
+    "ProfileNotFound": "Profiilia ei löytynyt"
   },
   "AchievementsPage": {
+    "MyTitle": "Omat saavutukset",
+    "UserTitle": "Käyttäjän {name} saavutukset",
     "Title": "Saavutukset",
     "LevelProgress": "Tason edistyminen",
     "AchievementStars": "Saavutustähdet",

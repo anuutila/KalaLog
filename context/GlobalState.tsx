@@ -12,6 +12,7 @@ import { handleApiError } from '@/lib/utils/handleApiError';
 import { getUserAchievements } from '@/services/api/achievementService';
 import { getCatches } from '@/services/api/catchService';
 import { getUserInfo } from '@/services/api/userService';
+import { usePathname } from 'next/navigation';
 
 interface GlobalState {
   isLoggedIn: boolean | null;
@@ -25,11 +26,13 @@ interface GlobalState {
   fetchCatches: () => Promise<void>;
   displayNameMap: { [userId: string]: string };
   achievements: IAchievement[];
+  previousPath: string | null;
 }
 
 const GlobalContext = createContext<GlobalState | undefined>(undefined);
 
 export const GlobalStateProvider = ({ children }: { children: React.ReactNode }) => {
+  const pathname = usePathname();
   const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
   const [jwtUserInfo, setJwtUserInfo] = useState<JwtUserInfo | null>(null);
   const [catches, setCatches] = useState<ICatch[]>([]);
@@ -38,6 +41,10 @@ export const GlobalStateProvider = ({ children }: { children: React.ReactNode })
   // Map of user IDs to display names that are used if there are duplicae names
   const [displayNameMap, setDisplayNameMap] = useState<{ [userId: string]: string }>({});
   const [achievements, setAchievements] = useState<IAchievement[]>([]);
+
+  const [currentPath, setCurrentPath] = useState<string | null>(null);
+  const [previousPath, setPreviousPath] = useState<string | null>(null);
+
   const t = useTranslations();
 
   // Fetch login status
@@ -48,6 +55,7 @@ export const GlobalStateProvider = ({ children }: { children: React.ReactNode })
         const userInfoResponse: UserInfoResponse = await getUserInfo();
         console.log(userInfoResponse.message);
         console.log('User info:', userInfoResponse.data?.jwtUserInfo);
+        console.log('Logged in:', userInfoResponse.data?.loggedIn);
         setIsLoggedIn(userInfoResponse.data.loggedIn);
         setJwtUserInfo(userInfoResponse.data.jwtUserInfo);
       } catch (error) {
@@ -151,6 +159,16 @@ export const GlobalStateProvider = ({ children }: { children: React.ReactNode })
     setDisplayNameMap(idToDisplayNameMap);
   }
 
+  useEffect(() => {
+    if (pathname !== currentPath) {
+      const nonHistoryPaths = ['/login', '/signup'];
+      if (currentPath && !nonHistoryPaths.includes(currentPath)) {
+          setPreviousPath(currentPath);
+      }
+      setCurrentPath(pathname);
+    }
+  }, [pathname, currentPath]);
+
   return (
     <GlobalContext.Provider
       value={{
@@ -165,6 +183,7 @@ export const GlobalStateProvider = ({ children }: { children: React.ReactNode })
         fetchCatches,
         displayNameMap,
         achievements,
+        previousPath,
       }}
     >
       {children}

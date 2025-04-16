@@ -70,6 +70,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ user
       totalXP: userStats.totalStars,
       totalStars: userStats.totalStars,
       starsByRarity: userStats.byRarity,
+      userAchievements: validatedAchievements ?? [],
     };
 
     const validatedProfile = PublicUserProfileSchema.parse(publicProfile);

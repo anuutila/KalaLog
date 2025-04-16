@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { AchievementSchema } from './achievement';
 
 export enum UserRole {
   SUPERADMIN = 'superadmin',
@@ -74,7 +75,7 @@ export const PublicUserProfileSchema = z.object({
     4: z.number().int().min(0),
     5: z.number().int().min(0),
   }),
-
+  userAchievements: z.array(AchievementSchema)
 });
 
 export type IPublicUserProfile = z.infer<typeof PublicUserProfileSchema>;

@@ -60,6 +60,7 @@ export default function UserAchievementsPage() {
         const profileResponse: UserProfileResponse = await getUserProfileByUsername(viewedUsername);
         const profileData = profileResponse.data;
         setProfileData(profileData);
+        setViewedAchievements(profileData.userAchievements);
       } catch (err: any) {
         setError(err?.message ?? t('Error'));
         handleApiError(err, 'fetching user profile data');

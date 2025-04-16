@@ -72,6 +72,9 @@ export default function LayoutHeader({ pages, tabs, pathname }: { pages: Page[];
                   isActive={pathname === tab.path}
                 />
               ))}
+              <Box mr={'md'}>
+                <LanguageSwitcher />
+              </Box>
             </Group>
           </Group>
         </Container>

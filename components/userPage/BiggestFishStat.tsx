@@ -34,7 +34,7 @@ export function BiggestFishStat({
     }
 
     return (
-        <Group align='center' justify="space-between" >
+        <Group align='center' justify="space-between" gap={0}>
             <Badge
                 size="lg"
                 color={color}

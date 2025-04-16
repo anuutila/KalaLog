@@ -23,10 +23,11 @@ interface LeanUserForPublicProfile {
   createdAt?: Date;
 }
 
-export async function GET(req: NextRequest, { params }: Params): Promise<NextResponse<UserProfileResponse | ErrorResponse>> {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ username: string }> }): Promise<NextResponse<UserProfileResponse | ErrorResponse>> {
+  const { username } = await params;
+
   try {
     await dbConnect();
-    const { username } = params;
 
     if (!username) {
       throw new CustomError('Username parameter is required.', 400);

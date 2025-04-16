@@ -7,15 +7,11 @@ import { ErrorResponse, UserAchievementsResponse } from '@/lib/types/responses';
 import { handleError } from '@/lib/utils/handleError';
 import { CustomError } from '@/lib/utils/customError';
 
-// Params type for dynamic route
-interface Params {
-  params: { username: string }
-}
+export async function GET(req: NextRequest, { params }: { params: Promise<{ username: string }> }): Promise<NextResponse<UserAchievementsResponse | ErrorResponse>> {
+  const { username } = await params;
 
-export async function GET(req: NextRequest, { params }: Params): Promise<NextResponse<UserAchievementsResponse | ErrorResponse>> {
   try {
     await dbConnect();
-    const { username } = params;
 
     if (!username) {
       throw new CustomError('Username parameter is required.', 400);
@@ -46,6 +42,6 @@ export async function GET(req: NextRequest, { params }: Params): Promise<NextRes
     return NextResponse.json<UserAchievementsResponse>({ message: 'User achievements retrieved successfully.', data: validatedAchievements });
 
   } catch (error: unknown) {
-    return handleError(error, `An unexpected error occurred while fetching achievements fo user: ${params.username}. Please try again later.`);
+    return handleError(error, `An unexpected error occurred while fetching achievements fo user: ${username}. Please try again later.`);
   }
 }

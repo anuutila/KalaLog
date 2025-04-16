@@ -56,3 +56,25 @@ export const IUserSchema = z.object({
 
 // Infer the TypeScript type from the schema
 export type IUser = z.infer<typeof IUserSchema>;
+
+export const PublicUserProfileSchema = z.object({
+  id: z.string(),
+  username: z.string(),
+  firstName: z.string(),
+  lastName: z.string(),
+  profilePictureUrl: z.string().url().optional().nullable(),
+  createdAt: z.date().optional().nullable(),
+  level: z.number().int().min(0),
+  totalXP: z.number().int().min(0),
+  totalStars: z.number().int().min(0),
+  starsByRarity: z.object({
+    1: z.number().int().min(0),
+    2: z.number().int().min(0),
+    3: z.number().int().min(0),
+    4: z.number().int().min(0),
+    5: z.number().int().min(0),
+  }),
+
+});
+
+export type IPublicUserProfile = z.infer<typeof PublicUserProfileSchema>;

@@ -2,7 +2,7 @@ import { IAchievement } from './achievement';
 import { ICatch } from './catch';
 import { IEvent } from './event';
 import { JwtUserInfo } from './jwtUserInfo';
-import { UserRole } from './user';
+import { IPublicUserProfile, UserRole } from './user';
 
 // Common response type
 export interface BaseResponse<T = undefined> {
@@ -83,6 +83,8 @@ export interface AllUsersResponseData {
     role: UserRole;
   }[];
 }
+
+export type UserProfileResponse = Required<BaseResponse<IPublicUserProfile>>;
 
 export type AllUsersResponse = Required<BaseResponse<AllUsersResponseData>>;
 

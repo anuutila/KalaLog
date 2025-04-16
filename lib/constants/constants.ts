@@ -8,6 +8,7 @@ export enum ApiEndpoints {
   Signup = '/api/signup',
   UserInfo = '/api/users/userInfo',
   UsersByFirstName = '/api/users/byFirstName',
+  UserProfileByUsername = '/api/users/byUsername',
   AdminPanelData = '/api/users/adminPanelData',
   LinkUserCatches = '/api/users/linkUserCatches',
   Achievements = '/api/achievements',

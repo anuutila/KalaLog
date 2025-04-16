@@ -1,124 +1,38 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
-import Link from 'next/link';
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { IconLogout, IconTrophy, IconUserCog } from '@tabler/icons-react';
-import { useTranslations } from 'next-intl';
-import { Avatar, Box, Button, Center, Container, LoadingOverlay, Modal, Stack, Title } from '@mantine/core';
-import AdminPanel from '@/components/AdminPanel/AdminPanel';
-import LevelProgress from '@/components/LevelProgress/LevelProgress';
+import { LoadingOverlay } from '@mantine/core';
 import { useGlobalState } from '@/context/GlobalState';
-import { showNotification } from '@/lib/notifications/notifications';
-import { LogoutResponse } from '@/lib/types/responses';
-import { UserRole } from '@/lib/types/user';
-import { handleApiError } from '@/lib/utils/handleApiError';
-import { logout } from '@/services/api/authservice';
-import { nameToColor } from '@/lib/utils/utils';
+import classes from '../../context/LoadingOverlayContext.module.css';
 
-export default function Page() {
-  const { isLoggedIn, jwtUserInfo, achievements, setIsLoggedIn, setJwtUserInfo } = useGlobalState();
-  const [adminPanelOpen, setAdminPanelOpen] = useState(false);
+export default function UserRedirectPage() {
   const router = useRouter();
-  const t = useTranslations();
-
-  const totalXP = useMemo(() => {
-    return achievements.reduce((acc, ach) => acc + ach.totalXP, 0);
-  }, [achievements]);
+  const { isLoggedIn, jwtUserInfo } = useGlobalState();
 
   useEffect(() => {
     if (isLoggedIn === null) {
       return;
     }
 
-    if (!isLoggedIn) {
-      console.log('Not logged in, redirecting to login...');
-      router.push('/login'); // Redirect to login if not logged in
+    if (isLoggedIn && jwtUserInfo?.username) {
+      // If logged in, redirect to their dynamic profile page
+      console.log(`User is logged in, redirecting to /user/${jwtUserInfo.username}`);
+      router.replace(`/user/${jwtUserInfo.username}`);
+    } else {
+      // If not logged in, redirect to the login page
+      console.log('User is not logged in, redirecting to /login');
+      router.replace('/login');
     }
-  }, [isLoggedIn, router]);
-
-  if (!isLoggedIn) {
-    // Optionally show a loading state while redirecting
-    return <LoadingOverlay visible overlayProps={{ blur: 2, zIndex: 2000, bg: 'rgba(0,0,0,0.5', fixed: true }} />;
-  }
-
-  const handleLogout = async () => {
-    try {
-      const logoutResponse: LogoutResponse = await logout();
-      console.log(logoutResponse.message);
-      showNotification('success', `${logoutResponse.message} See you later ${jwtUserInfo?.firstname}! 👋`, {
-        withTitle: false,
-      });
-
-      // Update global state
-      setIsLoggedIn(false);
-      setJwtUserInfo(null);
-
-      // Redirect to the login page
-      router.push('/login');
-    } catch (error) {
-      handleApiError(error, 'logout');
-    }
-  };
+  }, [isLoggedIn, jwtUserInfo, router]);
 
   return (
-    <Container
-      size="sm"
-      pt="xl" 
-      pb="md" 
-      py="md"
-      h="calc(100dvh - var(--app-shell-footer-offset, 0rem) - var(--app-shell-header-offset, 0rem) - env(safe-area-inset-bottom))"
-    >
-      <Center h="100%">
-        <Stack align="center" gap="xl" justify="space-between" h="100%">
-          <Stack align="center" gap="xl">
-            <Stack align="center" gap={0} mb={50}>
-              <Avatar
-                radius="100%"
-                size={150}
-                name={`${jwtUserInfo?.firstname} ${jwtUserInfo?.lastname ?? ''}`}
-                color={nameToColor(`${jwtUserInfo?.firstname} ${jwtUserInfo?.lastname ?? ''}`)}
-              />
-              <Box style={{ transform: 'translateY(-25%) translateX(-0%)' }}>
-                <LevelProgress totalXP={totalXP ?? 0} progressLabel={false} width={125} iconLeftOffset={-60}/>
-                <Center mt="lg">
-                  <Title order={1} c="white">
-                    {jwtUserInfo?.firstname} {jwtUserInfo?.lastname}
-                  </Title>
-                </Center>
-              </Box>
-            </Stack>
-
-            {isLoggedIn && (
-              <Link href="/user/achievements" passHref prefetch>
-                <Button size="md" leftSection={<IconTrophy />}>
-                  {t('UserPage.Achievements')}
-                </Button>
-              </Link>
-            )}
-          </Stack>
-          <Stack>
-            <Modal
-              opened={adminPanelOpen}
-              onClose={() => setAdminPanelOpen(false)}
-              title={t('UserPage.AdminPanel')}
-              size="lg"
-            >
-              <AdminPanel />
-            </Modal>
-            {isLoggedIn && (jwtUserInfo?.role === UserRole.ADMIN || jwtUserInfo?.role === UserRole.SUPERADMIN) && (
-              <Button variant="subtle" leftSection={<IconUserCog />} size="md" onClick={() => setAdminPanelOpen(true)}>
-                {t('UserPage.AdminPanel')}
-              </Button>
-            )}
-            {isLoggedIn && (
-              <Button variant="subtle" size="md" onClick={handleLogout} leftSection={<IconLogout />}>
-                {t('UserPage.Logout')}
-              </Button>
-            )}
-          </Stack>
-        </Stack>
-      </Center>
-    </Container>
+    <LoadingOverlay
+      visible
+      classNames={{ root: classes.loading_overlay_root, loader: classes.loading_overlay_loader }}
+      overlayProps={{ blur: 2, zIndex: 2000, bg: 'rgba(0,0,0,0.5)', w: '100dvw', h: '100dvh', fixed: true }}
+      w={'100dvw'}
+      h={'100dvh'}
+    />
   );
 }

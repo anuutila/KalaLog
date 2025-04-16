@@ -465,3 +465,73 @@ function getDistanceBetweenPoints(lat1: number, lng1: number, lat2: number, lng2
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return R * c;
 }
+
+export interface UserCatchStats {
+  totalCatches: number;
+  biggestPike: ICatch | null;
+  biggestZander: ICatch | null;
+  biggestPerch: ICatch | null;
+}
+
+/**
+* Calculates key statistics from a user's catches in a single pass.
+*/
+export function calculateUserCatchStats(allCatches: ICatch[], username: string): UserCatchStats {
+  if (!allCatches || !username) {
+    return {
+      totalCatches: 0,
+      biggestPike: null,
+      biggestZander: null,
+      biggestPerch: null,
+    };
+  }
+
+  let biggestPike: ICatch | null = null;
+  let biggestZander: ICatch | null = null;
+  let biggestPerch: ICatch | null = null;
+  let totalCatches = 0;
+
+  for (const catchItem of allCatches) {
+    // Ensure the catch belongs to the user
+    if (catchItem.caughtBy.username !== username) {
+      continue;
+    }
+
+    totalCatches++;
+    const currentWeight = catchItem.weight ?? 0;
+    const currentLength = catchItem.length ?? 0;
+
+    switch (catchItem.species.toLowerCase().trim()) {
+      case 'hauki': // Pike
+        const biggestPikeWeight = biggestPike?.weight ?? 0;
+        const biggestPikeLength = biggestPike?.length ?? 0;
+        if (!biggestPike || currentWeight > biggestPikeWeight || (currentWeight === biggestPikeWeight && currentLength > biggestPikeLength)) {
+          biggestPike = catchItem;
+        }
+        break;
+
+      case 'kuha': // Zander
+        const biggestZanderWeight = biggestZander?.weight ?? 0;
+        const biggestZanderLength = biggestZander?.length ?? 0;
+        if (!biggestZander || currentWeight > biggestZanderWeight || (currentWeight === biggestZanderWeight && currentLength > biggestZanderLength)) {
+          biggestZander = catchItem;
+        }
+        break;
+
+      case 'ahven': // Perch
+        const biggestPerchWeight = biggestPerch?.weight ?? 0;
+        const biggestPerchLength = biggestPerch?.length ?? 0;
+        if (!biggestPerch || currentWeight > biggestPerchWeight || (currentWeight === biggestPerchWeight && currentLength > biggestPerchLength)) {
+          biggestPerch = catchItem;
+        }
+        break;
+    }
+  }
+
+  return {
+    totalCatches,
+    biggestPike,
+    biggestZander,
+    biggestPerch,
+  };
+}

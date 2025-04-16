@@ -11,9 +11,6 @@ import { AchievementSchema, IAchievement } from '@/lib/types/achievement';
 import { calculateUserAchievementStats } from '@/lib/utils/achievementUtils';
 import { calculateLevel } from '@/lib/utils/levelUtils';
 
-interface Params {
-  params: { username: string }
-}
 interface LeanUserForPublicProfile {
   _id: Types.ObjectId;
   username?: string;

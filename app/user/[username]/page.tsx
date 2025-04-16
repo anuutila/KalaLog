@@ -221,13 +221,13 @@ export default function UserProfilePage() {
 
               {isLoadingProfile ? (
                 <Stack mx="md" mt="xl" gap={'md'} align='center' w={'100%'}>
-                  <Skeleton height={62} w={'min(100%, 350px)'} radius="lg" />
-                  <Skeleton height={170} w={'min(100%, 350px)'} radius="lg" />
-                  <Skeleton height={158} w={'min(100%, 350px)'} radius="lg" />
+                  <Skeleton height={62} w={'min(100%, 365px)'} radius="lg" />
+                  <Skeleton height={170} w={'min(100%, 365px)'} radius="lg" />
+                  <Skeleton height={158} w={'min(100%, 365px)'} radius="lg" />
                 </Stack>
               ) : (
                 <Stack align='center' w={'100%'} gap={0}>
-                  <Paper p="md" mt="xl" mx="md" radius={'lg'} bg={'var(--my-ui-item-background-color)'} w={'min(100%, 350px)'} >
+                  <Paper p="md" mt="xl" mx="md" radius={'lg'} bg={'var(--my-ui-item-background-color)'} w={'min(100%, 365px)'} >
                     <Group gap={'0'} justify='space-between'>
                       <Title c={'white'} order={3} fz={20} fw={600}>{t('UserPage.TotalCatches')}</Title>
                       <Group gap={10}>
@@ -237,7 +237,7 @@ export default function UserProfilePage() {
                     </Group>
                   </Paper>
 
-                  <Paper p="md" mt={'md'} mx="md" radius={'lg'} bg={'var(--my-ui-item-background-color)'} w={'min(100%, 350px)'} >
+                  <Paper p="md" mt={'md'} mx="md" radius={'lg'} bg={'var(--my-ui-item-background-color)'} w={'min(100%, 365px)'} >
                     <Title c={'white'} order={3} mb={'xs'} fz={20} fw={600}>{t('UserPage.PersonalBests')}</Title>
                     <Stack gap={8}>
                       {personalBestSpecies.map(spec => (
@@ -251,7 +251,7 @@ export default function UserProfilePage() {
                     </Stack>
                   </Paper>
 
-                  <Paper p="md" mt={'md'} mx="md" radius={'lg'} bg={'var(--my-ui-item-background-color)'} w={'min(100%, 350px)'} >
+                  <Paper p="md" mt={'md'} mx="md" radius={'lg'} bg={'var(--my-ui-item-background-color)'} w={'min(100%, 365px)'} >
                     <Group gap={'0'} justify='space-between'>
                       <Title c={'white'} order={3} fz={20} fw={600} mb={'xs'}>{t('UserPage.Achievements')}</Title>
                       {/* <Group gap={10}>

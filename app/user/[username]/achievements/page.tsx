@@ -173,7 +173,7 @@ export default function UserAchievementsPage() {
                     color={getNameColor}
                   />
                   <Stack gap={0}>
-                    <Text fw={600} size="xl">{profileData.firstName} {profileData.lastName}</Text>
+                    <Text fw={600} size="xl" c={'white'}>{profileData.firstName} {profileData.lastName}</Text>
                     <Text size="md" c="dimmed">@{profileData.username}</Text>
                   </Stack>
                 </Group>

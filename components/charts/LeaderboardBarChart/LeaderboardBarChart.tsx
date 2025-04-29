@@ -11,7 +11,8 @@ import {
   ChartDataset,
   ChartOptions,
   Plugin,
-  TooltipItem
+  TooltipItem,
+  ScriptableContext
 } from 'chart.js';
 import Chart from 'chartjs-plugin-datalabels';
 import { AchievementChartColors, BarChartBgColors, ChartColorsRGBA, fixedBarChartBgColorMap, fixedColorMap } from '../chartConstants';
@@ -23,8 +24,9 @@ import { Box, Combobox, Group, Input, InputBase, Select, Stack, useCombobox } fr
 import { IPublicUserProfile } from '@/lib/types/user';
 import { StarRarityCounts } from '@/lib/utils/achievementUtils';
 import { capitalizeFirstLetter } from '@/lib/utils/utils';
-import { IconListNumbers, IconRuler, IconRuler2 } from '@tabler/icons-react';
+import { IconListNumbers, IconRuler2 } from '@tabler/icons-react';
 import { getPrimaryMetricOptions, getSecondaryMetricOptions } from '@/components/catchesPage/optionGenerators';
+import { getStackedBarBorderWidth } from '@/lib/utils/chartUtils';
 
 ChartJS.register(
   CategoryScale,
@@ -327,7 +329,8 @@ function formatGenericChartJsData(
   // --- Generate Datasets based on Metric ---
   if (primaryMetric === 'totalCatches') {
     // STACKED BY SPECIES
-    datasets = categories.map((species) => {
+    // @ts-ignore
+    datasets = categories.map((species, datasetIndex, allDatasets) => {
       let bgColor = fixedBarChartBgColorMap[species];
       let borderColor = fixedColorMap[species];
       if (!bgColor) {
@@ -345,10 +348,11 @@ function formatGenericChartJsData(
         backgroundColor: bgColor,
         hoverBackgroundColor: borderColor,
         borderColor: borderColor,
-        borderSkipped: 'middle',
         stack: 'userStack',
         pointStyle: 'circle',
         pointBorderWidth: 0,
+        borderWidth: (context: ScriptableContext<'bar'>) => getStackedBarBorderWidth(context, 3),
+        hoverBorderWidth: (context: ScriptableContext<'bar'>) => getStackedBarBorderWidth(context, 4),
         animation: {
           duration: 400,
         }
@@ -357,7 +361,8 @@ function formatGenericChartJsData(
 
   } else if (primaryMetric === 'totalStars') {
     // STACKED BY RARITY (Only for registered users)
-    datasets = categories.map((rarityStr) => {
+    // @ts-ignore
+    datasets = categories.map((rarityStr, datasetIndex, allDatasets) => {
       const rarity = parseInt(rarityStr, 10) as keyof StarRarityCounts;
       const rarityIndex = rarity - 1;
 
@@ -379,7 +384,8 @@ function formatGenericChartJsData(
         backgroundColor: bgColor,
         hoverBackgroundColor: borderColor,
         borderColor: borderColor,
-        borderSkipped: 'middle',
+        borderWidth: (context: ScriptableContext<'bar'>) => getStackedBarBorderWidth(context, 3),
+        hoverBorderWidth: (context: ScriptableContext<'bar'>) => getStackedBarBorderWidth(context, 4),
         stack: 'userStack',
         pointStyle: 'circle',
         pointBorderWidth: 0,
@@ -406,7 +412,9 @@ function formatGenericChartJsData(
       backgroundColor: bgColor,
       hoverBackgroundColor: borderColor,
       borderColor: borderColor,
-      borderSkipped: false as const,
+      borderWidth: 3,
+      hoverBorderWidth: 4,
+      borderSkipped: 'left',
       pointStyle: 'circle',
       animation: {
         duration: 400,
@@ -441,8 +449,6 @@ function generateChartOptions(
     font: {
       family: '-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif',
     },
-    borderWidth: 3,
-    hoverBorderWidth: 4,
     hoverBorderColor: 'white',
     borderRadius: 5,
     scales: {

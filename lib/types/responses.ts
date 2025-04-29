@@ -74,19 +74,9 @@ export interface UsersByFirstNameResponseData {
 
 export type UsersByFirstNameResponse = Required<BaseResponse<UsersByFirstNameResponseData>>;
 
-export interface AllUsersResponseData {
-  users: {
-    id: string | null;
-    username: string;
-    firstName: string;
-    lastName: string;
-    role: UserRole;
-  }[];
-}
-
 export type UserProfileResponse = Required<BaseResponse<IPublicUserProfile>>;
 
-export type AllUsersResponse = Required<BaseResponse<AllUsersResponseData>>;
+export type AllUserProfilesResponse = Required<BaseResponse<IPublicUserProfile[]>>;
 
 export type AllAchievementsResponse = Required<BaseResponse<IAchievement[]>>;
 

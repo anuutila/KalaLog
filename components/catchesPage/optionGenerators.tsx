@@ -3,6 +3,8 @@ import { Checkbox, CheckIcon, Combobox, Group } from '@mantine/core';
 import { DEFAULT_BODY_OF_WATER } from '@/lib/constants/constants';
 import { ICatch } from '@/lib/types/catch';
 import { FieldIdentifier, fieldToIconMap } from './constants';
+import { PrimaryMetric, SecondaryMetric } from '../charts/LeaderboardBarChart/LeaderboardBarChart';
+import { capitalizeFirstLetter } from '@/lib/utils/utils';
 
 const currentYear = new Date().getFullYear();
 
@@ -23,7 +25,7 @@ export const getColumnOptions = (
         <Group gap="xs">
           <Checkbox
             checked={visibleColumns.includes(displayLabel)}
-            onChange={() => {}}
+            onChange={() => { }}
             aria-hidden
             tabIndex={-1}
             style={{ pointerEvents: 'none' }}
@@ -64,7 +66,7 @@ export const getSelectAllOption = (value: string, visibleColumns: string[], colD
     <Group gap="xs">
       <Checkbox
         checked={visibleColumns.length === colDefs.length}
-        onChange={() => {}}
+        onChange={() => { }}
         aria-hidden
         tabIndex={-1}
         style={{ pointerEvents: 'none' }}
@@ -73,3 +75,23 @@ export const getSelectAllOption = (value: string, visibleColumns: string[], colD
     </Group>
   </Combobox.Option>
 );
+
+export const getPrimaryMetricOptions = (metrics: string[], primaryMetric: PrimaryMetric | null = 'totalCatches', t: any) =>
+  metrics.map((metric, index) => (
+    <Combobox.Option value={metric} key={metric} active={primaryMetric === metric}>
+      <Group gap="sm">
+        {primaryMetric === metric ? <CheckIcon size={12} /> : null}
+        <span>{index > 3 ? t(`Fish.${capitalizeFirstLetter(metric)}`) : t(`StatisticsPage.${capitalizeFirstLetter(metric)}`)}</span>
+      </Group>
+    </Combobox.Option>
+  ));
+
+export const getSecondaryMetricOptions = (metrics: string[], secondaryMetric: SecondaryMetric | null = 'count', t: any) =>
+  metrics.map((metric, index) => (
+    <Combobox.Option value={metric} key={metric} active={secondaryMetric === metric}>
+      <Group gap="sm">
+        {secondaryMetric === metric ? <CheckIcon size={12} /> : null}
+        <span>{t(`StatisticsPage.${capitalizeFirstLetter(metric)}`)}</span>
+      </Group>
+    </Combobox.Option>
+  ));

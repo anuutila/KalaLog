@@ -82,7 +82,7 @@
   },
   "CatchesPage": {
     "TableSettings": {
-      "Button" : "Taulukon asetukset",
+      "Button": "Taulukon asetukset",
       "Title": "Taulukon asetukset",
       "Columns": "Näytä sarakkeet",
       "BodyOfWater": "Valitse vesialue",
@@ -143,9 +143,17 @@
     "Overview": "Yleiskatsaus",
     "Leaderboards": "Tulostaulukot",
     "TotalCatches": "Saaliit yhteensä",
+    "TotalXP": "Kokemuspisteet",
+    "TotalStars": "Saavutustähdet",
+    "Level": "Kalastajan taso",
     "SpeciesDistribution": "Lajijakauma",
     "TopAnglers": "Huippukalastajat",
-    "CatchCount": "Saaliiden määrä"
+    "CatchCount": "Saaliiden määrä",
+    "LeaderboardType": "Tulostaulukon tyyppi",
+    "Metric": "Kriteeri",
+    "Count": "Määrä",
+    "Weight": "Paino",
+    "Length": "Pituus"
   },
   "CommunityPage": {
     "Anglers": "Kalastajat",
@@ -167,7 +175,7 @@
         "EndDate": "Loppumispäivämäärä",
         "Participants": "Valitse osallistujat",
         "BodyOfWater": "Kirjoita vesialueen nimi ja paina enter"
-      } 
+      }
     }
   },
   "UserPage": {
@@ -203,54 +211,54 @@
     "tiny_catch": {
       "Name": "Kaikki lasketaan",
       "Description": "Nappaa alle 10 cm pituinen kala",
-      "Progress": "Pienin kala:\u00A0\u00A0 {progress} cm"
+      "Progress": "Pienin kala:   {progress} cm"
     },
     "weight_catch": {
       "Name": "Suurkala",
       "Description": "Nappaa yli {value} kg painava kala",
       "DescSingular": "Nappaa yli 1 kg painava kala",
-      "Progress": "Suurin kala:\u00A0\u00A0 {progress} kg"
+      "Progress": "Suurin kala:   {progress} kg"
     },
     "species_amount": {
       "Name": "Iktyologi",
       "Description": "Nappaa {value} eri kalalajia",
-      "Progress": "Lajeja napattu:\u00A0\u00A0 {progress}"
+      "Progress": "Lajeja napattu:   {progress}"
     },
     "total_catches": {
       "Name": "Fishunter",
       "Description": "Nappaa yhteensä {value} kalaa",
       "DescSingular": "Nappaa yksi kala",
-      "Progress": "Saaliita yhteensä:\u00A0\u00A0 {progress}"
+      "Progress": "Saaliita yhteensä:   {progress}"
     },
     "pike_amount": {
       "Name": "Haukimestari",
       "Description": "Nappaa {value} haukea",
       "DescSingular": "Nappaa yksi hauki",
-      "Progress": "Haukia yhteensä:\u00A0\u00A0 {progress}"
+      "Progress": "Haukia yhteensä:   {progress}"
     },
     "perch_amount": {
       "Name": "Ahvenmestari",
       "Description": "Nappaa {value} ahventa",
       "DescSingular": "Nappaa yksi ahven",
-      "Progress": "Ahvenia yhteensä:\u00A0\u00A0 {progress}"
+      "Progress": "Ahvenia yhteensä:   {progress}"
     },
     "zander_amount": {
       "Name": "Kuhaneuvos",
       "Description": "Nappaa {value} kuhaa",
       "DescSingular": "Nappaa yksi kuha",
-      "Progress": "Kuhia yhteensä:\u00A0\u00A0 {progress}"
+      "Progress": "Kuhia yhteensä:   {progress}"
     },
     "bream_amount": {
       "Name": "Lahnamestari",
       "Description": "Nappaa {value} lahnaa",
       "DescSingular": "Nappaa yksi lahna",
-      "Progress": "Lahnoja yhteensä:\u00A0\u00A0 {progress}"
+      "Progress": "Lahnoja yhteensä:   {progress}"
     },
     "roach_amount": {
       "Name": "Särkimestari",
       "Description": "Nappaa {value} särkeä",
       "DescSingular": "Nappaa yksi särki",
-      "Progress": "Särkiä yhteensä:\u00A0\u00A0 {progress}"
+      "Progress": "Särkiä yhteensä:   {progress}"
     },
     "kahen_kilon_siika": {
       "Name": "Kahen kilon siika",
@@ -259,17 +267,17 @@
     "lure_amount": {
       "Name": "Viehearsenaali",
       "Description": "Nappaa kala {value} eri vieheellä",
-      "Progress": "Käytettyjä vieheitä:\u00A0\u00A0 {progress}"
+      "Progress": "Käytettyjä vieheitä:   {progress}"
     },
     "spot_amount": {
       "Name": "Kalaopas",
       "Description": "Nappaa kala {value} eri paikasta samalla vesialueella (GPS-koordinaatit väh. 200 m päässä toisistaan)",
-      "Progress": "Paikkojen määrä:\u00A0\u00A0 {progress}"
+      "Progress": "Paikkojen määrä:   {progress}"
     },
     "bodies_of_water_amount": {
       "Name": "Reissumies",
       "Description": "Nappaa kala {value} eri vesialueelta",
-      "Progress": "Vesialueiden määrä:\u00A0\u00A0 {progress}"
+      "Progress": "Vesialueiden määrä:   {progress}"
     },
     "four_seasons": {
       "Name": "Vuoden ympäri",
@@ -278,7 +286,7 @@
     "fishing_streak": {
       "Name": "Kalaputki",
       "Description": "Nappaa kala {value} päivänä peräkkäin",
-      "Progress": "Pisin putki:\u00A0\u00A0 {progress} päivää"
+      "Progress": "Pisin putki:   {progress} päivää"
     },
     "rapid_catches": {
       "Name": "Sarjatuli",
@@ -287,7 +295,7 @@
     "hour_catches": {
       "Name": "Nyt syö!",
       "Description": "Nappaa 8 kalaa tunnin sisällä",
-      "Progress": "Eniten kaloja tunnissa:\u00A0\u00A0 {progress}"
+      "Progress": "Eniten kaloja tunnissa:   {progress}"
     },
     "add_image": {
       "Name": "Todistusaineisto",

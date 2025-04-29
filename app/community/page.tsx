@@ -5,13 +5,10 @@ import { Box, Center, Container, FloatingIndicator, Paper, Tabs } from '@mantine
 import { useCallback, useEffect, useState } from 'react';
 import classes from '../statistics/page.module.css';
 import AnglersTab from '@/components/communityPage/AnglersTab/AnglersTab';
-import { UserRole } from '@/lib/types/user';
+import { IPublicUserProfile } from '@/lib/types/user';
 import { handleApiError } from '@/lib/utils/handleApiError';
-import { AllUsersResponse, UserAchievementsResponse } from '@/lib/types/responses';
+import { AllUserProfilesResponse } from '@/lib/types/responses';
 import { getAllUsers } from '@/services/api/userService';
-import { getAllUserAchievements } from '@/services/api/achievementService';
-import { IAchievement } from '@/lib/types/achievement';
-import { calculateLevel } from '@/lib/utils/levelUtils';
 import EventsTab from '@/components/communityPage/EventsTab/EventsTab';
 import { usePathname, useRouter } from 'next/navigation';
 import { CatchUtils } from '@/lib/utils/catchUtils';
@@ -24,13 +21,8 @@ const TABS_CONFIG = [
 
 const DEFAULT_TAB_VALUE = TABS_CONFIG[0].value;
 
-export interface CommunityPageUserInfo {
-  id?: string | null;
-  username?: string;
+export interface UnregisteredUserInfo {
   firstName: string;
-  lastName?: string;
-  role?: UserRole;
-  level?: number;
 }
 
 export default function Page() {
@@ -38,9 +30,8 @@ export default function Page() {
   const router = useRouter();
   const pathname = usePathname();
   const { catches } = useGlobalState();
-  const [anglersUserInfos, setAnglersUserInfos] = useState<CommunityPageUserInfo[]>([]);
-  const [eventsUserInfos, setEventsUserInfos] = useState<CommunityPageUserInfo[]>([]);
-  const [achievements, setAchievements] = useState<IAchievement[]>([]);
+  const [anglersUserInfos, setAnglersUserInfos] = useState<IPublicUserProfile[]>([]);
+  const [eventsUserInfos, setEventsUserInfos] = useState<(IPublicUserProfile | UnregisteredUserInfo)[]>([]);
   const [loadingUsers, setLoadingUsers] = useState<boolean>(false);
   const [rootRef, setRootRef] = useState<HTMLElement | null>(null);
   const [controlsRefs, setControlsRefs] = useState<Record<string, HTMLElement | null>>({});
@@ -84,22 +75,10 @@ export default function Page() {
     }
   };
 
-  const fetchAllAchievements = async (): Promise<IAchievement[]> => {
+  const fetchAllUsers = async (): Promise<IPublicUserProfile[]> => {
     try {
-      const achievementsResponse: UserAchievementsResponse = await getAllUserAchievements();
-      const achievementsData = achievementsResponse?.data;
-      setAchievements(achievementsData);
-      return achievementsData;
-    } catch (error) {
-      handleApiError(error, 'fetching achievements');
-      throw error;
-    }
-  };
-
-  const fetchAllUsers = async (): Promise<CommunityPageUserInfo[]> => {
-    try {
-      const usersResponse: AllUsersResponse = await getAllUsers();
-      const usersData = usersResponse?.data?.users;
+      const usersResponse: AllUserProfilesResponse = await getAllUsers();
+      const usersData = usersResponse?.data;
       setAnglersUserInfos(usersData);
       return usersData;
     } catch (error) {
@@ -116,31 +95,23 @@ export default function Page() {
       }
 
       try {
-        const [fetchedUsers, fetchedAchievements] = await Promise.all([
+        const [fetchedUsers] = await Promise.all([
           fetchAllUsers(),
-          fetchAllAchievements()
         ]);
 
-        const unregisteredUsers: CommunityPageUserInfo[] = CatchUtils.getUniqueAnglers(catches)
+        const unregisteredUsers: UnregisteredUserInfo[] = CatchUtils.getUniqueAnglers(catches)
           .filter((user) => !user.userId)
           .map((user) => ({ firstName: user.name }));
 
         const eventsUserInfos = [...fetchedUsers, ...unregisteredUsers];
         setEventsUserInfos(eventsUserInfos);
 
-        const usersWithLevelInfo = fetchedUsers
-          .map((user) => {
-            const userXP = fetchedAchievements.filter(a => a.userId === user.id).reduce((acc, ach) => acc + ach.totalXP, 0);
-            const level = calculateLevel(userXP);
-            return { ...user, level };
-          })
-          .sort((a, b) => {
+        const anglersTabUserInfos = fetchedUsers
+          .toSorted((a, b) => {
             return a.firstName.localeCompare(b.firstName);
           });
 
-        
-
-        setAnglersUserInfos(usersWithLevelInfo);
+        setAnglersUserInfos(anglersTabUserInfos);
       } catch (error) {
         console.error("Failed to fetch data:", error);
       } finally {

@@ -1,4 +1,4 @@
-export enum ChartColorsRGB {
+export enum ChartColorsHEX {
   blue = '#228be6',
   red = '#fa5252',
   yellow = '#fab005',
@@ -10,6 +10,7 @@ export enum ChartColorsRGB {
   lime = '#82c91e',
   indigo = '#4c6ef5',
   teal = '#12b886',
+  grape = '#be4bdb',
   gray = '#e9ecef',
 }
 
@@ -25,6 +26,7 @@ export enum ChartColorsRGBA {
   lime = 'rgba(130, 201, 30, 1)',   // from #82c91e
   indigo = 'rgba(76, 110, 245, 1)',  // from #4c6ef5
   teal = 'rgba(18, 184, 134, 1)',   // from #12b886
+  grape = 'rgba(190, 75, 219, 1)',   // from #be4bdb
   gray = 'rgba(233, 236, 239, 1)',  // from #e9ecef
 }
 
@@ -40,6 +42,7 @@ export enum ChartColorsDimmedRGBA {
   lime = 'rgba(130, 201, 30, 0.6)',   // from #82c91e
   indigo = 'rgba(76, 110, 245, 0.6)',  // from #4c6ef5
   teal = 'rgba(18, 184, 134, 0.6)',   // from #12b886
+  grape = 'rgba(190, 75, 219, 0.6)',   // from #be4bdb
   gray = 'rgba(233, 236, 239, 0.6)',  // from #e9ecef
 }
 
@@ -55,6 +58,7 @@ export enum BarChartBgColors {
   lime = 'rgb(89, 132, 29)',
   indigo = 'rgb(57, 77, 158)',
   teal = 'rgb(22, 121, 91)',
+  grape = 'rgb(125, 56, 142)',
   gray = 'rgb(151, 153, 154)',
 }
 
@@ -84,4 +88,11 @@ export const fixedBarChartBgColorMap: Record<string, string> = {
   'Särki': BarChartBgColors.violet,
   'Kiiski': BarChartBgColors.orange,
 };
-  
+
+export enum AchievementChartColors {
+  gray,
+  green,
+  blue,
+  grape,
+  orange
+}

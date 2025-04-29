@@ -8,6 +8,10 @@ import OverviewTab from '@/components/statisticsPage/OverviewTab/OverviewTab';
 import LeaderboardsTab from '@/components/statisticsPage/LeaderboardsTab/LeaderboardsTab';
 import { useGlobalState } from '@/context/GlobalState';
 import { usePathname, useRouter } from 'next/navigation';
+import { IPublicUserProfile } from '@/lib/types/user';
+import { getAllUsers } from '@/services/api/userService';
+import { AllUserProfilesResponse } from '@/lib/types/responses';
+import { handleApiError } from '@/lib/utils/handleApiError';
 
 const TABS_CONFIG = [
   { value: 'overview', labelKey: 'StatisticsPage.Overview' },
@@ -23,6 +27,22 @@ export default function Page() {
   const { catches, jwtUserInfo, displayNameMap } = useGlobalState();
   const [rootRef, setRootRef] = useState<HTMLElement | null>(null);
   const [controlsRefs, setControlsRefs] = useState<Record<string, HTMLElement | null>>({});
+  const [userInfos, setUserInfos] = useState<IPublicUserProfile[]>([]);
+
+  useEffect(() => {
+    const fetchAllUsers = async (): Promise<IPublicUserProfile[]> => {
+      try {
+        const usersResponse: AllUserProfilesResponse = await getAllUsers();
+        const usersData = usersResponse?.data;
+        setUserInfos(usersData);
+        return usersData;
+      } catch (error) {
+        handleApiError(error, 'fetching users');
+        throw error;
+      }
+    };
+    fetchAllUsers();
+  }, []);
 
   const setControlRef = (val: string) => (node: HTMLElement | null) => {
     controlsRefs[val] = node;
@@ -99,7 +119,7 @@ export default function Page() {
           <OverviewTab catches={catches} />
         )}
         {activeTab === TABS_CONFIG[1].value && (
-          <LeaderboardsTab catches={catches} userInfo={jwtUserInfo} userDisplayNameMap={displayNameMap} />
+          <LeaderboardsTab catches={catches} userInfo={jwtUserInfo} userDisplayNameMap={displayNameMap} allUserInfos={userInfos}/>
         )}
       </Container>
     </>

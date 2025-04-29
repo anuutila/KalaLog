@@ -143,9 +143,17 @@
     "Overview": "Overview",
     "Leaderboards": "Leaderboards",
     "TotalCatches": "Total Catches",
+    "TotalXP": "Total XP",
+    "TotalStars": "Achievement Stars",
+    "Level": "Angler Level",
     "SpeciesDistribution": "Species Distribution",
     "TopAnglers": "Top Anglers",
-    "CatchCount": "Catch Count"
+    "CatchCount": "Catch Count",
+    "LeaderboardType": "Leaderboard Type",
+    "Metric": "Metric",
+    "Count": "Count",
+    "Weight": "Weight",
+    "Length": "Length"
   },
   "CommunityPage": {
     "Anglers": "Anglers",

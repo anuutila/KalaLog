@@ -1,5 +1,5 @@
 import { ApiEndpoints } from '@/lib/constants/constants';
-import { AllUsersResponse, UserCatchesLinkedResponse, UserInfoResponse, UserProfileResponse, UsersByFirstNameResponse } from '@/lib/types/responses';
+import { AllUserProfilesResponse, UserCatchesLinkedResponse, UserInfoResponse, UserProfileResponse, UsersByFirstNameResponse } from '@/lib/types/responses';
 import { IUser } from '@/lib/types/user';
 import { httpClient } from '../httpClient';
 
@@ -16,8 +16,8 @@ export async function getUserProfileByUsername(username: string): Promise<UserPr
   return httpClient<UserProfileResponse>(endpoint);
 }
 
-export async function getAllUsers(): Promise<AllUsersResponse> {
-  return httpClient<AllUsersResponse>(ApiEndpoints.AllUsers);
+export async function getAllUsers(): Promise<AllUserProfilesResponse> {
+  return httpClient<AllUserProfilesResponse>(ApiEndpoints.AllUsers);
 }
 
 export async function linkUserCatches(user: IUser): Promise<UserCatchesLinkedResponse> {

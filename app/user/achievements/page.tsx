@@ -23,9 +23,10 @@ import { calculateLevel } from '@/lib/utils/levelUtils';
 
 type StarRarityCounts = { 1: number; 2: number; 3: number; 4: number; 5: number };
 const rarityTranslationKeys = ['Common', 'Uncommon', 'Rare', 'Epic', 'Legendary'];
+
 export default function Page() {
-  const t = useTranslations();
   const tRarity = useTranslations("AchievementsPage.Rarities");
+  const t = useTranslations();
   const { setActions } = useHeaderActions();
   const { achievements } = useGlobalState();
   const [userAchDict, setUserAchDict] = useState<Record<string, IAchievement>>({});

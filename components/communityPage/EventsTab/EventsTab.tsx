@@ -1,8 +1,8 @@
-import { CommunityPageUserInfo } from "@/app/community/page";
+import { UnregisteredUserInfo } from "@/app/community/page";
 import { useGlobalState } from "@/context/GlobalState";
 import { IEvent } from "@/lib/types/event";
 import { EventsResponse } from "@/lib/types/responses";
-import { editorRoles, UserRole } from "@/lib/types/user";
+import { editorRoles, IPublicUserProfile, UserRole } from "@/lib/types/user";
 import { calculateEventStats } from "@/lib/utils/eventUtils";
 import { handleApiError } from "@/lib/utils/handleApiError";
 import { getEvents } from "@/services/api/eventService";
@@ -16,7 +16,7 @@ import { DateTimeFormatOptions, useFormatter, useTranslations } from "next-intl"
 import EventDetails from "./EventDetails";
 
 interface EventsTabProps {
-  allUsers: CommunityPageUserInfo[];
+  allUsers: (IPublicUserProfile | UnregisteredUserInfo)[];
 }
 
 export default function EventsTab({ allUsers }: EventsTabProps) {

@@ -231,8 +231,8 @@ export default function UserProfilePage() {
                     <Group gap={'0'} justify='space-between'>
                       <Title c={'white'} order={3} fz={20} fw={600}>{t('UserPage.TotalCatches')}</Title>
                       <Group gap={10}>
-                        <Title c={'white'} order={1} fz={25} lh={1}>{totalCatches} </Title>
-                        <IconFish size={30} stroke={2} color='white' style={{ transform: 'translateY(0px)' }} />
+                        <Text c={'white'} fz={18} fw={500} lh={1}>{totalCatches} </Text>
+                        <IconFish size={22} stroke={2} color='white' style={{ transform: 'translateY(0px)' }} />
                       </Group>
                     </Group>
                   </Paper>

@@ -1,12 +1,12 @@
-import { CommunityPageUserInfo } from "@/app/community/page";
 import LevelIcon from "@/components/LevelIcon/LevelIcon";
+import { IPublicUserProfile } from "@/lib/types/user";
 import { nameToColor } from "@/lib/utils/utils";
 import { Avatar, Group, Paper, Skeleton, Stack, Text } from "@mantine/core";
 import { IconChevronRight } from "@tabler/icons-react";
 import Link from "next/link";
 
 interface AnglersTabProps {
-  userInfos: CommunityPageUserInfo[];
+  userInfos: IPublicUserProfile[];
   loadingUsers: boolean;
 }
 

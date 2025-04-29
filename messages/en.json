@@ -142,6 +142,7 @@
   "StatisticsPage": {
     "Overview": "Overview",
     "Leaderboards": "Leaderboards",
+    "Map": "Map",
     "TotalCatches": "Total Catches",
     "TotalXP": "Total XP",
     "TotalStars": "Achievement Stars",

@@ -1,0 +1,36 @@
+.mapboxgl-ctrl-group {
+  background-color: #1f1f1f !important;
+  border: 1px solid #424242 !important;
+  border-radius: 8px !important;
+  box-shadow: none !important;
+}
+
+.mapboxgl-ctrl-group button {
+  background-color: transparent !important;
+  width: 30px !important;
+  height: 30px !important;
+}
+
+.mapboxgl-ctrl-group button+button {
+  border-top: 1px solid #424242 !important;
+}
+
+.mapboxgl-ctrl-group button .mapboxgl-ctrl-icon {
+  filter: invert(1) grayscale(1) brightness(1.5);
+}
+
+.mapboxgl-ctrl-group button:active {
+  background-color: #333 !important;
+}
+
+/* .mapboxgl-ctrl-geolocate-active .mapboxgl-ctrl-icon {
+   filter: invert(0.8) sepia(1) saturate(5) hue-rotate(180deg);
+} */
+
+.mapboxgl-ctrl-logo {
+  display: none !important;
+}
+
+.mapboxgl-ctrl-attrib {
+  display: none !important;
+}

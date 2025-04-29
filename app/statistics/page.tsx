@@ -12,10 +12,12 @@ import { IPublicUserProfile } from '@/lib/types/user';
 import { getAllUsers } from '@/services/api/userService';
 import { AllUserProfilesResponse } from '@/lib/types/responses';
 import { handleApiError } from '@/lib/utils/handleApiError';
+import MapTab from '@/components/statisticsPage/MapTab/MapTab';
 
 const TABS_CONFIG = [
   { value: 'overview', labelKey: 'StatisticsPage.Overview' },
   { value: 'leaderboards', labelKey: 'StatisticsPage.Leaderboards' },
+  { value: 'map', labelKey: 'StatisticsPage.Map' },
 ];
 
 const DEFAULT_TAB_VALUE = TABS_CONFIG[0].value;
@@ -114,14 +116,20 @@ export default function Page() {
         </Center>
       </Paper>
 
-      <Container size={'sm'} h={'100%'} p={0} className={classes.tabContainer}>
-        {activeTab === TABS_CONFIG[0].value && (
-          <OverviewTab catches={catches} />
+      {activeTab !== TABS_CONFIG[2].value
+        ? (<Container size={'sm'} h={'100%'} p={0} className={classes.tabContainer}>
+          {activeTab === TABS_CONFIG[0].value && (
+            <OverviewTab catches={catches} />
+          )}
+          {activeTab === TABS_CONFIG[1].value && (
+            <LeaderboardsTab catches={catches} userInfo={jwtUserInfo} userDisplayNameMap={displayNameMap} allUserInfos={userInfos} />
+          )}
+        </Container>
+        ) : (
+          <Box h={'100%'} w={'100%'}>
+            <MapTab />
+          </Box>
         )}
-        {activeTab === TABS_CONFIG[1].value && (
-          <LeaderboardsTab catches={catches} userInfo={jwtUserInfo} userDisplayNameMap={displayNameMap} allUserInfos={userInfos}/>
-        )}
-      </Container>
     </>
   );
 }

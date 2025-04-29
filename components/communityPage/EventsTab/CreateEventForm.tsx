@@ -9,16 +9,17 @@ import { CreateEventData } from '@/lib/types/event';
 import { EventCreatedResponse } from '@/lib/types/responses';
 import { handleApiError } from '@/lib/utils/handleApiError';
 import { useLoadingOverlay } from '@/context/LoadingOverlayContext';
-import { CommunityPageUserInfo } from '@/app/community/page';
 import { CatchUtils } from '@/lib/utils/catchUtils';
 import { ICatch } from '@/lib/types/catch';
 import { useTranslations } from 'next-intl';
 import { IconX, IconCheck, IconTrash, IconLabel, IconCalendar } from '@tabler/icons-react';
 import { nameToColor } from '@/lib/utils/utils';
+import { IPublicUserProfile } from '@/lib/types/user';
+import { UnregisteredUserInfo } from '@/app/community/page';
 
 
 interface CreateEventFormProps {
-  users: CommunityPageUserInfo[];
+  users: (IPublicUserProfile | UnregisteredUserInfo)[];
   catches: ICatch[];
   onSuccessAction: () => void;
   onCancelAction: () => void;
@@ -38,7 +39,8 @@ export default function CreateEventForm({ users, catches, onSuccessAction, onCan
   const [isFormValid, setIsFormValid] = useState(false);
 
   // Format user data for MultiSelect
-  const userSelectData: Record<string, { username: string | undefined; id: string | undefined }> = users.reduce((acc, user,) => {
+  const userSelectData: Record<string, { username: string | undefined; id: string | undefined }> = users.reduce((acc, u,) => {
+    const user = u as IPublicUserProfile;
     acc[`${user.firstName}${user.lastName ? ' ' : ''}${user.lastName ?? ''}`] = { username: user.username ?? '', id: user.id ?? '' };
     return acc;
   }, {} as Record<string, { username: string | undefined; id: string | undefined }>);

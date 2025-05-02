@@ -82,18 +82,18 @@ export default function EventsTab({ allUsers }: EventsTabProps) {
     const startDateObj = new Date(event.startDate);
     const endDateObj = new Date(event.endDate);
 
-    const options = {
+    const options: Intl.DateTimeFormatOptions = {
       month: 'short',
       day: 'numeric',
     };
 
-    const optionsWithYear = {
+    const optionsWithYear: Intl.DateTimeFormatOptions = {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
     };
 
-    const dayOnlyOptions = {
+    const dayOnlyOptions: Intl.DateTimeFormatOptions = {
       day: 'numeric',
     };
 

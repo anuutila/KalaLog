@@ -78,37 +78,21 @@ export default function EventsTab({ allUsers }: EventsTabProps) {
   const format = useFormatter();
 
   const getDateRange = (event: IEvent) => {
-
     const startDateObj = new Date(event.startDate);
     const endDateObj = new Date(event.endDate);
 
-    const options: Intl.DateTimeFormatOptions = {
-      month: 'short',
-      day: 'numeric',
-    };
-
-    const optionsWithYear: Intl.DateTimeFormatOptions = {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    };
-
-    const dayOnlyOptions: Intl.DateTimeFormatOptions = {
-      day: 'numeric',
-    };
-
-    const formattedStart = format.dateTime(startDateObj, options);
-    const formattedEnd = format.dateTime(endDateObj, options);
+    const formattedStart = format.dateTime(startDateObj, { month: 'short', day: 'numeric'});
+    const formattedEnd = format.dateTime(endDateObj, { month: 'short', day: 'numeric'});
     const formattedYear = format.dateTime(endDateObj, { year: 'numeric' });
 
     let dateRangeString = `${formattedStart} - ${formattedEnd}, ${formattedYear}`;
 
     if (dayjs(event.startDate).isSame(dayjs(event.endDate), 'month')) {
-      const startDayOnly = format.dateTime(startDateObj, dayOnlyOptions);
+      const startDayOnly = format.dateTime(startDateObj, { day: 'numeric' });
       dateRangeString = `${startDayOnly}. - ${formattedEnd}, ${formattedYear}`;
     }
     if (!dayjs(event.startDate).isSame(dayjs(event.endDate), 'year')) {
-      const formattedStartWithYear = format.dateTime(startDateObj, optionsWithYear);
+      const formattedStartWithYear = format.dateTime(startDateObj, { year: 'numeric', month: 'short', day: 'numeric' });
       dateRangeString = `${formattedStartWithYear} - ${formattedEnd}, ${formattedYear}`;
     }
 

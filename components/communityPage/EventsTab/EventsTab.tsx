@@ -155,9 +155,9 @@ export default function EventsTab({ allUsers }: EventsTabProps) {
                     <Group align="top" justify="space-between">
                       <Stack flex={1} gap={'xs'}>
                         <Title order={3} c={'white'} >{event.name}</Title>
-                        <Group align="center" gap="xs">
+                        <Group align="center" gap="xs" wrap={'nowrap'}>
                           <IconCalendar size={24} color="#c9c9c9" stroke={2} />
-                          <Text fz={'md'} fw={500} mr={-10}>
+                          <Text fz={'md'} fw={500} mr={-16} style={{ whiteSpace: 'nowrap' }}>
                             {getDateRange(event)}
                           </Text>
                         </Group>

@@ -95,7 +95,7 @@ const yAxisLabelPlugin: Plugin<'bar', YAxisLabelPluginOptions> = {
     const defaultWeight = '500';
     const highlightWeight = 'bold';
     const fontSize = 16;
-    const fontFamily = "'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', sans-serif";
+    const fontFamily = '-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji';
 
 
     ctx.save();

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, use, useContext, useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { showNotification } from '@/lib/notifications/notifications';
 import { IAchievement } from '@/lib/types/achievement';
@@ -12,7 +12,8 @@ import { handleApiError } from '@/lib/utils/handleApiError';
 import { getUserAchievements } from '@/services/api/achievementService';
 import { getCatches } from '@/services/api/catchService';
 import { getUserInfo } from '@/services/api/userService';
-import { usePathname } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
+import useHash from '@/hooks/useHash';
 
 interface GlobalState {
   isLoggedIn: boolean | null;
@@ -33,6 +34,8 @@ const GlobalContext = createContext<GlobalState | undefined>(undefined);
 
 export const GlobalStateProvider = ({ children }: { children: React.ReactNode }) => {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const hash = useHash();
   const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
   const [jwtUserInfo, setJwtUserInfo] = useState<JwtUserInfo | null>(null);
   const [catches, setCatches] = useState<ICatch[]>([]);
@@ -160,14 +163,20 @@ export const GlobalStateProvider = ({ children }: { children: React.ReactNode })
   }
 
   useEffect(() => {
-    if (pathname !== currentPath) {
+    const fullPath = pathname + (searchParams.toString() ? `?${searchParams.toString()}` : '') + hash;
+    // Avoid updating the path with the hash if the pathname is '/catches'
+    if (pathname === '/catches' && fullPath && hash) {
+      return;
+    }
+
+    if (fullPath !== currentPath) {
       const nonHistoryPaths = ['/login', '/signup'];
       if (currentPath && !nonHistoryPaths.includes(currentPath)) {
           setPreviousPath(currentPath);
       }
-      setCurrentPath(pathname);
+      setCurrentPath(fullPath);
     }
-  }, [pathname, currentPath]);
+  }, [pathname, searchParams, hash, currentPath, setCurrentPath, setPreviousPath]);
 
   return (
     <GlobalContext.Provider

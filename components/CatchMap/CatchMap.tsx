@@ -10,6 +10,7 @@ import { FishColorsMantine6RGB, FixedFishColors } from '@/lib/constants/constant
 import { CircleLayerSpecification, GeoJSONSource, MapMouseEvent, SymbolLayerSpecification } from 'mapbox-gl';
 import Link from 'next/link';
 import { IconChevronRight, IconRuler2, IconUser, IconWeight } from '@tabler/icons-react';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
 
@@ -48,7 +49,13 @@ const clusterCircleLayerStyle: CircleLayerSpecification = {
       10, 20, // 20px radius for 10-49 points
       50, 25  // 25px radius for >= 50 points
     ],
-    'circle-stroke-width': 3,
+    'circle-stroke-width': [
+      'step',
+      ['get', 'point_count'],
+      1.5, // 1px stroke for < 10 points
+      10, 2, // 2px stroke for 10-49 points
+      50, 3   // 3px stroke for >= 50 points
+    ],
     'circle-stroke-color': '#228be6'
   }
 };
@@ -87,24 +94,32 @@ interface CatchMapProps {
 }
 
 export default function CatchMap({
-  initialLatitude = 62.1467,
-  initialLongitude = 23.215,
-  initialZoom = 11
+  initialLatitude = 62.15,
+  initialLongitude = 23.2129,
+  initialZoom = 10.75
 }: CatchMapProps) {
   const t = useTranslations();
   const { catches, displayNameMap } = useGlobalState();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  const read = (key: string, fallback: number) => {
+    const val = searchParams.get(key);
+    return val ? parseFloat(val) : fallback;
+  }
+
   const [viewState, setViewState] = useState({
-    longitude: initialLongitude,
-    latitude: initialLatitude,
-    zoom: initialZoom,
-    pitch: 0,
-    bearing: 0
-  });
+    longitude: read('lng', initialLongitude),
+    latitude:  read('lat', initialLatitude),
+    zoom:      read('zoom', initialZoom),
+    pitch:     read('pitch', 0),
+    bearing:   read('bearing', 0),
+  })
+
   const [selectedCatch, setSelectedCatch] = useState<CatchWithCoords | null>(null);
   const mapRef = useRef<MapRef | null>(null);
 
   const catchesWithCoords: CatchWithCoords[] = useMemo(() => {
-
     return catches.flatMap((c): CatchWithCoords[] => {
       const id = c.id;
       if (!id) {
@@ -163,7 +178,6 @@ export default function CatchMap({
   // };
 
   const geojsonData = useMemo(() => {
-    console.log("Recalculating GeoJSON data...");
     return {
       type: 'FeatureCollection' as const,
       features: catchesWithCoords.map(catchItem => {
@@ -246,11 +260,34 @@ export default function CatchMap({
 
   }, [setSelectedCatch]);
 
+  const handleMoveEnd = () => {
+    if (!viewState) {
+      return;
+    }
+    const { longitude, latitude, zoom, pitch, bearing } = viewState
+    const url = new URL(window.location.href);
+    url.pathname = '/statistics';
+    url.searchParams.set('lng', longitude.toFixed(8));
+    url.searchParams.set('lat', latitude.toFixed(8));
+    url.searchParams.set('zoom', zoom.toFixed(2));
+    url.searchParams.set('pitch', pitch.toFixed(2));
+    url.searchParams.set('bearing', bearing.toFixed(2));
+    url.hash = 'map';
+    router.replace(url.toString());
+  }
 
   if (!MAPBOX_TOKEN) {
     console.error("Mapbox token is not configured!");
     return <div>Error: Mapbox token missing. Please configure NEXT_PUBLIC_MAPBOX_TOKEN.</div>;
   }
+
+  const href = useMemo(() => {
+    const url = new URL(window.location.origin);
+    url.pathname = '/catches';
+    url.searchParams.set('catchNumber', String(selectedCatch?.catchNumber || ''));
+    url.hash = '';                                     
+    return url;                                    
+  }, [selectedCatch])
 
   return (
     <Box h={'100%'} w={'100%'} pos={'relative'}>
@@ -258,6 +295,7 @@ export default function CatchMap({
         ref={mapRef}
         {...viewState}
         onMove={evt => setViewState(evt.viewState)}
+        onMoveEnd={handleMoveEnd}
         mapboxAccessToken={MAPBOX_TOKEN}
         mapStyle="mapbox://styles/anuutila/cma3129fq000001skaoqnfrg1"
         style={{ width: '100%', height: '100%' }}
@@ -311,25 +349,25 @@ export default function CatchMap({
                     <IconRuler2 size={20} />
                     <Text size="sm" fw={500}>{t('Common.Length')}:</Text>
                   </Group>
-                  <Text size="sm" flex={1}>{selectedCatch.length ? `${selectedCatch.length} cm` : '-'}</Text>
+                  <Text size="sm" fw={500} flex={1}>{selectedCatch.length ? `${selectedCatch.length} cm` : '-'}</Text>
                 </Group >
                 <Group gap={6} wrap={'nowrap'}>
                   <Group gap={4} flex={1.5} align={'center'} wrap={'nowrap'}>
                     <IconWeight size={20} />
-                    <Text size="sm">{t('Common.Weight')}:</Text>
+                    <Text size="sm" fw={500}>{t('Common.Weight')}:</Text>
                   </Group>
-                  <Text size="sm" flex={1}>{selectedCatch.weight ? `${selectedCatch.weight} kg` : '-'}</Text>
+                  <Text size="sm" fw={500} flex={1}>{selectedCatch.weight ? `${selectedCatch.weight} kg` : '-'}</Text>
                 </Group>
                 <Group gap={6} wrap={'nowrap'}>
                   <Group gap={4} flex={1.5} align={'center'} wrap={'nowrap'}>
                     <IconUser size={20} />
-                    <Text size="sm">{t('Common.CaughtBy')}:</Text>
+                    <Text size="sm" fw={500}>{t('Common.CaughtBy')}:</Text>
                   </Group>
-                  <Text size="sm" flex={1}>{selectedCatch.angler}</Text>
+                  <Text size="sm" fw={500} flex={1}>{selectedCatch.angler}</Text>
                 </Group>
                 <Group justify={'center'} align={'center'} gap={0} mt={6}>
                   <Link
-                      href={`/catches?catchNumber=${selectedCatch.catchNumber}`}
+                      href={href}
                       passHref
                       prefetch={!!selectedCatch}
                       style={{

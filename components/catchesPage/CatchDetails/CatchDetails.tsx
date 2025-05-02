@@ -20,6 +20,8 @@ import ConfirmDeleteModal from './ConfirmDeleteModal';
 import ConfirmEditModal from './ConfirmEditModal';
 import FullscreenImage from './FullscreenImage';
 import classes from './CatchDetails.module.css';
+import { navigateBack } from '@/lib/utils/utils';
+import { useRouter } from 'next/navigation';
 
 export interface CatchDetails {
   species: { label: string; data: string };
@@ -54,7 +56,8 @@ const noAccessPlaceholder = '/no-access-placeholder.png';
 
 export default function CatchDetails({ selectedCatch, setSelectedCatch }: CatchDetailsProps) {
   const t = useTranslations();
-  const { setCatches, isLoggedIn, jwtUserInfo, displayNameMap } = useGlobalState();
+  const router = useRouter();
+  const { setCatches, isLoggedIn, jwtUserInfo, displayNameMap, previousPath } = useGlobalState();
   const { setActionsDisabled } = useHeaderActions();
   const { showLoading, hideLoading } = useLoadingOverlay();
   const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
@@ -156,7 +159,7 @@ export default function CatchDetails({ selectedCatch, setSelectedCatch }: CatchD
       showNotification('success', catchDeletedResponse.message, { withTitle: false });
 
       // Close the modal
-      setSelectedCatch(null);
+      navigateBack(router, previousPath);
 
       // Update the catches state
       setCatches((prevCatches) => prevCatches.filter((catchItem) => catchItem.id !== catchId));
@@ -234,9 +237,9 @@ export default function CatchDetails({ selectedCatch, setSelectedCatch }: CatchD
               {!isInEditView && (
                 <CopyButton value={urlToCopy} timeout={4000}>
                   {({ copied, copy }) => (
-                    <Tooltip 
-                      label={copied ? t('Tooltips.LinkCopied') : t('Tooltips.CopyLink')} 
-                      withArrow 
+                    <Tooltip
+                      label={copied ? t('Tooltips.LinkCopied') : t('Tooltips.CopyLink')}
+                      withArrow
                       position="bottom"
                       events={{ focus: true, hover: true, touch: false }}
                     >
@@ -288,7 +291,7 @@ export default function CatchDetails({ selectedCatch, setSelectedCatch }: CatchD
                   isInEditView
                     ? () => openCancelEditModal()
                     : () => {
-                      setSelectedCatch(null);
+                      navigateBack(router, previousPath);
                     }
                 }
               >

@@ -24,7 +24,7 @@ export default function AnglersTab({ userInfos, loadingUsers }: AnglersTabProps)
             key={user.id}
           >
             <Paper p={'sm'} pr={6} radius={'lg'} bg={"var(--my-ui-item-background-color)"} shadow="md">
-              <Group gap={0}>
+              <Group gap={0} wrap={'nowrap'}>
                 <Avatar
                   radius="100%"
                   size={50}

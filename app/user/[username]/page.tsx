@@ -1,10 +1,10 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { IconChevronLeft, IconChevronRight, IconFish, IconLogout, IconStar, IconStarFilled, IconTrophy, IconUserCog } from '@tabler/icons-react';
+import { IconChevronLeft, IconFish, IconLogout, IconStarFilled, IconTrophy, IconUserCog } from '@tabler/icons-react';
 import { useTranslations } from 'next-intl';
-import { Avatar, Box, Button, Center, Container, LoadingOverlay, Modal, Stack, Text, Alert, ActionIcon, Skeleton, rem, Paper, Title, Group, Badge, SimpleGrid } from '@mantine/core';
+import { Avatar, Box, Button, Center, Container, Modal, Stack, Text, Alert, ActionIcon, Skeleton, rem, Paper, Title, Group, Badge } from '@mantine/core';
 import { IconAlertCircle } from '@tabler/icons-react';
 import AdminPanel from '@/components/AdminPanel/AdminPanel';
 import { useGlobalState } from '@/context/GlobalState';
@@ -14,16 +14,14 @@ import { UserRole, IPublicUserProfile } from '@/lib/types/user';
 import { handleApiError } from '@/lib/utils/handleApiError';
 import { logout } from '@/services/api/authservice';
 import { getUserProfileByUsername } from '@/services/api/userService';
-import { nameToColor } from '@/lib/utils/utils';
+import { nameToColor, navigateBack } from '@/lib/utils/utils';
 import { useParams, useRouter } from 'next/navigation';
 import { useHeaderActions } from '@/context/HeaderActionsContext';
 import classes from '@/context/LoadingOverlayContext.module.css';
 import ProfileTitle from '@/components/userPage/ProfileTitle';
-import { ICatch } from '@/lib/types/catch';
 import { calculateUserCatchStats } from '@/lib/utils/catchUtils';
 import { BiggestFishStat } from '@/components/userPage/BiggestFishStat';
-import { calculateTotalPossibleStars, StarRarityCounts } from '@/lib/utils/achievementUtils';
-import { AchievementColors } from '@/components/achievements/AchievementItem/AchievementItem';
+import { calculateTotalPossibleStars } from '@/lib/utils/achievementUtils';
 
 export default function UserProfilePage() {
   const router = useRouter();
@@ -49,15 +47,12 @@ export default function UserProfilePage() {
       return;
     }
 
-    const fallbackPath = '/catches';
-    const goBackPath = previousPath || fallbackPath;
-
     setActions(
       <ActionIcon
         size="lg"
         variant="transparent"
         c="white"
-        onClick={() => router.push(goBackPath)}
+        onClick={() => navigateBack(router, previousPath)}
       >
         <IconChevronLeft style={{ width: '100%', height: '100%' }} />
       </ActionIcon>
@@ -174,7 +169,7 @@ export default function UserProfilePage() {
   }
 
   return (
-    <Container size="sm" pt="xl" px="0" pb={'md'}>
+    <Container size="sm" pt="xl" px={'md'} pb={'md'}>
       <Center h="100%" w="100%">
         <Stack align="center" gap="xl" justify="space-between" h="100%" w="100%">
           <Stack align="center" gap="xl" w={'100%'}>
@@ -227,7 +222,7 @@ export default function UserProfilePage() {
                 </Stack>
               ) : (
                 <Stack align='center' w={'100%'} gap={0}>
-                  <Paper p="md" mt="xl" mx="md" radius={'lg'} bg={'var(--my-ui-item-background-color)'} w={'min(100%, 365px)'} >
+                  <Paper p="md" mt="xl" mx="md" radius={'lg'} bg={'var(--my-ui-item-background-color)'} w={'100%'} maw={500}>
                     <Group gap={'0'} justify='space-between'>
                       <Title c={'white'} order={3} fz={20} fw={600}>{t('UserPage.TotalCatches')}</Title>
                       <Group gap={10}>
@@ -237,7 +232,7 @@ export default function UserProfilePage() {
                     </Group>
                   </Paper>
 
-                  <Paper p="md" mt={'md'} mx="md" radius={'lg'} bg={'var(--my-ui-item-background-color)'} w={'min(100%, 365px)'} >
+                  <Paper p="md" mt={'md'} mx="md" radius={'lg'} bg={'var(--my-ui-item-background-color)'} w={'100%'} maw={500}>
                     <Title c={'white'} order={3} mb={'xs'} fz={20} fw={600}>{t('UserPage.PersonalBests')}</Title>
                     <Stack gap={8}>
                       {personalBestSpecies.map(spec => (
@@ -251,7 +246,7 @@ export default function UserProfilePage() {
                     </Stack>
                   </Paper>
 
-                  <Paper p="md" mt={'md'} mx="md" radius={'lg'} bg={'var(--my-ui-item-background-color)'} w={'min(100%, 365px)'} >
+                  <Paper p="md" mt={'md'} mx="md" radius={'lg'} bg={'var(--my-ui-item-background-color)'} w={'100%'} maw={500}>
                     <Group gap={'0'} justify='space-between'>
                       <Title c={'white'} order={3} fz={20} fw={600} mb={'xs'}>{t('UserPage.Achievements')}</Title>
                       {/* <Group gap={10}>

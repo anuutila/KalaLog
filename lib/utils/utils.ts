@@ -1,6 +1,7 @@
 import imageCompression, { Options } from 'browser-image-compression';
 import { ICatch } from '../types/catch';
 import { MantineColor } from '@mantine/core';
+import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
 
 export function sortByDate(catches: ICatch[]): ICatch[] {
   return catches.sort((a, b) => {
@@ -134,3 +135,8 @@ export function getPageLabelKey(pathname: string | null): string {
 
   return 'Pages.KalaLog';
 };
+
+export function navigateBack(router: AppRouterInstance, previousPath: string | null, fallbackPath: string = '/catches'): void {
+  const goBackPath = previousPath || fallbackPath;
+  router.push(goBackPath);
+}

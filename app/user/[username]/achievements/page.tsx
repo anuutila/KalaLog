@@ -15,7 +15,7 @@ import LevelIcon from '@/components/LevelIcon/LevelIcon';
 import { calculateLevel } from '@/lib/utils/levelUtils';
 import { getUserProfileByUsername } from '@/services/api/userService';
 import { IPublicUserProfile } from '@/lib/types/user';
-import { nameToColor } from '@/lib/utils/utils';
+import { nameToColor, navigateBack } from '@/lib/utils/utils';
 import { calculateTotalPossibleStars, calculateUserAchievementStats, sortAchievements, StarRarityCounts } from '@/lib/utils/achievementUtils';
 import { UserProfileResponse } from '@/lib/types/responses';
 import { handleApiError } from '@/lib/utils/handleApiError';
@@ -90,15 +90,12 @@ export default function UserAchievementsPage() {
 
   // Effect to set Header Action (Back Button)
   useEffect(() => {
-    const fallbackPath = '/catches';
-    const goBackPath = previousPath || fallbackPath;
-
     setActions(
       <ActionIcon
         size="lg"
         variant="transparent"
         c="white"
-        onClick={() => router.push(goBackPath)}
+        onClick={() => navigateBack(router, previousPath)}
       >
         <IconChevronLeft style={{ width: '100%', height: '100%' }} />
       </ActionIcon>

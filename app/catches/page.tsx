@@ -37,7 +37,6 @@ import { useGlobalState } from '@/context/GlobalState';
 import { useHeaderActions } from '@/context/HeaderActionsContext';
 import { DEFAULT_BODY_OF_WATER } from '@/lib/constants/constants';
 import { CatchUtils } from '@/lib/utils/catchUtils';
-import { showNotification } from '@/lib/notifications/notifications';
 
 const currentYear = new Date().getFullYear().toString();
 
@@ -92,44 +91,19 @@ export default function CatchesPage() {
   });
 
   useEffect(() => {
-    if (!loadingCatches && catches.length > 0 && !initialParamLoadDone.current) {
-      const catchNumberParam = searchParams.get('catchNumber');
-
-      if (catchNumberParam) {
-        const catchNum = parseInt(catchNumberParam, 10);
-        if (!isNaN(catchNum)) {
-          const catchToOpen = catches.find(c => c.catchNumber === catchNum);
-          if (catchToOpen) {
-            if (selectedCatch?.id !== catchToOpen.id) {
-              setSelectedCatch(catchToOpen);
-            }
-          } else {
-            const message = `Catch #${catchNum} not found.`;
-            showNotification('error', message, { withTitle: true });
-          }
-        }
+    if (!loadingCatches && catches.length > 0) {
+      const param = searchParams.get('catchNumber');
+      if (param) {
+        const num = parseInt(param, 10);
+        const found = catches.find(c => c.catchNumber === num) || null;
+        setSelectedCatch(found);
+      } else {
+        setSelectedCatch(null);
       }
-      initialParamLoadDone.current = true;
+
+      setCatchDetailsOpen(!!param);
     }
   }, [searchParams, catches, loadingCatches]);
-
-  useEffect(() => {
-    const isOpen = !!selectedCatch;
-    setCatchDetailsOpen(isOpen);
-
-    if (initialParamLoadDone.current) {
-        console.log("State Sync: Updating URL for selectedCatch", selectedCatch);
-        if (isOpen && selectedCatch) {
-             if (searchParams.get('catchNumber') !== String(selectedCatch.catchNumber)) {
-                 router.push(`/catches?catchNumber=${selectedCatch.catchNumber}`, { scroll: false });
-             }
-        } else {
-            if (searchParams.has('catchNumber')) {
-                router.push('/catches', { scroll: false });
-            }
-        }
-    }
-  }, [selectedCatch, searchParams, router]);
 
   useEffect(() => {
     const newSpeciesColWidth = imageIconsEnabled ? SpeciesColWidths.WithIcon : SpeciesColWidths.NoIcon;
@@ -361,7 +335,9 @@ export default function CatchesPage() {
   const onRowClicked = useCallback((event: any) => {
     if (event?.data) {
       console.log('Selected catch:', event.data);
-      setSelectedCatch(event.data);
+      const params = new URLSearchParams(searchParams.toString());
+      params.set('catchNumber', event.data.catchNumber);
+      window.history.pushState(null, '', `?${params.toString()}`)
     }
   }, []);
 

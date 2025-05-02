@@ -1,10 +1,84 @@
 'use client';
 
-import React, { useState } from 'react';
-import Map, { NavigationControl, GeolocateControl } from 'react-map-gl/mapbox';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
+import Map, { NavigationControl, GeolocateControl, MapRef, Popup, Source, Layer } from 'react-map-gl/mapbox';
 import './CatchMap.css';
+import { useGlobalState } from '@/context/GlobalState';
+import { Box, Group, Stack, Text, Title } from '@mantine/core';
+import { useTranslations } from 'next-intl';
+import { FishColorsMantine6RGB, FixedFishColors } from '@/lib/constants/constants';
+import { CircleLayerSpecification, GeoJSONSource, MapMouseEvent, SymbolLayerSpecification } from 'mapbox-gl';
+import Link from 'next/link';
+import { IconChevronRight, IconRuler2, IconUser, IconWeight } from '@tabler/icons-react';
 
 const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
+
+const SOURCE_ID = 'catches-source';
+
+const unclusteredPointLayerStyle: CircleLayerSpecification = {
+  id: 'unclustered-point-layer',
+  type: 'circle',
+  source: SOURCE_ID,
+  filter: ['!', ['has', 'point_count']],
+  paint: {
+    'circle-color': ['coalesce', ['get', 'markerColor'], '#cccccc'],
+    'circle-radius': 6,
+    'circle-stroke-width': 1,
+    'circle-stroke-color': '#ffffff',
+  }
+};
+
+const clusterCircleLayerStyle: CircleLayerSpecification = {
+  id: 'cluster-circle-layer',
+  type: 'circle',
+  source: SOURCE_ID,
+  filter: ['has', 'point_count'],
+  paint: {
+    'circle-color': [
+      'step',
+      ['get', 'point_count'],
+      '#141414',
+      10, '#141414',
+      50, '#141414'
+    ],
+    'circle-radius': [
+      'step',
+      ['get', 'point_count'],
+      15, // 15px radius for < 10 points
+      10, 20, // 20px radius for 10-49 points
+      50, 25  // 25px radius for >= 50 points
+    ],
+    'circle-stroke-width': 3,
+    'circle-stroke-color': '#228be6'
+  }
+};
+
+const clusterCountLayerStyle: SymbolLayerSpecification = {
+  id: 'cluster-count-layer',
+  type: 'symbol',
+  source: SOURCE_ID,
+  filter: ['has', 'point_count'],
+  layout: {
+    'text-field': '{point_count_abbreviated}',
+    'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+    'text-size': 16,
+    'text-allow-overlap': true 
+  },
+  paint: {
+    'text-color': '#ffffff',
+  }
+};
+
+interface CatchWithCoords {
+  id?: string;
+  catchNumber: number;
+  species: string;
+  length?: number | null;
+  weight?: number | null;
+  angler: string;
+  latitude: number;
+  longitude: number;
+}
 
 interface CatchMapProps {
   initialLatitude?: number;
@@ -17,7 +91,8 @@ export default function CatchMap({
   initialLongitude = 23.215,
   initialZoom = 11
 }: CatchMapProps) {
-
+  const t = useTranslations();
+  const { catches, displayNameMap } = useGlobalState();
   const [viewState, setViewState] = useState({
     longitude: initialLongitude,
     latitude: initialLatitude,
@@ -25,6 +100,152 @@ export default function CatchMap({
     pitch: 0,
     bearing: 0
   });
+  const [selectedCatch, setSelectedCatch] = useState<CatchWithCoords | null>(null);
+  const mapRef = useRef<MapRef | null>(null);
+
+  const catchesWithCoords: CatchWithCoords[] = useMemo(() => {
+
+    return catches.flatMap((c): CatchWithCoords[] => {
+      const id = c.id;
+      if (!id) {
+        console.warn("Skipping catch: Missing ID", c);
+        return [];
+      }
+
+      const coordsString = c.location?.coordinates;
+      if (typeof coordsString !== 'string' || coordsString.trim() === '') {
+        return [];
+      }
+
+      const parts = coordsString.split(',');
+      if (parts.length !== 2) {
+        console.warn(`Skipping catch ${id}: Invalid coordinate format "${coordsString}"`);
+        return [];
+      }
+
+      const latStr = parts[0].trim();
+      const lonStr = parts[1].trim();
+      const latitude = parseFloat(latStr);
+      const longitude = parseFloat(lonStr);
+
+      if (isNaN(latitude) || isNaN(longitude)) {
+        console.warn(`Skipping catch ${id}: Non-numeric coordinates "${coordsString}"`);
+        return [];
+      }
+
+      if (latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180) {
+        console.warn(`Skipping catch ${id}: Coordinates out of range lat=${latitude}, lon=${longitude}`);
+        return [];
+      }
+
+      const angler = (c.caughtBy.userId && displayNameMap[c.caughtBy.userId]) || c.caughtBy.name || 'Unknown Angler';
+
+      const catchItem: CatchWithCoords = {
+        id: id,
+        catchNumber: c.catchNumber,
+        species: c.species,
+        length: c.length,
+        weight: c.weight,
+        angler: angler,
+        latitude: latitude,
+        longitude: longitude,
+      };
+
+      return [catchItem];
+
+    });
+  }, [catches, displayNameMap]);
+
+  // const getRandomColor = () => {
+  //   const color = AdditionalFishColors[Math.floor(Math.random() * Object.keys(AdditionalFishColors).length)];
+  //   const rgbColor = AdditionalFishColorsMantine3RGB[color as keyof typeof AdditionalFishColorsMantine3RGB];
+  //   return rgbColor;
+  // };
+
+  const geojsonData = useMemo(() => {
+    console.log("Recalculating GeoJSON data...");
+    return {
+      type: 'FeatureCollection' as const,
+      features: catchesWithCoords.map(catchItem => {
+        const speciesKey = catchItem.species.toLowerCase().trim();
+        const fixedColor = FixedFishColors[speciesKey as keyof typeof FixedFishColors];
+        const finalRGBColor = `rgb(${FishColorsMantine6RGB[fixedColor as keyof typeof FishColorsMantine6RGB] || '100, 100, 100'})`;
+
+        const feature = {
+          type: 'Feature' as const,
+          geometry: {
+            type: 'Point' as const,
+            coordinates: [catchItem.longitude, catchItem.latitude]
+          },
+          properties: {
+            ...catchItem,
+            markerColor: finalRGBColor
+          }
+        };
+        return feature;
+      })
+    };
+  }, [catchesWithCoords]);
+
+  const handleMapClick = useCallback((event: MapMouseEvent) => {
+    const features = event.features;
+    if (!features || features.length === 0) {
+      setSelectedCatch(null); // Clicked on base map
+      return;
+    }
+
+    const feature = features[0];
+    const isCluster = feature.properties?.point_count > 0;
+    const clickedLayerId = feature.layer?.id;
+
+    // Check if a cluster circle was clicked
+    if (isCluster && clickedLayerId === clusterCircleLayerStyle.id) {
+      setSelectedCatch(null); // Close popup if open
+
+      const map = mapRef.current?.getMap();
+      const source = map?.getSource(SOURCE_ID) as GeoJSONSource | undefined;
+
+      if (!source || !feature.properties?.cluster_id || feature.geometry.type !== 'Point') return;
+
+      const clusterId = feature.properties.cluster_id;
+
+      // Get the zoom level needed to expand this cluster
+      source.getClusterExpansionZoom(clusterId, (err, zoom) => {
+        if (err || !zoom) {
+          console.error("Error getting cluster expansion zoom:", err);
+          return;
+        }
+        // Zoom the map to the cluster location and the required zoom level
+        if (map) {
+          map.easeTo({
+            // @ts-ignore
+            center: feature.geometry.coordinates as [number, number],
+            zoom: zoom + 1,
+            duration: 800
+          });
+        }
+      });
+    }
+    // Check if an individual (unclustered) point was clicked
+    else if (!isCluster && clickedLayerId === unclusteredPointLayerStyle.id) {
+      if (feature.properties && feature.geometry.type === 'Point') {
+        const catchData = feature.properties as CatchWithCoords;
+        const [longitude, latitude] = feature.geometry.coordinates;
+        setSelectedCatch({
+          ...catchData,
+          latitude: latitude,
+          longitude: longitude
+        });
+      } else {
+        setSelectedCatch(null);
+      }
+    }
+    else {
+      setSelectedCatch(null);
+    }
+
+  }, [setSelectedCatch]);
+
 
   if (!MAPBOX_TOKEN) {
     console.error("Mapbox token is not configured!");
@@ -32,21 +253,101 @@ export default function CatchMap({
   }
 
   return (
-    <div style={{ height: '100%', width: '100%', position: 'relative' }}>
+    <Box h={'100%'} w={'100%'} pos={'relative'}>
       <Map
+        ref={mapRef}
         {...viewState}
         onMove={evt => setViewState(evt.viewState)}
         mapboxAccessToken={MAPBOX_TOKEN}
-        // mapStyle="mapbox://styles/mapbox/outdoors-v12"
-        // mapStyle="mapbox://styles/mapbox/dark-v11"
         mapStyle="mapbox://styles/anuutila/cma3129fq000001skaoqnfrg1"
         style={{ width: '100%', height: '100%' }}
         antialias={true}
         projection={"globe"}
+        onClick={handleMapClick}
+        interactiveLayerIds={[clusterCircleLayerStyle.id, unclusteredPointLayerStyle.id]}
+        onMouseEnter={(e) => {
+          const feature = e.features?.[0];
+          if (feature && (feature.layer?.id === unclusteredPointLayerStyle.id || feature.layer?.id === clusterCircleLayerStyle.id)) {
+            mapRef.current?.getCanvas().style.setProperty('cursor', 'pointer');
+          }
+        }}
+        onMouseLeave={() => { mapRef.current?.getCanvas().style.setProperty('cursor', ''); }}
       >
         <NavigationControl position="top-right" />
         <GeolocateControl position="top-right" />
+
+        {geojsonData && geojsonData.features.length > 0 && (
+          <Source
+            id={SOURCE_ID}
+            type="geojson"
+            data={geojsonData}
+            cluster={true}
+            clusterMaxZoom={14}
+            clusterRadius={50}
+          >
+            <Layer {...clusterCircleLayerStyle} />
+            <Layer {...clusterCountLayerStyle} />
+            <Layer {...unclusteredPointLayerStyle} />
+          </Source>
+        )}
+
+        {selectedCatch && (
+          <Popup
+            latitude={selectedCatch.latitude!}
+            longitude={selectedCatch.longitude!}
+            onClose={() => setSelectedCatch(null)}
+            closeOnClick={false}
+            offset={10}
+            maxWidth="300px"
+            className="myPopup"
+          >
+            <Box>
+              <Stack gap={4} c={'var(--mantine-color-dark-7)'}>
+                <Group>
+                  <Title order={4} mb={6}>{selectedCatch.species}, #{selectedCatch.catchNumber}</Title>
+                </Group>
+                <Group gap={6} wrap={'nowrap'}>
+                  <Group gap={4} flex={1.5} align={'center'} wrap={'nowrap'}>
+                    <IconRuler2 size={20} />
+                    <Text size="sm" fw={500}>{t('Common.Length')}:</Text>
+                  </Group>
+                  <Text size="sm" flex={1}>{selectedCatch.length ? `${selectedCatch.length} cm` : '-'}</Text>
+                </Group >
+                <Group gap={6} wrap={'nowrap'}>
+                  <Group gap={4} flex={1.5} align={'center'} wrap={'nowrap'}>
+                    <IconWeight size={20} />
+                    <Text size="sm">{t('Common.Weight')}:</Text>
+                  </Group>
+                  <Text size="sm" flex={1}>{selectedCatch.weight ? `${selectedCatch.weight} kg` : '-'}</Text>
+                </Group>
+                <Group gap={6} wrap={'nowrap'}>
+                  <Group gap={4} flex={1.5} align={'center'} wrap={'nowrap'}>
+                    <IconUser size={20} />
+                    <Text size="sm">{t('Common.CaughtBy')}:</Text>
+                  </Group>
+                  <Text size="sm" flex={1}>{selectedCatch.angler}</Text>
+                </Group>
+                <Group justify={'center'} align={'center'} gap={0} mt={6}>
+                  <Link
+                      href={`/catches?catchNumber=${selectedCatch.catchNumber}`}
+                      passHref
+                      prefetch={!!selectedCatch}
+                      style={{
+                        color: 'inherit',
+                        display: 'inline-block'
+                      }}
+                    >
+                      <Group gap={2}>
+                        <Text fz={12}>{t('StatisticsPage.ShowDetails')}</Text>
+                          <IconChevronRight size={14} stroke={2.5} />
+                      </Group>
+                    </Link>
+                </Group>
+              </Stack>
+            </Box>
+          </Popup>
+        )}
       </Map>
-    </div>
+    </Box>
   );
 }

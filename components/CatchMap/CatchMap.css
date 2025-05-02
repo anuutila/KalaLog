@@ -34,3 +34,27 @@
 .mapboxgl-ctrl-attrib {
   display: none !important;
 }
+
+
+
+.myPopup {
+  max-width: 300px;
+  min-width: 200px;
+
+  .mapboxgl-popup-content {
+    /* background-color: var(--mantine-color-dark-8); */
+    padding: 10px;
+    border-radius: 12px;
+    /* border: 1px solid var(--mantine-color-dark-4); */
+
+    .mapboxgl-popup-close-button {
+      color: var(--mantine-color-dark-9);
+      font-size: 20px;
+    }
+  }
+
+  .mapboxgl-popup-tip {
+    /* border-top-color: var(--mantine-color-dark-4); */
+    /* border: 1px solid var(--mantine-color-dark-4); */
+  }
+}

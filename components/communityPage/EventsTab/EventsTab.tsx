@@ -12,7 +12,7 @@ import { useEffect, useState } from "react";
 import CreateEventForm from "./CreateEventForm";
 import { IconCalendar, IconChevronRight, IconFish, IconMapPin, IconPlus } from "@tabler/icons-react";
 import { nameToColor } from "@/lib/utils/utils";
-import { DateTimeFormatOptions, useFormatter, useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 import EventDetails from "./EventDetails";
 
 interface EventsTabProps {
@@ -82,18 +82,18 @@ export default function EventsTab({ allUsers }: EventsTabProps) {
     const startDateObj = new Date(event.startDate);
     const endDateObj = new Date(event.endDate);
 
-    const options: DateTimeFormatOptions = {
+    const options = {
       month: 'short',
       day: 'numeric',
     };
 
-    const optionsWithYear: DateTimeFormatOptions = {
+    const optionsWithYear = {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
     };
 
-    const dayOnlyOptions: DateTimeFormatOptions = {
+    const dayOnlyOptions = {
       day: 'numeric',
     };
 

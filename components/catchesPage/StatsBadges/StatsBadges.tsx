@@ -3,54 +3,13 @@ import { useTranslations } from 'next-intl';
 import { Badge } from '@mantine/core';
 import { ICatch } from '@/lib/types/catch';
 import classes from './StatsBadges.module.css';
+import { AdditionalFishColorsMantine3RGB, AllColorsMantine3RGB, FixedFishColors } from '@/lib/constants/constants';
 
 interface StatsBadgesProps {
   filteredCatches: ICatch[];
 }
 
-enum FishColors {
-  kuha = 'blue',
-  ahven = 'red',
-  hauki = 'green',
-  lahna = 'yellow',
-  särki = 'orange',
-  kiiski = 'violet',
-}
-
-enum FishColorsRGB {
-  blue = '116, 192, 252',
-  red = '255, 168, 168',
-  yellow = '255, 224, 102',
-  green = '140, 233, 154',
-  orange = '255, 192, 120',
-  violet = '177, 151, 252',
-}
-
-enum AdditionalColorsRGB {
-  pink = '250, 162, 193',
-  lime = '192, 235, 117',
-  gray = '222, 226, 230',
-  indigo = '145, 167, 255',
-  cyan = '102, 217, 232',
-  teal = '99, 230, 190',
-}
-
-enum AllColorsRGB {
-  blue = '116, 192, 252',
-  red = '255, 168, 168',
-  yellow = '255, 224, 102',
-  pink = '250, 162, 193',
-  green = '140, 233, 154',
-  cyan = '102, 217, 232',
-  orange = '255, 192, 120',
-  lime = '192, 235, 117',
-  gray = '222, 226, 230',
-  indigo = '145, 167, 255',
-  violet = '177, 151, 252',
-  teal = '99, 230, 190',
-}
-
-const additionalColors = Object.keys(AdditionalColorsRGB);
+const additionalColors = Object.keys(AdditionalFishColorsMantine3RGB);
 
 export default function StatsBadges({ filteredCatches }: StatsBadgesProps) {
   const t = useTranslations('Fish');
@@ -75,7 +34,7 @@ export default function StatsBadges({ filteredCatches }: StatsBadgesProps) {
   const sortedFishEntries = Object.entries(fishCounts).sort((a, b) => b[1].count - a[1].count);
 
   const fishBadges = sortedFishEntries.map(([fishKey, { count, displayName }]) => {
-    const color = FishColors[fishKey as keyof typeof FishColors] || getRandomColor();
+    const color = FixedFishColors[fishKey as keyof typeof FixedFishColors] || getRandomColor();
     return (
       <Badge
         px={12}
@@ -87,7 +46,7 @@ export default function StatsBadges({ filteredCatches }: StatsBadgesProps) {
           /* , border: `2px solid rgba(${AllColorsRGB[color]}, 0.15)`*/
         }}
         key={fishKey}
-        color={AllColorsRGB[color]}
+        color={AllColorsMantine3RGB[color]}
         variant="light"
         classNames={{ root: classes.root, label: classes.label }}
         size="lg"

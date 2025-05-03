@@ -4,6 +4,7 @@
   color: rgb(var(--badge-color)) !important; */
   /* border: 2px solid var(--badge-color) !important; */
   /* background-color: var(--badge-background) !important; */
+  box-sizing: content-box;
 }
 
 .label {

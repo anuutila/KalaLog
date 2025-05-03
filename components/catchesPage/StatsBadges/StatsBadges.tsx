@@ -52,20 +52,17 @@ export default function StatsBadges({ badgesCatches, selectedSpecies, toggleSpec
         color: `var(--mantine-color-${color}-3)`,
         background: `var(--mantine-color-${color}-light-hover)`,
         border: `3px solid #0d0d0d`,
-        boxSizing: 'content-box',
       }
       : isActive
         ? {
           color: `var(--mantine-color-${color}-3)`,
           background: `var(--mantine-color-${color}-light-hover)`,
           border: `3px solid rgba(${AllColorsMantine6RGB[color]}, 0.4)`,
-          boxSizing: 'content-box',
         }
         : {
           color: `var(--mantine-color-dark-3)`,
           background: `transparent`,
           border: `3px solid rgba(${AllColorsMantine6RGB[color]}, 0.4)`,
-          boxSizing: 'content-box',
         };
 
     return (

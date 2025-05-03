@@ -90,6 +90,7 @@
       "Year": "Valitse vuosi",
       "AllYears": "Kaikki vuodet",
       "Filters": "Näytä suodattimet",
+      "FiltersInfo": "Näytä taulukon suodattimet, joita voidaan käyttää saaliiden suodattamiseen kunkin sarakkeen mukaan.",
       "ImageIcons": "Näytä kameraikonit",
       "ImageIconsInfo": "Näytä kameraikoni laji-sarakkeessa, jos saaliille on lisätty yksi tai useampi kuva.",
       "LocationIcons": "Näytä sijainti-ikonit",

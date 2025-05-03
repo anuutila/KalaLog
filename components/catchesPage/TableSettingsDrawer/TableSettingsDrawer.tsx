@@ -97,6 +97,24 @@ export default function TableSettingsDrawer({
       );
     });
 
+    const filtersSwitchLabel = () => {
+      return (
+        <Group gap="xs" wrap="nowrap" align="center">
+          <Text fw={500}>{tTable('Filters')}</Text>
+          <Tooltip
+            onClick={(event) => event.preventDefault()}
+            label={tTable('FiltersInfo')}
+            withArrow
+            multiline
+            w={200}
+            events={{ hover: true, focus: true, touch: true }}
+          >
+            <IconInfoCircle size={22} stroke={2} color="var(--mantine-color-dimmed)" />
+          </Tooltip>
+        </Group>
+      );
+    };
+
   const imageIconSwitchLabel = () => {
     return (
       <Group gap="xs" wrap="nowrap" align="center">
@@ -261,7 +279,7 @@ export default function TableSettingsDrawer({
                 classNames={{ body: classes.switch_body, label: classes.switch_input_label }}
                 checked={filtersSliderChecked}
                 fw={500}
-                label={tTable('Filters')}
+                label={filtersSwitchLabel()}
                 labelPosition="left"
                 onChange={(event) => setFiltersSliderChecked(event.currentTarget.checked)}
                 size="md"

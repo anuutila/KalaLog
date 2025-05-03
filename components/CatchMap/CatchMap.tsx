@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Map, { NavigationControl, GeolocateControl, MapRef, Popup, Source, Layer } from 'react-map-gl/mapbox';
 import './CatchMap.css';
 import { useGlobalState } from '@/context/GlobalState';
@@ -69,7 +69,7 @@ const clusterCountLayerStyle: SymbolLayerSpecification = {
     'text-field': '{point_count_abbreviated}',
     'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
     'text-size': 16,
-    'text-allow-overlap': true 
+    'text-allow-overlap': true
   },
   paint: {
     'text-color': '#ffffff',
@@ -101,6 +101,7 @@ export default function CatchMap({
   const t = useTranslations();
   const { catches, displayNameMap } = useGlobalState();
   const searchParams = useSearchParams();
+  const catchNumParam = searchParams.get('catchNumber');
   const router = useRouter();
 
   const read = (key: string, fallback: number) => {
@@ -110,10 +111,10 @@ export default function CatchMap({
 
   const [viewState, setViewState] = useState({
     longitude: read('lng', initialLongitude),
-    latitude:  read('lat', initialLatitude),
-    zoom:      read('zoom', initialZoom),
-    pitch:     read('pitch', 0),
-    bearing:   read('bearing', 0),
+    latitude: read('lat', initialLatitude),
+    zoom: read('zoom', initialZoom),
+    pitch: read('pitch', 0),
+    bearing: read('bearing', 0),
   })
 
   const [selectedCatch, setSelectedCatch] = useState<CatchWithCoords | null>(null);
@@ -201,10 +202,21 @@ export default function CatchMap({
     };
   }, [catchesWithCoords]);
 
+  useEffect(() => {
+    if (catchNumParam && catchesWithCoords.length) {
+      const num = parseInt(catchNumParam, 10);
+      const found = catchesWithCoords.find(c => c.catchNumber === num) || null;
+      setSelectedCatch(found);
+    }
+    else {
+      setSelectedCatch(null);
+    }
+  }, [catchNumParam, catchesWithCoords]);
+
   const handleMapClick = useCallback((event: MapMouseEvent) => {
     const features = event.features;
     if (!features || features.length === 0) {
-      setSelectedCatch(null); // Clicked on base map
+      handleOnClosePopup(); // Clicked on base map
       return;
     }
 
@@ -214,7 +226,7 @@ export default function CatchMap({
 
     // Check if a cluster circle was clicked
     if (isCluster && clickedLayerId === clusterCircleLayerStyle.id) {
-      setSelectedCatch(null); // Close popup if open
+      handleOnClosePopup();
 
       const map = mapRef.current?.getMap();
       const source = map?.getSource(SOURCE_ID) as GeoJSONSource | undefined;
@@ -244,18 +256,19 @@ export default function CatchMap({
     else if (!isCluster && clickedLayerId === unclusteredPointLayerStyle.id) {
       if (feature.properties && feature.geometry.type === 'Point') {
         const catchData = feature.properties as CatchWithCoords;
-        const [longitude, latitude] = feature.geometry.coordinates;
-        setSelectedCatch({
-          ...catchData,
-          latitude: latitude,
-          longitude: longitude
-        });
+
+        const url = new URL(window.location.href);
+        if (url.searchParams.get('catchNumber') === String(catchData.catchNumber)) {
+          return;
+        }
+        url.searchParams.set('catchNumber', String(catchData.catchNumber));
+        router.replace(url.toString());
       } else {
-        setSelectedCatch(null);
+        handleOnClosePopup();
       }
     }
     else {
-      setSelectedCatch(null);
+      handleOnClosePopup();
     }
 
   }, [setSelectedCatch]);
@@ -272,8 +285,21 @@ export default function CatchMap({
     url.searchParams.set('zoom', zoom.toFixed(2));
     url.searchParams.set('pitch', pitch.toFixed(2));
     url.searchParams.set('bearing', bearing.toFixed(2));
+    if (catchNumParam) {
+      url.searchParams.set('catchNumber', catchNumParam);
+    }
     url.hash = 'map';
     router.replace(url.toString());
+  }
+
+  const handleOnClosePopup = () => {
+    const url = new URL(window.location.href);
+    if (url.pathname !== '/statistics') {
+      return;
+    }
+    url.searchParams.delete('catchNumber');
+    router.replace(url.toString());
+    setSelectedCatch(null);
   }
 
   if (!MAPBOX_TOKEN) {
@@ -285,8 +311,8 @@ export default function CatchMap({
     const url = new URL(window.location.origin);
     url.pathname = '/catches';
     url.searchParams.set('catchNumber', String(selectedCatch?.catchNumber || ''));
-    url.hash = '';                                     
-    return url;                                    
+    url.hash = '';
+    return url;
   }, [selectedCatch])
 
   return (
@@ -333,8 +359,7 @@ export default function CatchMap({
           <Popup
             latitude={selectedCatch.latitude!}
             longitude={selectedCatch.longitude!}
-            onClose={() => setSelectedCatch(null)}
-            closeOnClick={false}
+            onClose={handleOnClosePopup}
             offset={10}
             maxWidth="300px"
             className="myPopup"
@@ -367,19 +392,19 @@ export default function CatchMap({
                 </Group>
                 <Group justify={'center'} align={'center'} gap={0} mt={6}>
                   <Link
-                      href={href}
-                      passHref
-                      prefetch={!!selectedCatch}
-                      style={{
-                        color: 'inherit',
-                        display: 'inline-block'
-                      }}
-                    >
-                      <Group gap={2}>
-                        <Text fz={12}>{t('StatisticsPage.ShowDetails')}</Text>
-                          <IconChevronRight size={14} stroke={2.5} />
-                      </Group>
-                    </Link>
+                    href={href}
+                    passHref
+                    prefetch={!!selectedCatch}
+                    style={{
+                      color: 'inherit',
+                      display: 'inline-block'
+                    }}
+                  >
+                    <Group gap={2}>
+                      <Text fz={12}>{t('StatisticsPage.ShowDetails')}</Text>
+                      <IconChevronRight size={14} stroke={2.5} />
+                    </Group>
+                  </Link>
                 </Group>
               </Stack>
             </Box>

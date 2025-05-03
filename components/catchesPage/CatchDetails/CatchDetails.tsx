@@ -24,6 +24,7 @@ import { navigateBack } from '@/lib/utils/utils';
 import { useRouter } from 'next/navigation';
 
 export interface CatchDetails {
+  catchNumber: number;
   species: { label: string; data: string };
   length: { label: string; data: number | null | undefined };
   weight: { label: string; data: number | null | undefined };
@@ -187,6 +188,7 @@ export default function CatchDetails({ selectedCatch, setSelectedCatch }: CatchD
   const isFallbackImage = imagesToShow.length === 1 && imagesToShow[0] === defaultPlaceholder;
 
   const details: CatchDetails = {
+    catchNumber: selectedCatch.catchNumber,
     species: {
       label: t('Common.FishSpecies'),
       data: t.has(`Fish.${selectedCatch.species}`) ? t(`Fish.${selectedCatch.species}`) : selectedCatch.species,

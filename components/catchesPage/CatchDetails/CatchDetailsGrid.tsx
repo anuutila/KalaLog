@@ -14,6 +14,7 @@ import {
 import { ActionIcon, Box, Fieldset, Grid, Group, Stack, Text } from '@mantine/core';
 import { CatchDetails } from './CatchDetails';
 import classes from './CatchDetails.module.css';
+import Link from 'next/link';
 
 interface CatchDetailsGridProps {
   details: CatchDetails;
@@ -125,10 +126,18 @@ export default function CatchDetailsGrid({ details, coordinates }: CatchDetailsG
               <Text fw={500}>{details.spot.data ?? '-'}</Text>
               {details.coordinates.data && (
                 <Box pos="relative" h="100%" w={35}>
-                  <a
-                    href={`https://www.google.com/maps?q=${coordinates}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <Link
+                    href={{
+                      pathname: '/statistics',
+                      hash: 'map',
+                      query: { 
+                        lat: coordinates?.split(',')[0].trim(), 
+                        lng: coordinates?.split(',')[1].trim(), 
+                        zoom: 15,
+                        catchNumber: details.catchNumber
+                      },
+                    }}
+                    passHref
                     style={{ position: 'absolute', top: '50%', transform: 'translateY(-50%)' }}
                   >
                     <ActionIcon
@@ -140,7 +149,7 @@ export default function CatchDetailsGrid({ details, coordinates }: CatchDetailsG
                     >
                       <IconMapPin style={{ width: '70%', height: '70%' }} stroke={2} />
                     </ActionIcon>
-                  </a>
+                  </Link>
                 </Box>
               )}
             </Group>

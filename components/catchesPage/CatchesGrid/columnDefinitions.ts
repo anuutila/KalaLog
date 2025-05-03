@@ -26,6 +26,10 @@ export const getColumnDefs = (
     cellRendererParams: {
       imageIconsEnabled, // Pass the value to the renderer
     },
+    filter: true,
+    filterParams: {
+      maxNumConditions: 10
+    }
   },
   {
     headerName: t('Common.Picture'),

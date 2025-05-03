@@ -5,7 +5,7 @@ import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-quartz.css';
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { use, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ColDef, GridReadyEvent } from 'ag-grid-community';
 
 import './page.css';
@@ -54,14 +54,13 @@ export default function CatchesPage() {
   const locale = useLocale();
   const t = useTranslations();
   const searchParams = useSearchParams();
-  const initialParamLoadDone = useRef(false);
   const gridRef = useRef<AgGridReact<ICatch>>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const router = useRouter();
   const { setActions } = useHeaderActions();
   const { catches, catchesError, loadingCatches, displayNameMap } = useGlobalState();
 
   const [filteredCatches, setFilteredCatches] = useState<ICatch[] | null>(null);
+  const [filteredCatchesForBadges, setFilteredCatchesForBadges] = useState<ICatch[] | null>(null);
   const [uniqueYears, setUniqueYears] = useState<string[]>([]);
   const [uniqueBodiesOfWater, setUniqueBodiesOfWater] = useState<string[]>([]);
   const [rowCount, setRowCount] = useState<number>(0);
@@ -89,6 +88,52 @@ export default function CatchesPage() {
     resizable: false,
     suppressHeaderFilterButton: true,
   });
+
+  const [selectedSpecies, setSelectedSpecies] = useState<string[]>([]);
+  const speciesToggleRef = useRef(false); // Ref to track if the species filter was changed by badge toggle
+
+  const toggleSpecies = useCallback((species: string | null) => {
+    if (!species) {
+      setSelectedSpecies([]);
+      return;
+    }
+    setSelectedSpecies(prev =>
+      prev.includes(species)
+        ? prev.filter(s => s !== species)
+        : [...prev, species]
+    );
+  }, []);
+
+  const applySpeciesFilter = useCallback(
+    (species: string[]) => {
+      if (species.length > 0) {
+        speciesToggleRef.current = true; // Indicate that the filter was changed by badge toggle
+        const filterModel = {
+          filterType: 'text',
+          operator: 'OR',
+          conditions: species.map(s => ({
+            type: 'equals',
+            filtertype: 'text',
+            filter: s,
+          })),
+        };
+        gridRef.current!.api.setColumnFilterModel(FieldIdentifier.Species, filterModel).then(() => {
+          gridRef.current!.api.onFilterChanged();
+        });
+      } else {
+        gridRef.current!.api.setColumnFilterModel(FieldIdentifier.Species, null).then(() => {
+          gridRef.current!.api.onFilterChanged();
+        });
+      }
+    }, []
+  );
+
+  useEffect(() => {
+    if (gridRef.current?.api) {
+      console.log('Applying species filter:', selectedSpecies);
+      applySpeciesFilter(selectedSpecies);
+    }
+  }, [selectedSpecies, applySpeciesFilter]);
 
   useEffect(() => {
     if (!loadingCatches && catches.length > 0) {
@@ -206,9 +251,24 @@ export default function CatchesPage() {
     setFilteredCatches(nodes);
   }, []);
 
+  const updateFilteredCatchesForBadges = useCallback(() => {
+    if (speciesToggleRef.current) {
+      speciesToggleRef.current = false; // Reset the ref after applying the filter
+      return;
+    }
+    const nodes: ICatch[] = [];
+    gridRef.current!.api.forEachNodeAfterFilter((node) => {
+      if (node.data) {
+        nodes.push(node.data);
+      }
+    });
+    setFilteredCatchesForBadges(nodes);
+  }, []);
+
   const updateRowCountAndFilteredCatches = useCallback(() => {
     updateRowCount();
     updateFilteredCatches();
+    updateFilteredCatchesForBadges();
   }, [updateRowCount, updateFilteredCatches]);
 
   const applyYearFilter = useCallback((year: string | null) => {
@@ -414,6 +474,9 @@ export default function CatchesPage() {
           rowCount={rowCount}
           filteredCatches={filteredCatches}
           scrollRef={scrollRef}
+          selectedSpecies={selectedSpecies}
+          toggleSpecies={toggleSpecies}
+          badgesCatches={filteredCatchesForBadges}
         />
       </Stack>
 

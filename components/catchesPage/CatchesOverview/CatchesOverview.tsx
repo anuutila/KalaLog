@@ -14,6 +14,9 @@ interface CatchesOverviewProps {
   rowCount: number;
   filteredCatches: ICatch[] | null;
   scrollRef: RefObject<HTMLDivElement>;
+  selectedSpecies: string[];
+  toggleSpecies: (species: string | null) => void;
+  badgesCatches: ICatch[] | null;
 }
 
 export default function CatchesOverview({
@@ -24,6 +27,9 @@ export default function CatchesOverview({
   rowCount,
   filteredCatches,
   scrollRef,
+  selectedSpecies,
+  toggleSpecies,
+  badgesCatches,
 }: CatchesOverviewProps) {
   const t = useTranslations();
   const bodyOfWaterTitle =
@@ -66,22 +72,31 @@ export default function CatchesOverview({
       </Group>
       <Box style={{ position: 'relative' }}>
         <ScrollArea viewportRef={scrollRef} type="never">
-          <Group gap="sm" wrap="nowrap" pl="md" pr={30}>
-            {filteredCatches 
+          <Group gap="6" wrap="nowrap" pl="md" pr={30}>
+            {badgesCatches
               ? (<>
-              <Badge
-              size="lg"
-              classNames={{ root: classes.badge }}
-              variant="light"
-              data-content={`${t('Common.Total')}: ${rowCount}`}
-              px={12}
-              h={28}
-              pt={1}
-            />
-            <StatsBadges filteredCatches={filteredCatches} />
-            </>)
+                <Badge
+                  size="lg"
+                  classNames={{ root: classes.badge }}
+                  variant="light"
+                  data-content={`${t('Common.Total')}: ${rowCount}`}
+                  onClick={() => toggleSpecies(null)}
+                  style={{
+                    cursor: selectedSpecies.length === 0 ? 'default' : 'pointer',
+                  }}
+                  px={12}
+                  h={28}
+                  pt={1}
+                  mr={2.5}
+                />
+                <StatsBadges
+                  badgesCatches={badgesCatches}
+                  selectedSpecies={selectedSpecies}
+                  toggleSpecies={toggleSpecies}
+                />
+              </>)
               : (Array.from({ length: 4 }).map((_, index) => (
-                <Skeleton key={index} height={28} w={90} mx={0} circle/>
+                <Skeleton key={index} height={28} w={90} mx={0} circle />
               )))
             }
           </Group>

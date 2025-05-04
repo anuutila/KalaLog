@@ -39,7 +39,7 @@ export default function CatchesOverview({
   const yearTitle = selectedYear === 'AllYears' ? `${uniqueYears.at(-1)} - ${uniqueYears[0]}` : selectedYear;
 
   return (
-    <Stack c="var(--mantine-color-text)" pb="md" w="100%" gap={0}>
+    <Stack c="var(--mantine-color-text)" pb="sm" w="100%" gap={0}>
       <Group align="center" ml="md" mb={6} gap="xs">
         <Box w={24} h={{ base: '100%', md: 24 }}>
           <IconMapPinFilled size={24} color="rgba(255,255,255,0.35)" stroke={1.5} />
@@ -55,7 +55,7 @@ export default function CatchesOverview({
           }
         </Title>
       </Group>
-      <Group align="center" mb="md" ml="md" gap="xs" h="100%">
+      <Group align="center" mb="sm" ml="md" gap="xs" h="100%">
         <Box w={24} h={{ base: 28, md: 24 }}>
           <IconCalendarFilled size={24} color="rgba(255,255,255,0.35)" stroke={1.5} />
         </Box>
@@ -72,7 +72,7 @@ export default function CatchesOverview({
       </Group>
       <Box style={{ position: 'relative' }}>
         <ScrollArea viewportRef={scrollRef} type="never">
-          <Group gap="6" wrap="nowrap" pl="md" pr={30}>
+          <Group gap="3" wrap="nowrap" pl="md" pr={30}>
             {badgesCatches
               ? (<>
                 <Badge
@@ -96,7 +96,7 @@ export default function CatchesOverview({
                 />
               </>)
               : (Array.from({ length: 4 }).map((_, index) => (
-                <Skeleton key={index} height={28} w={90} mx={0} circle />
+                <Skeleton key={index} height={28} w={90} mx={3} my={3} circle />
               )))
             }
           </Group>

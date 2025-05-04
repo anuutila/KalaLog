@@ -62,7 +62,9 @@ export default function StatsBadges({ badgesCatches, selectedSpecies, toggleSpec
         : {
           color: `var(--mantine-color-dark-3)`,
           background: `transparent`,
-          border: `3px solid rgba(${AllColorsMantine6RGB[color]}, 0.4)`,
+          border: `1px solid var(--mantine-color-dark-3)`,
+          marginLeft: '2px',
+          marginRight: '2px',
         };
 
     return (

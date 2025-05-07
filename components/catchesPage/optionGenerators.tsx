@@ -3,7 +3,7 @@ import { Checkbox, CheckIcon, Combobox, Group } from '@mantine/core';
 import { DEFAULT_BODY_OF_WATER } from '@/lib/constants/constants';
 import { ICatch } from '@/lib/types/catch';
 import { FieldIdentifier, fieldToIconMap } from './constants';
-import { PrimaryMetric, SecondaryMetric } from '../charts/LeaderboardBarChart/LeaderboardBarChart';
+import { getSecondaryMetricIcon, PrimaryMetric, SecondaryMetric } from '../charts/LeaderboardBarChart/LeaderboardBarChart';
 import { capitalizeFirstLetter } from '@/lib/utils/utils';
 
 const currentYear = new Date().getFullYear();
@@ -86,12 +86,17 @@ export const getPrimaryMetricOptions = (metrics: string[], primaryMetric: Primar
     </Combobox.Option>
   ));
 
-export const getSecondaryMetricOptions = (metrics: string[], secondaryMetric: SecondaryMetric | null = 'count', t: any) =>
+export const getSecondaryMetricOptions = (metrics: SecondaryMetric[], secondaryMetric: SecondaryMetric = 'count', t: any) =>
   metrics.map((metric, index) => (
     <Combobox.Option value={metric} key={metric} active={secondaryMetric === metric}>
       <Group gap="sm">
         {secondaryMetric === metric ? <CheckIcon size={12} /> : null}
-        <span>{t(`StatisticsPage.${capitalizeFirstLetter(metric)}`)}</span>
+        <Group gap={4}>
+          {getSecondaryMetricIcon(metric)}
+          <span>
+            {t(`StatisticsPage.${capitalizeFirstLetter(metric)}`)}
+          </span>
+        </Group>
       </Group>
     </Combobox.Option>
   ));

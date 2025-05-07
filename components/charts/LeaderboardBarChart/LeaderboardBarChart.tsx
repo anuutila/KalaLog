@@ -24,7 +24,7 @@ import { Box, Combobox, Group, Input, InputBase, Select, Stack, useCombobox } fr
 import { IPublicUserProfile } from '@/lib/types/user';
 import { StarRarityCounts } from '@/lib/utils/achievementUtils';
 import { capitalizeFirstLetter } from '@/lib/utils/utils';
-import { IconListNumbers, IconRuler2 } from '@tabler/icons-react';
+import { IconListNumbers, IconRuler2, IconTallymarks, IconWeight } from '@tabler/icons-react';
 import { getPrimaryMetricOptions, getSecondaryMetricOptions } from '@/components/catchesPage/optionGenerators';
 import { getStackedBarBorderWidth } from '@/lib/utils/chartUtils';
 
@@ -39,6 +39,17 @@ ChartJS.register(
 );
 
 const rarityTranslationKeys = ['Common', 'Uncommon', 'Rare', 'Epic', 'Legendary'];
+
+const secondaryMetricIconMap: Record<SecondaryMetric, React.ElementType> = {
+  'count': IconTallymarks,
+  'weight': IconWeight,
+  'length': IconRuler2,
+};
+
+export const getSecondaryMetricIcon = (metric: SecondaryMetric) => {
+  const Icon = secondaryMetricIconMap[metric];
+  return <Icon size={20} />;
+};
 
 const allBgColors = Object.values(BarChartBgColors);
 const allBorderColors = Object.values(ChartColorsRGBA);
@@ -343,7 +354,7 @@ function formatGenericChartJsData(
       const data = rankedUsers.map(user => user.speciesCounts?.[species] || 0);
 
       return {
-        label: species,
+        label: t.has(`Fish.${species}`) ? t(`Fish.${species}`) : species,
         data: data,
         backgroundColor: bgColor,
         hoverBackgroundColor: borderColor,
@@ -674,7 +685,7 @@ export default function LeaderboardBarChart({ catches, userInfo, userDisplayName
                 rightSectionPointerEvents="none"
                 onClick={() => secondaryCombobox.toggleDropdown()}
                 size="sm"
-                leftSection={<IconRuler2 size={20} />}
+                leftSection={getSecondaryMetricIcon(secondaryMetric)}
                 leftSectionPointerEvents="none"
               >
                 {t(`StatisticsPage.${capitalizeFirstLetter(secondaryMetric)}`)

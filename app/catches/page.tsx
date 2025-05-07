@@ -5,12 +5,12 @@ import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-quartz.css';
 
-import { use, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ColDef, GridReadyEvent } from 'ag-grid-community';
 
 import './page.css';
 
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { ICatch } from '@lib/types/catch';
 import { IconAdjustments } from '@tabler/icons-react';
 import { useLocale, useTranslations } from 'next-intl';
@@ -175,7 +175,7 @@ export default function CatchesPage() {
 
   useEffect(() => {
     if (catches.length > 0) {
-      const uniqueYears = CatchUtils.getUniqueYearsForBodyOfWater(catches, DEFAULT_BODY_OF_WATER).map(
+      const uniqueYears = CatchUtils.getUniqueYearsForBodyOfWater(catches, selectedBodyOfWater ?? DEFAULT_BODY_OF_WATER).map(
         (item) => item.year
       );
       if (uniqueYears.length > 0) {
@@ -201,7 +201,7 @@ export default function CatchesPage() {
         setSelectedBodyOfWater(DEFAULT_BODY_OF_WATER);
       }
     }
-  }, [catches]);
+  }, [catches, selectedBodyOfWater]);
 
   useEffect(() => {
     setDefaultColDef((prevColDef) => ({
@@ -213,7 +213,7 @@ export default function CatchesPage() {
 
   useEffect(() => {
     if (gridRef.current && gridRef.current.api) {
-      gridRef.current.api.setGridOption('defaultColDef', defaultColDef);
+      gridRef.current.api.setGridOption('defaultColDef', defaultColDef as any);
     }
   }, [defaultColDef]);
 

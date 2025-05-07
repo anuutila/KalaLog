@@ -216,9 +216,9 @@ export default function UserProfilePage() {
 
               {isLoadingProfile ? (
                 <Stack mx="md" mt="xl" gap={'md'} align='center' w={'100%'}>
-                  <Skeleton height={62} w={'min(100%, 365px)'} radius="lg" />
-                  <Skeleton height={170} w={'min(100%, 365px)'} radius="lg" />
-                  <Skeleton height={158} w={'min(100%, 365px)'} radius="lg" />
+                  <Skeleton height={62} w={'100%'} maw={500} radius="lg" />
+                  <Skeleton height={170} w={'100%'} maw={500} radius="lg" />
+                  <Skeleton height={158} w={'100%'} maw={500} radius="lg" />
                 </Stack>
               ) : (
                 <Stack align='center' w={'100%'} gap={0}>

@@ -31,7 +31,7 @@ export const fieldToDisplayLabelMap: Record<FieldIdentifier, string> = {
   [FieldIdentifier.Weight]: 'Common.Weight',
   [FieldIdentifier.Lure]: 'Common.Lure',
   [FieldIdentifier.BodyOfWater]: 'Common.BodyOfWater',
-  [FieldIdentifier.Location]: 'Common.Location',
+  [FieldIdentifier.Location]: 'Common.Spot',
   [FieldIdentifier.Time]: 'Common.Time',
   [FieldIdentifier.Date]: 'Common.Date',
   [FieldIdentifier.CaughtBy]: 'Common.CaughtBy',

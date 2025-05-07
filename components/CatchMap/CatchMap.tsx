@@ -35,13 +35,7 @@ const clusterCircleLayerStyle: CircleLayerSpecification = {
   source: SOURCE_ID,
   filter: ['has', 'point_count'],
   paint: {
-    'circle-color': [
-      'step',
-      ['get', 'point_count'],
-      '#141414',
-      10, '#141414',
-      50, '#141414'
-    ],
+    'circle-color': '#141414',
     'circle-radius': [
       'step',
       ['get', 'point_count'],
@@ -68,7 +62,13 @@ const clusterCountLayerStyle: SymbolLayerSpecification = {
   layout: {
     'text-field': '{point_count_abbreviated}',
     'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
-    'text-size': 16,
+    'text-size': [
+      'step',
+      ['get', 'point_count'],
+      16, // 16px for < 10 points
+      10, 18, // 18px for 10-49 points
+      50, 20   // 20px for >= 50 points
+    ],
     'text-allow-overlap': true
   },
   paint: {
@@ -367,7 +367,9 @@ export default function CatchMap({
             <Box>
               <Stack gap={4} c={'var(--mantine-color-dark-7)'}>
                 <Group>
-                  <Title order={4} mb={6}>{selectedCatch.species}, #{selectedCatch.catchNumber}</Title>
+                  <Title order={4} mb={6}>
+                    {t.has(`Fish.${selectedCatch.species}`) ? t(`Fish.${selectedCatch.species}`) : selectedCatch.species} #{selectedCatch.catchNumber}
+                  </Title>
                 </Group>
                 <Group gap={6} wrap={'nowrap'}>
                   <Group gap={4} flex={1.5} align={'center'} wrap={'nowrap'}>

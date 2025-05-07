@@ -34,6 +34,7 @@
     "@tsparticles/confetti": "^3.8.1",
     "@vercel/analytics": "^1.4.1",
     "@vercel/speed-insights": "^1.1.0",
+    "ag-grid-community": "^33.2.4",
     "ag-grid-react": "^32.3.3",
     "bcryptjs": "^2.4.3",
     "browser-image-compression": "^2.0.2",

@@ -219,6 +219,7 @@ export default function CatchEditForm({
         lure: lureValue,
         location: {
           ...formData.location,
+          bodyOfWater: bodyOfWaterValue,
           spot: spotValue,
         },
         caughtBy: {

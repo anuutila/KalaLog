@@ -179,7 +179,7 @@ export const CatchUtils = {
     const yearMap = new Map<string, number>();
 
     catches
-      .filter((c) => c.location.bodyOfWater === bodyOfWater)
+      .filter((c) => bodyOfWater !== 'AllBodiesOfWater' ? c.location.bodyOfWater === bodyOfWater : true)
       .forEach((c) => {
         const year = c.date.split('-')[0];
         yearMap.set(year, (yearMap.get(year) || 0) + 1);

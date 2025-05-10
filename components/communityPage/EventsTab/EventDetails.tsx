@@ -371,7 +371,7 @@ export default function EventDetails({ event, stats }: EventDetailsProps) {
           >
             <CatchMap
               mapCatches={stats.eventCatches}
-              updateUrl={false}
+              urlHash={'events'}
             />
             <Box
               py={4}

@@ -93,7 +93,7 @@ interface CatchMapProps {
   initialLatitude?: number;
   initialLongitude?: number;
   initialZoom?: number;
-  updateUrl?: boolean;
+  urlHash?: string;
 }
 
 export default function CatchMap({
@@ -101,7 +101,7 @@ export default function CatchMap({
   initialLatitude = 62.15,
   initialLongitude = 23.2129,
   initialZoom = 10.75,
-  updateUrl = true,
+  urlHash = 'map',
 }: CatchMapProps) {
   const t = useTranslations();
   const { catches, displayNameMap } = useGlobalState();
@@ -176,7 +176,7 @@ export default function CatchMap({
       return [catchItem];
 
     });
-  }, [catches, displayNameMap, mapCatches]);
+  }, [catches, displayNameMap]);
 
   // const getRandomColor = () => {
   //   const color = AdditionalFishColors[Math.floor(Math.random() * Object.keys(AdditionalFishColors).length)];
@@ -280,12 +280,12 @@ export default function CatchMap({
   }, [setSelectedCatch]);
 
   const handleMoveEnd = () => {
-    if (!viewState || !updateUrl) {
+    if (!viewState) {
       return;
     }
     const { longitude, latitude, zoom, pitch, bearing } = viewState
     const url = new URL(window.location.href);
-    url.pathname = '/statistics';
+    url.pathname = window.location.pathname;
     url.searchParams.set('lng', longitude.toFixed(8));
     url.searchParams.set('lat', latitude.toFixed(8));
     url.searchParams.set('zoom', zoom.toFixed(2));
@@ -294,13 +294,15 @@ export default function CatchMap({
     if (catchNumParam) {
       url.searchParams.set('catchNumber', catchNumParam);
     }
-    url.hash = 'map';
+    url.hash = urlHash;
     router.replace(url.toString());
   }
 
   const handleOnClosePopup = () => {
     const url = new URL(window.location.href);
-    if (url.pathname !== '/statistics') {
+
+    // Prevent the catchNumber from being removed from the URL when navigating to /catches from /statistics or /community
+    if (url.pathname !== '/statistics' && url.pathname !== '/community') {
       return;
     }
     url.searchParams.delete('catchNumber');

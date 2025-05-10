@@ -18,7 +18,7 @@ export default function LayoutHeader({ pages, tabs, pathname }: { pages: Page[];
   return (
     <AppShell.Header withBorder={false} className={classes.header} bg="var(--header-background-color)" w="100%">
       <Group p={0} m={0} h="100%" w="100%" justify="center" align="center">
-        <Container p={0} m={0} h="100%" w="100%" size="xl">
+        <Container p={0} m={0} h="100%" w="100%" maw={3500}>
           <Group p={0} m={0} h="100%" justify="space-between" align="center" w="100%">
             <Group visibleFrom="md" classNames={{ root: classes.logo_container }}>
               <Title order={1} classNames={{ root: classes.logo_title }}>

@@ -10,7 +10,7 @@ import { ColDef, GridReadyEvent } from 'ag-grid-community';
 
 import './page.css';
 
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { ICatch } from '@lib/types/catch';
 import { IconAdjustments } from '@tabler/icons-react';
 import { useLocale, useTranslations } from 'next-intl';
@@ -53,6 +53,7 @@ enum LocationColWidths {
 export default function CatchesPage() {
   const locale = useLocale();
   const t = useTranslations();
+  const router = useRouter();
   const searchParams = useSearchParams();
   const gridRef = useRef<AgGridReact<ICatch>>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -397,9 +398,9 @@ export default function CatchesPage() {
       console.log('Selected catch:', event.data);
       const params = new URLSearchParams(searchParams.toString());
       params.set('catchNumber', event.data.catchNumber);
-      window.history.pushState(null, '', `?${params.toString()}`)
+      router.push(`?${params.toString()}`, { scroll: false });
     }
-  }, []);
+  }, [router, searchParams]);
 
   const resetTableSettings = () => {
     setVisibleColumns(defaultVisibleColumns);

@@ -48,7 +48,7 @@ const secondaryMetricIconMap: Record<SecondaryMetric, React.ElementType> = {
 
 export const getSecondaryMetricIcon = (metric: SecondaryMetric) => {
   const Icon = secondaryMetricIconMap[metric];
-  return <Icon size={20} />;
+  return <Icon color={'#828282'} size={20} />;
 };
 
 const allBgColors = Object.values(BarChartBgColors);

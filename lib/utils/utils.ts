@@ -138,5 +138,5 @@ export function getPageLabelKey(pathname: string | null): string {
 
 export function navigateBack(router: AppRouterInstance, previousPath: string | null, fallbackPath: string = '/catches'): void {
   const goBackPath = previousPath || fallbackPath;
-  router.push(goBackPath);
+  router.push(goBackPath, { scroll: false });
 }

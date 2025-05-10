@@ -81,7 +81,7 @@ export const getPrimaryMetricOptions = (metrics: string[], primaryMetric: Primar
     <Combobox.Option value={metric} key={metric} active={primaryMetric === metric}>
       <Group gap="sm">
         {primaryMetric === metric ? <CheckIcon size={12} /> : null}
-        <span>{index > 3 ? t(`Fish.${capitalizeFirstLetter(metric)}`) : t(`StatisticsPage.${capitalizeFirstLetter(metric)}`)}</span>
+        <span>{['pike', 'zander', 'perch'].includes(metric) ? t(`Fish.${capitalizeFirstLetter(metric)}`) : t(`StatisticsPage.${capitalizeFirstLetter(metric)}`)}</span>
       </Group>
     </Combobox.Option>
   ));

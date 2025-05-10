@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { IconCheck, IconPencil, IconShare, IconTrash, IconX } from '@tabler/icons-react';
+import { IconCheck, IconChevronLeft, IconPencil, IconShare, IconTrash, IconX } from '@tabler/icons-react';
 import { useTranslations } from 'next-intl';
 import { ActionIcon, Box, Container, CopyButton, Group, Paper, Stack, Title, Tooltip } from '@mantine/core';
 import { useGlobalState } from '@/context/GlobalState';
@@ -59,7 +59,7 @@ export default function CatchDetails({ selectedCatch, setSelectedCatch }: CatchD
   const t = useTranslations();
   const router = useRouter();
   const { setCatches, isLoggedIn, jwtUserInfo, displayNameMap, previousPath } = useGlobalState();
-  const { setActionsDisabled } = useHeaderActions();
+  const { setActions, setPageTitle } = useHeaderActions();
   const { showLoading, hideLoading } = useLoadingOverlay();
   const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
   const [disableScroll, setDisableScroll] = useState(false);
@@ -117,13 +117,37 @@ export default function CatchDetails({ selectedCatch, setSelectedCatch }: CatchD
 
   useEffect(() => {
     // Disable header actions when the component mounts
-    setActionsDisabled(true);
+    // setActionsDisabled(true);
+    // Set the page title
+    setPageTitle(t('CatchesPage.CatchDetails'));
 
     // Re-enable header actions when the component unmounts
     return () => {
-      setActionsDisabled(false);
+      // setActionsDisabled(false);
+      setPageTitle(null);
     };
   }, []);
+
+  useEffect(() => {
+    setActions(
+      <ActionIcon
+        size="lg"
+        variant="transparent"
+        c="white"
+        onClick={
+          isInEditView
+            ? () => openCancelEditModal(true)
+            : () => {
+              navigateBack(router, previousPath);
+            }
+        }
+      >
+        <IconChevronLeft style={{ width: '100%', height: '100%' }} />
+      </ActionIcon>
+    );
+
+    return () => setActions(null);
+  }, [router, setActions, previousPath, isInEditView]);
 
   const openConfirmEditModal = () => {
     ConfirmEditModal({
@@ -134,10 +158,13 @@ export default function CatchDetails({ selectedCatch, setSelectedCatch }: CatchD
     });
   };
 
-  const openCancelEditModal = () => {
+  const openCancelEditModal = (navigateToCatches: boolean) => {
     CancelEditModal({
       onConfirm: () => {
         setIsInEditView(false);
+        if (navigateToCatches) {
+          navigateBack(router, previousPath);
+        }
       },
       t,
     });
@@ -254,7 +281,7 @@ export default function CatchDetails({ selectedCatch, setSelectedCatch }: CatchD
                           copy();
                           showNotification(
                             'success',
-                            t('Notifications.LinkCopiedMessage', { catchNumber: selectedCatch.catchNumber }),
+                            t('Notifications.CatchLinkCopiedMessage', { catchNumber: selectedCatch.catchNumber }),
                             { withTitle: true, title: t('Notifications.LinkCopiedTitle') }
                           );
                         }}
@@ -284,14 +311,25 @@ export default function CatchDetails({ selectedCatch, setSelectedCatch }: CatchD
                   <IconTrash size={20} />
                 </ActionIcon>
               )}
-              {/* Close Button */}
+              {/* Close Button Mobile*/}
+              {isInEditView && <ActionIcon
+                size="lg"
+                variant="light"
+                color="gray"
+                hiddenFrom="md"
+                onClick={() => openCancelEditModal(false)}
+              >
+                <IconX size={20} />
+              </ActionIcon>}
+              {/* Close Button Desktop*/}
               <ActionIcon
                 size="lg"
                 variant="light"
                 color="gray"
+                visibleFrom="md"
                 onClick={
                   isInEditView
-                    ? () => openCancelEditModal()
+                    ? () => openCancelEditModal(false)
                     : () => {
                       navigateBack(router, previousPath);
                     }

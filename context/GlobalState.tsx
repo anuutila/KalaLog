@@ -164,8 +164,10 @@ export const GlobalStateProvider = ({ children }: { children: React.ReactNode })
 
   useEffect(() => {
     const fullPath = pathname + (searchParams.toString() ? `?${searchParams.toString()}` : '') + hash;
-    // Avoid updating the path with the hash if the pathname is '/catches'
-    if (pathname === '/catches' && fullPath && hash) {
+
+    // Avoid updating the path with the hash if the pathname is '/catches' or '/user/<username>'
+    // Otherwise, the #map or #events will remain in the URL and mess up the navigation
+    if ((pathname === '/catches' || pathname.startsWith('/user/')) && fullPath && hash) {
       return;
     }
 

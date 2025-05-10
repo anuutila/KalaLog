@@ -3,7 +3,7 @@ import { useGlobalState } from "@/context/GlobalState";
 import { IEvent } from "@/lib/types/event";
 import { EventsResponse } from "@/lib/types/responses";
 import { editorRoles, IPublicUserProfile, UserRole } from "@/lib/types/user";
-import { calculateEventStats } from "@/lib/utils/eventUtils";
+import { calculateEventStats, generateAllParticipantNames, IEventStats } from "@/lib/utils/eventUtils";
 import { handleApiError } from "@/lib/utils/handleApiError";
 import { getEvents } from "@/services/api/eventService";
 import { ActionIcon, Affix, Avatar, AvatarGroup, Badge, Box, darken, Group, lighten, Paper, Skeleton, Stack, Text, Title, Tooltip } from "@mantine/core";
@@ -13,7 +13,10 @@ import CreateEventForm from "./CreateEventForm";
 import { IconCalendar, IconChevronRight, IconFish, IconMapPin, IconPlus } from "@tabler/icons-react";
 import { nameToColor } from "@/lib/utils/utils";
 import { useFormatter, useTranslations } from "next-intl";
-import EventDetails from "./EventDetails";
+import EventDetails, { EventDetailsProps } from "./EventDetails";
+import { useRouter, useSearchParams } from "next/navigation";
+import ParticipantAvatarGroup from "./ParticipantAvatarGroup";
+import EventStatBadges from "./EventStatBadges";
 
 interface EventsTabProps {
   allUsers: (IPublicUserProfile | UnregisteredUserInfo)[];
@@ -21,35 +24,24 @@ interface EventsTabProps {
 
 export default function EventsTab({ allUsers }: EventsTabProps) {
   const tCommunity = useTranslations('CommunityPage');
+  const format = useFormatter();
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [events, setEvents] = useState<IEvent[]>([]);
   const [loadingEvents, setLoadingEvents] = useState(true);
   const [showCreateForm, setShowCreateForm] = useState(false);
-  const [showEventDetails, setShowEventDetails] = useState(false);
-  const [selectedEvent, setSelectedEvent] = useState<IEvent | null>(null);
+  const [eventDetailsOpen, setEventDetailsOpen] = useState(false);
+  const [selectedEventDetails, setSelectedEventDetails] = useState<EventDetailsProps | null>(null);
   const { jwtUserInfo: userInfo, catches } = useGlobalState();
   const canCreateEvents = userInfo?.role && [UserRole.TRUSTED_CREATOR, ...editorRoles].includes(userInfo.role);
 
   const handleOpenCreateForm = () => setShowCreateForm(true);
   const handleCloseCreateForm = () => setShowCreateForm(false);
 
-  const handleOpenEventDetails = () => setShowEventDetails(true);
-  const handleCloseEventDetails = () => setShowEventDetails(false);
-
   const handleEventCreated = () => {
     handleCloseCreateForm();
     fetchData(); // Refresh event list
   };
-
-  const onCloseEventDetails = () => {
-    handleCloseEventDetails();
-    setSelectedEvent(null);
-  }
-
-  useEffect(() => {
-    if (selectedEvent) {
-      handleOpenEventDetails();
-    }
-  }, [selectedEvent]);
 
   const fetchData = async () => {
     setLoadingEvents(true);
@@ -67,15 +59,36 @@ export default function EventsTab({ allUsers }: EventsTabProps) {
     fetchData();
   }, []);
 
-  const tooltipLabelContent = (remainingNames: string[]) => (
-    <Stack gap={2}>
-      {remainingNames.map(name => (
-        <Text key={name} size="sm">{name}</Text>
-      ))}
-    </Stack>
-  );
+  useEffect(() => {
+    if (!loadingEvents && events.length > 0) {
+      const param = searchParams.get('eventId');
+      if (param) {
+        if (!selectedEventDetails) {
+          const foundEvent = events.find(e => e.id === param) || null;
+          const stats = foundEvent ? calculateEventStats(foundEvent, catches) : null;
+          if (foundEvent && stats) {
+            setSelectedEventDetails({ event: foundEvent, stats });
+          } else {
+            setSelectedEventDetails(null);
+          }
+        }
+      } else {
+        setSelectedEventDetails(null);
+      }
 
-  const format = useFormatter();
+      setEventDetailsOpen(!!param);
+    }
+  }, [searchParams, loadingEvents, events]);
+
+  const openEventDetails = (event: IEvent, stats: IEventStats) => {
+    console.log('Selected event:', event);
+    setSelectedEventDetails({ event, stats });
+    const url = new URL(window.location.href)
+    url.pathname = '/community'
+    url.searchParams.set('eventId', event.id)
+    url.hash = 'events'
+    router.push(url.toString(), { scroll: false })
+  };
 
   const getDateRange = (event: IEvent) => {
     const startDateObj = new Date(event.startDate);
@@ -85,18 +98,24 @@ export default function EventsTab({ allUsers }: EventsTabProps) {
     const formattedEnd = format.dateTime(endDateObj, { month: 'short', day: 'numeric'});
     const formattedYear = format.dateTime(endDateObj, { year: 'numeric' });
 
-    let dateRangeString = `${formattedStart} - ${formattedEnd}, ${formattedYear}`;
+    // let dateRangeString = `${formattedStart} - ${formattedEnd}, ${formattedYear}`;
+    let dateRangeString = `${formattedStart} - ${formattedEnd}`;
 
     if (dayjs(event.startDate).isSame(dayjs(event.endDate), 'month')) {
       const startDayOnly = format.dateTime(startDateObj, { day: 'numeric' });
-      dateRangeString = `${startDayOnly}. - ${formattedEnd}, ${formattedYear}`;
+      // dateRangeString = `${startDayOnly}. - ${formattedEnd}, ${formattedYear}`;
+      // dateRangeString = `${startDayOnly}. - ${formattedEnd}`;
     }
     if (!dayjs(event.startDate).isSame(dayjs(event.endDate), 'year')) {
       const formattedStartWithYear = format.dateTime(startDateObj, { year: 'numeric', month: 'short', day: 'numeric' });
-      dateRangeString = `${formattedStartWithYear} - ${formattedEnd}, ${formattedYear}`;
+      // dateRangeString = `${formattedStartWithYear} - ${formattedEnd}, ${formattedYear}`;
+      // dateRangeString = `${formattedStartWithYear} - ${formattedEnd}`;
+    }
+    if (dayjs(event.startDate).isSame(dayjs(event.endDate), 'day')) {
+      dateRangeString = formattedStart;
     }
 
-    return dateRangeString.replace(/k./g, 'k'); // Remove extra dot
+    return dateRangeString //.replace(/k./g, 'k'); // Remove extra dot
   }
 
   const borderColorGray = darken(`var(--mantine-color-gray-light-color)`, 0.5);
@@ -120,16 +139,8 @@ export default function EventsTab({ allUsers }: EventsTabProps) {
               {Array.from({ length: 6 }).map((_, index) => <Skeleton key={index} height={142} radius="lg" />)}
             </Stack>
           : events.map((event) => {
-            const stats = calculateEventStats(event, catches);
-            const participantNames = event.participants
-              .map(p => p ? `${p.firstName} ${p.lastName}` : 'Unknown User');
-            const unregisteredNames = event.unregisteredParticipants || [];
-            const allParticipantNames = [...participantNames, ...unregisteredNames].sort();
-
-            let maxAvatarsVisible = 4
-            if (allParticipantNames.length > maxAvatarsVisible) {
-              maxAvatarsVisible -= 1;
-            }
+            const stats: IEventStats = calculateEventStats(event, catches);
+            const allParticipantNames = generateAllParticipantNames(event);
 
             let renderYearTitle = false;
             const currentEventYear = dayjs(event.startDate).format('YYYY');
@@ -162,82 +173,16 @@ export default function EventsTab({ allUsers }: EventsTabProps) {
                           </Text>
                         </Group>
                       </Stack>
-                      <AvatarGroup>
-                        {allParticipantNames.slice(0, maxAvatarsVisible).map(participant => {
-                          const color = nameToColor(participant);
-                          const borderColor = darken(`var(--mantine-color-${color}-light-color)`, 0.5);
-                          return (
-                            <Tooltip
-                              key={participant}
-                              label={participant}
-                              withArrow
-                              arrowSize={8}
-                              position="top"
-                              events={{ hover: true, focus: true, touch: true }}>
-                              <Avatar
-                                size={36}
-                                radius={'xl'}
-                                name={participant}
-                                color={color}
-                                style={{
-                                  border: `3px solid ${borderColor}`,
-                                  outline: '2px solid var(--my-ui-item-background-color)',
-                                  outlineOffset: '-1px',
-                                  boxSizing: 'content-box'
-                                }}
-                              />
-                            </Tooltip>
-                          );
-                        })}
-                        {allParticipantNames.length > maxAvatarsVisible &&
-                          <Tooltip
-                            label={tooltipLabelContent(allParticipantNames.slice(maxAvatarsVisible))}
-                            withArrow
-                            arrowSize={8}
-                            position="top"
-                            events={{ hover: true, focus: true, touch: true }}
-                          >
-                            <Avatar
-                              size={36}
-                              radius="xl"
-                              color="gray"
-                              style={{
-                                border: `3px solid ${borderColorGray}`,
-                                outline: '2px solid var(--my-ui-item-background-color)',
-                                outlineOffset: '-1px',
-                                boxSizing: 'content-box'
-                              }}
-                            >
-                              +{allParticipantNames.length - maxAvatarsVisible}
-                            </Avatar>
-                          </Tooltip>
-                        }
-                      </AvatarGroup>
+                      <ParticipantAvatarGroup
+                        participantNames={allParticipantNames}
+                        maxAvatarsVisible={4}
+                      />
                     </Group>
                     <Group gap={'xs'} maw={'90%'}>
-                      <Badge
-                        px={12}
-                        pt={1}
-                        h={28}
-                        color="green"
-                        variant="light"
-                        size="lg" leftSection={<Stack pb={1}><IconMapPin size={20} /></Stack>}
-                      // styles={{ label: { color: greenBadgeColor } }}
-                      >
-                        {event.bodiesOfWater.join(', ')}
-                      </Badge>
-                      <Badge
-                        px={12}
-                        pt={1}
-                        h={28}
-                        color="blue"
-                        variant="light"
-                        size="lg"
-                        leftSection={<Stack pb={1}><IconFish size={24} /></Stack>}
-                      // styles={{ label: { color: blueBadgeColor } }}
-                      >
-                        {stats.totalCatches} {tCommunity('FishCount')}
-                      </Badge>
+                      <EventStatBadges
+                        event={event}
+                        eventStats={stats}
+                      />
                     </Group>
                   </Stack>
                   <Box
@@ -253,7 +198,7 @@ export default function EventsTab({ allUsers }: EventsTabProps) {
                       pointerEvents: 'none'
                     }}
                   >
-                    <Stack p={20} justify="end" onClick={() => setSelectedEvent(event)} style={{ pointerEvents: 'auto' }}>
+                    <Stack p={20} justify="end" onClick={() => openEventDetails(event, stats)} style={{ pointerEvents: 'auto' }}>
                       <IconChevronRight size={20} stroke={2.5} />
                     </Stack>
                   </Box>
@@ -270,15 +215,15 @@ export default function EventsTab({ allUsers }: EventsTabProps) {
             onCancelAction={handleCloseCreateForm}
           />
         )}
-        {showEventDetails && (
+        {eventDetailsOpen && selectedEventDetails && (
           <EventDetails
-            event={selectedEvent}
-            onCloseAction={onCloseEventDetails}
+            event={selectedEventDetails.event}
+            stats={selectedEventDetails.stats}
           />
         )}
       </Stack>
 
-      {canCreateEvents && !showCreateForm && !showEventDetails && (
+      {canCreateEvents && !showCreateForm && !eventDetailsOpen && (
         <Affix bottom={{ base: 'calc(var(--app-shell-footer-offset) + env(safe-area-inset-bottom) + 20px)', md: 0 }} right={20} zIndex={350}>
           <Tooltip label={tCommunity('CreateButtonTooltip')} position="left" withArrow>
             <ActionIcon

@@ -8,7 +8,7 @@ const PopulatedUserSchema = z.object({
 }).nullable();
 
 const BaseEventSchema = z.object({
-  id: z.string().optional(),
+  id: z.string(),
   name: z.string().min(3, 'Event name must be at least 3 characters long'),
   startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid start date format (YYYY-MM-DD)'),
   endDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid end date format (YYYY-MM-DD)'),
@@ -29,6 +29,8 @@ export const IEventSchema = BaseEventSchema.refine(
   message: "End date cannot be earlier than start date",
   path: ["endDate"],
 });
+
+export type IPopulatedEventUserSchema = z.infer<typeof PopulatedUserSchema>;
 
 // Infer the main TypeScript type from the final refined schema
 export type IEvent = z.infer<typeof IEventSchema>;

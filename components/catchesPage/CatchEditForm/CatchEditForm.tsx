@@ -50,7 +50,7 @@ interface CatchEditFormProps {
   catchData: ICatch;
   setIsInEditView: React.Dispatch<React.SetStateAction<boolean>>;
   setSelectedCatch: React.Dispatch<React.SetStateAction<ICatch | null>>;
-  openCancelEditModal: () => void;
+  openCancelEditModal: (navigateToCatches: boolean) => void;
   setDisableScroll: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
@@ -637,7 +637,7 @@ export default function CatchEditForm({
             <Button
               size="md"
               variant="default"
-              onClick={() => openCancelEditModal()}
+              onClick={() => openCancelEditModal(false)}
               leftSection={<IconEraser size={20} />}
             >
               {t('Common.Cancel')}

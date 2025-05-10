@@ -81,6 +81,7 @@
     }
   },
   "CatchesPage": {
+    "CatchDetails": "Saaliin tiedot",
     "TableSettings": {
       "Button": "Taulukon asetukset",
       "Title": "Taulukon asetukset",
@@ -166,6 +167,10 @@
     "CreateButtonTooltip": "Luo uusi tapahtuma",
     "FishCount": "Kalaa",
     "EditEvent": "Muokkaa tapahtumaa",
+    "EventDetails": "Tapahtuman tiedot",
+    "Participants": "Kalastajat",
+    "Leaderboard": "Tulostaulukko",
+    "CatchMapNote": "Näytetään {amount}/{totalAmount} saalista",
     "EventForm": {
       "Name": "Tapahtuman nimi",
       "StartDate": "Alkamispäivämäärä",
@@ -312,7 +317,8 @@
   "Notifications": {
     "NewAchievement": "Uusi saavutus avattu!",
     "LinkCopiedTitle": "Linkki kopioitu!",
-    "LinkCopiedMessage": "Linkki saaliiseen #{catchNumber} on nyt kopioitu leikepöydälle!"
+    "LinkCopiedMessage": "Linkki saaliiseen #{catchNumber} on nyt kopioitu leikepöydälle!",
+    "EventLinkCopiedMessage": "Linkki tapahtumaan ({eventName}) on nyt kopioitu leikepöydälle!"
   },
   "Tooltips": {
     "CopyLink": "Kopioi jaettava linkki",

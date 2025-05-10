@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import Map, { NavigationControl, GeolocateControl, MapRef, Popup, Source, Layer } from 'react-map-gl/mapbox';
+import Map, { NavigationControl, GeolocateControl, MapRef, Popup, Source, Layer, FullscreenControl } from 'react-map-gl/mapbox';
 import './CatchMap.css';
 import { useGlobalState } from '@/context/GlobalState';
 import { Box, Group, Stack, Text, Title } from '@mantine/core';
@@ -11,6 +11,7 @@ import { CircleLayerSpecification, GeoJSONSource, MapMouseEvent, SymbolLayerSpec
 import Link from 'next/link';
 import { IconChevronRight, IconRuler2, IconUser, IconWeight } from '@tabler/icons-react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { ICatch } from '@/lib/types/catch';
 
 const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
 
@@ -88,15 +89,19 @@ interface CatchWithCoords {
 }
 
 interface CatchMapProps {
+  mapCatches?: ICatch[];
   initialLatitude?: number;
   initialLongitude?: number;
   initialZoom?: number;
+  updateUrl?: boolean;
 }
 
 export default function CatchMap({
+  mapCatches = [],
   initialLatitude = 62.15,
   initialLongitude = 23.2129,
-  initialZoom = 10.75
+  initialZoom = 10.75,
+  updateUrl = true,
 }: CatchMapProps) {
   const t = useTranslations();
   const { catches, displayNameMap } = useGlobalState();
@@ -121,7 +126,8 @@ export default function CatchMap({
   const mapRef = useRef<MapRef | null>(null);
 
   const catchesWithCoords: CatchWithCoords[] = useMemo(() => {
-    return catches.flatMap((c): CatchWithCoords[] => {
+    const catchItems = mapCatches.length ? mapCatches : catches;
+    return catchItems.flatMap((c): CatchWithCoords[] => {
       const id = c.id;
       if (!id) {
         console.warn("Skipping catch: Missing ID", c);
@@ -170,7 +176,7 @@ export default function CatchMap({
       return [catchItem];
 
     });
-  }, [catches, displayNameMap]);
+  }, [catches, displayNameMap, mapCatches]);
 
   // const getRandomColor = () => {
   //   const color = AdditionalFishColors[Math.floor(Math.random() * Object.keys(AdditionalFishColors).length)];
@@ -274,7 +280,7 @@ export default function CatchMap({
   }, [setSelectedCatch]);
 
   const handleMoveEnd = () => {
-    if (!viewState) {
+    if (!viewState || !updateUrl) {
       return;
     }
     const { longitude, latitude, zoom, pitch, bearing } = viewState
@@ -339,6 +345,7 @@ export default function CatchMap({
       >
         <NavigationControl position="top-right" />
         <GeolocateControl position="top-right" />
+        <FullscreenControl position="bottom-right" />
 
         {geojsonData && geojsonData.features.length > 0 && (
           <Source

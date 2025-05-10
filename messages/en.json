@@ -81,6 +81,7 @@
     }
   },
   "CatchesPage": {
+    "CatchDetails": "Catch Details",
     "TableSettings": {
       "Button": "Table Settings",
       "Title": "Table Settings",
@@ -166,6 +167,10 @@
     "CreateButtonTooltip": "Create New Event",
     "FishCount": "Fish",
     "EditEvent": "Edit event",
+    "EventDetails": "Event details",
+    "Participants": "Anglers",
+    "Leaderboard": "Leaderboard",
+    "CatchMapNote": "Showing {amount}/{totalAmount} Catches",
     "EventForm": {
       "Name": "Event Name",
       "StartDate": "Start Date",
@@ -312,7 +317,8 @@
   "Notifications": {
     "NewAchievement": "New achievement unlocked!",
     "LinkCopiedTitle": "Link Copied!",
-    "LinkCopiedMessage": "Link to Catch #{catchNumber} is now on your clipboard!"
+    "CatchLinkCopiedMessage": "Link to Catch #{catchNumber} is now on your clipboard!",
+    "EventLinkCopiedMessage": "Link to event ({eventName}) is now on your clipboard!"
   },
   "Tooltips": {
     "CopyLink": "Copy shareable link",

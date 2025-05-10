@@ -382,8 +382,8 @@ export default function EventDetails({ event, stats }: EventDetailsProps) {
               bg={"var(--my-ui-item-background-color)"}
               style={{
                 borderTopRightRadius: '12px',
-                borderRight: '1px solid #424242',
-                borderTop: '1px solid #424242',
+                borderBottomLeftRadius: '16px',
+                border: '1px solid #424242',
               }}
             >
               <Text fz={14} c={'dimmed'}>{t('CommunityPage.CatchMapNote', { amount: catchesWithCoordsAmount, totalAmount: stats.totalCatches })}</Text>

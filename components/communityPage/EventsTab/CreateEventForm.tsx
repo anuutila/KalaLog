@@ -1,7 +1,7 @@
 'use client';
 
-import { useImperativeHandle, useRef, useState, useEffect } from 'react';
-import { TextInput, Button, Group, Stack, MultiSelect, TagsInput, Paper, Container, Fieldset, Title, ActionIcon, TagsInputProps, MultiSelectProps, Avatar, Text } from '@mantine/core';
+import { useRef, useState, useEffect } from 'react';
+import { TextInput, Button, Group, Stack, MultiSelect, TagsInput, Paper, Container, Fieldset, Title, ActionIcon, MultiSelectProps, Avatar, Text } from '@mantine/core';
 import { createEvent } from '@/services/api/eventService';
 import { showNotification } from '@/lib/notifications/notifications';
 import dayjs from 'dayjs';
@@ -19,7 +19,6 @@ import { UnregisteredUserInfo } from '@/app/community/page';
 import ImageUploadForm, { ImageUploadFormRef } from '@/components/ImageUploadForm/ImageUploadForm';
 import FullscreenImage from '@/components/catchesPage/CatchDetails/FullscreenImage';
 import mongoose from 'mongoose';
-import { optimizeImage } from '@/lib/utils/clientUtils/clientUtils';
 
 interface CreateEventFormProps {
   users: (IPublicUserProfile | UnregisteredUserInfo)[]; 
@@ -113,27 +112,10 @@ export default function CreateEventForm({ users, catches, onSuccessAction, onCan
     showLoading();
     setLoading(true);
     try {
-
-      // Optimize images before uploading
-      let optimizedFiles: File[] | undefined = undefined;
-      if (files.length > 0) {
-        console.log('Optimizing images...');
-        optimizedFiles = await Promise.all(
-          files.map(async (file) => {
-            const optimizedFile = await optimizeImage(file);
-            return optimizedFile;
-          })
-        );
-      }
-
-      if (optimizedFiles?.length !== files.length) {
-        throw new Error('Optimized files length does not match original files length.');
-      }
-
       console.log('Creating event...', eventData);
       console.log('With image metadata:', newImageMetadata);
 
-      const eventResponse: EventCreatedResponse = await createEvent(eventData, optimizedFiles ?? [], newImageMetadata);
+      const eventResponse: EventCreatedResponse = await createEvent(eventData, files ?? [], newImageMetadata);
       showNotification('success', 'Event created successfully!', { withTitle: false, duration: 3000 });
       onSuccessAction();
     } catch (err: any) {

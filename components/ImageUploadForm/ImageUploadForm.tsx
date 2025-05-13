@@ -15,6 +15,8 @@ import { SignedImageURLsResponse } from '@/lib/types/responses';
 import { UserRole } from '@/lib/types/user';
 import { handleApiError } from '@/lib/utils/handleApiError';
 import { getSignedImageURLs } from '@/services/api/imageService';
+import { optimizeImage } from '@/lib/utils/clientUtils/clientUtils';
+import { useLoadingOverlay } from '@/context/LoadingOverlayContext';
 
 const defaultPlaceholder = '/no-image-placeholder.png';
 
@@ -52,6 +54,7 @@ export default function ImageUploadForm({
 }: ImageUploadFormProps) {
   const t = useTranslations();
   const { isLoggedIn, jwtUserInfo } = useGlobalState();
+  const { showLoading, hideLoading } = useLoadingOverlay();
   const [existingImages, setExistingImages] = useState<ExistingImage[]>([]); // Existing images from the catch
   const [newImages, setNewImages] = useState<string[]>([]); // Previews for newly uploaded images
   const [selectedImage, setSelectedImage] = useState<{ type: 'existing' | 'new'; index: number } | null>(null);
@@ -79,10 +82,32 @@ export default function ImageUploadForm({
     }
   }, [catchData]);
 
-  const handleDrop = (acceptedFiles: File[]) => {
-    setAddedImages((prev) => [...prev, ...acceptedFiles]);
-    const newPreviews = acceptedFiles.map((file) => URL.createObjectURL(file));
-    setNewImages((prev) => [...prev, ...newPreviews]);
+  const handleDrop = async (acceptedFiles: File[]) => {
+    showLoading();
+    try {
+      const optimizationPromises = acceptedFiles.map(file =>
+        optimizeImage(file).catch(error => {
+          console.error(`Error optimizing image ${file.name}:`, error);
+          return null; // Failed files will be filtered out
+        })
+      );
+      const optimizedFiles = (await Promise.all(optimizationPromises)).filter(
+        file => file !== null
+      ) as File[];
+
+      if (optimizedFiles.length > 0) {
+        setAddedImages((prev) => [...prev, ...optimizedFiles]);
+        const newPreviews = optimizedFiles.map((file) => URL.createObjectURL(file));
+        setNewImages((prev) => [...prev, ...newPreviews]);
+      }
+    } catch (error) {
+      handleApiError(error, 'image processing');
+    } finally {
+      hideLoading();
+    }
+    // setAddedImages((prev) => [...prev, ...acceptedFiles]);
+    // const newPreviews = acceptedFiles.map((file) => URL.createObjectURL(file));
+    // setNewImages((prev) => [...prev, ...newPreviews]);
   };
 
   const handleDeleteNewImage = (index: number) => {

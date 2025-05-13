@@ -54,7 +54,6 @@ import { defaultSort } from '@/lib/utils/utils';
 import { createCatch } from '@/services/api/catchService';
 import { getUsersByFirstName } from '@/services/api/userService';
 import classes from './page.module.css';
-import { optimizeImage } from '@/lib/utils/clientUtils/clientUtils';
 
 export default function Page() {
   const t = useTranslations();
@@ -351,20 +350,8 @@ export default function Page() {
       console.log('Submitting form data:', parsedFormData);
       console.log(`With ${files.length} images`);
 
-      // Optimize images before uploading
-      let optimizedFiles: File[] | undefined = undefined;
-      if (files.length > 0) {
-        console.log('Optimizing images...');
-        optimizedFiles = await Promise.all(
-          files.map(async (file) => {
-            const optimizedFile = await optimizeImage(file);
-            return optimizedFile;
-          })
-        );
-      }
-
       // Send the catch details and image(s) to the API
-      const catchCreatedResponse: CatchCreaetedResponse = await createCatch(parsedFormData, optimizedFiles ?? []);
+      const catchCreatedResponse: CatchCreaetedResponse = await createCatch(parsedFormData, files ?? []);
       console.log(catchCreatedResponse.message, catchCreatedResponse.data);
       if (catchCreatedResponse.data.failedImageUploads) {
         showNotification('warning', catchCreatedResponse.message, { withTitle: true });

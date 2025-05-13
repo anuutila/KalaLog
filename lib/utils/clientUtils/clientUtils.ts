@@ -2,7 +2,7 @@ import imageCompression, { Options } from "browser-image-compression";
 
 export async function optimizeImage(file: File): Promise<File> {
   const options: Options = {
-    maxSizeMB: 4, // Target file size
+    maxSizeMB: 1, // Target file size
     useWebWorker: true, // Use Web Workers for faster processing
     alwaysKeepResolution: true, // Keep the original resolution
   };

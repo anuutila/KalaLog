@@ -163,7 +163,7 @@ export default function UserAchievementsPage() {
               <Paper withBorder p="sm" radius="lg">
                 <Group>
                   <Avatar
-                    src={profileData.profilePictureUrl}
+                    src={profileData.profilePicturePublicId}
                     name={`${profileData.firstName} ${profileData.lastName}`}
                     radius="xl"
                     size="lg"

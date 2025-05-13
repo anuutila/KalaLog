@@ -183,7 +183,7 @@ export default function UserProfilePage() {
                     size={150}
                     name={`${profileData?.firstName} ${profileData?.lastName ?? ''}`}
                     color={nameToColor(`${profileData?.firstName} ${profileData?.lastName ?? ''}`)}
-                    src={profileData?.profilePictureUrl}
+                    src={profileData?.profilePicturePublicId}
                   />)}
                 {/* <Box pos={'absolute'} left={-15} bottom={-15} style={{}}>
                   <LevelIcon level={profileData.level} absolutePos={false} />

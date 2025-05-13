@@ -16,7 +16,7 @@ interface LeanUserForPublicProfile {
   username?: string;
   firstName?: string;
   lastName?: string;
-  profilePictureUrl?: string;
+  profilePicturePublicId?: string;
   createdAt?: Date;
 }
 
@@ -26,7 +26,7 @@ export async function GET(): Promise<NextResponse<AllUserProfilesResponse | Erro
     await dbConnect();
 
     const allUsers = await User.find({})
-      .select('_id username firstName lastName profilePictureUrl createdAt')
+      .select('_id username firstName lastName profilePicturePublicId createdAt')
       .lean() as LeanUserForPublicProfile[] | null;
 
     if (!allUsers || allUsers.length === 0) {
@@ -58,7 +58,7 @@ export async function GET(): Promise<NextResponse<AllUserProfilesResponse | Erro
         username: user.username ?? '',
         firstName: user.firstName ?? '',
         lastName: user.lastName ?? '',
-        profilePictureUrl: user.profilePictureUrl,
+        profilePicturePublicId: user.profilePicturePublicId,
         createdAt: user.createdAt,
         level: calculatedLevel,
         totalXP: userStats.totalXP,

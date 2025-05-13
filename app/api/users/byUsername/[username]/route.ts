@@ -16,7 +16,7 @@ interface LeanUserForPublicProfile {
   username?: string;
   firstName?: string;
   lastName?: string;
-  profilePictureUrl?: string;
+  profilePicturePublicId?: string;
   createdAt?: Date;
 }
 
@@ -34,7 +34,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ user
 
     // Find user
     const user = await User.findOne({ username: username })
-      .select('_id username firstName lastName profilePictureUrl createdAt')
+      .select('_id username firstName lastName profilePicturePublicId createdAt')
       .lean() as LeanUserForPublicProfile | null;
 
     if (!user) {
@@ -64,7 +64,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ user
       username: user.username ?? '',
       firstName: user.firstName ?? '',
       lastName: user.lastName ?? '',
-      profilePictureUrl: user.profilePictureUrl,
+      profilePicturePublicId: user.profilePicturePublicId,
       createdAt: user.createdAt,
       level: calculatedLevel,
       totalXP: userStats.totalStars,

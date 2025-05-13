@@ -92,7 +92,7 @@ export const getSecondaryMetricOptions = (metrics: SecondaryMetric[], secondaryM
       <Group gap="sm">
         {secondaryMetric === metric ? <CheckIcon size={12} /> : null}
         <Group gap={4}>
-          {getSecondaryMetricIcon(metric)}
+          {/* {getSecondaryMetricIcon(metric)} */}
           <span>
             {t(`StatisticsPage.${capitalizeFirstLetter(metric)}`)}
           </span>

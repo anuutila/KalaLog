@@ -40,11 +40,11 @@ import { CatchEditedResponse, UsersByFirstNameResponse } from '@/lib/types/respo
 import { editorRoles } from '@/lib/types/user';
 import { CatchUtils } from '@/lib/utils/catchUtils';
 import { handleApiError } from '@/lib/utils/handleApiError';
-import { optimizeImage } from '@/lib/utils/utils';
 import { editCatch } from '@/services/api/catchService';
 import { getUsersByFirstName } from '@/services/api/userService';
 import FullscreenImage from '../CatchDetails/FullscreenImage';
 import classes from './CatchEditForm.module.css';
+import { optimizeImage } from '@/lib/utils/clientUtils/clientUtils';
 
 interface CatchEditFormProps {
   catchData: ICatch;

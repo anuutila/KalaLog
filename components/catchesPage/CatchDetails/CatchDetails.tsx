@@ -22,6 +22,7 @@ import FullscreenImage from './FullscreenImage';
 import classes from './CatchDetails.module.css';
 import { navigateBack } from '@/lib/utils/utils';
 import { useRouter } from 'next/navigation';
+import { defaultPlaceholder, noAccessPlaceholder } from '@/lib/constants/constants';
 
 export interface CatchDetails {
   catchNumber: number;
@@ -51,9 +52,6 @@ const speciesPlaceholders: Record<string, string> = {
   Särki: '/sarki-1000x1000.png',
   Kiiski: '/kiiski-1000x1000.png',
 };
-
-const defaultPlaceholder = '/no-image-placeholder.png';
-const noAccessPlaceholder = '/no-access-placeholder.png';
 
 export default function CatchDetails({ selectedCatch, setSelectedCatch }: CatchDetailsProps) {
   const t = useTranslations();

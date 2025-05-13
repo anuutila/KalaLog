@@ -1,6 +1,6 @@
 import React, { ForwardedRef, useEffect, useImperativeHandle, useState } from 'react';
-import { IconPhoto, IconTrash, IconUpload, IconX } from '@tabler/icons-react';
-import { ActionIcon, Box, Group, Image, Stack, Text } from '@mantine/core';
+import { IconInfoCircle, IconLockOpen2, IconMaximize, IconPhoto, IconPhotoStar, IconStar, IconTrash, IconUpload, IconUser, IconWorld, IconX } from '@tabler/icons-react';
+import { ActionIcon, Box, Group, Image, Stack, Switch, Text, Tooltip } from '@mantine/core';
 import { Dropzone, IMAGE_MIME_TYPE } from '@mantine/dropzone';
 import { ICatch } from '@/lib/types/catch';
 import classes from './ImageUploadForm.module.css';
@@ -33,6 +33,10 @@ interface ImageUploadFormProps {
   setAddedImages: React.Dispatch<React.SetStateAction<File[]>>;
   setDeletedImages?: React.Dispatch<React.SetStateAction<(string | undefined)[]>>;
   ref?: ForwardedRef<ImageUploadFormRef>;
+  newImageMetadata?: ReadonlyArray<{ coverImage: boolean; publicAccess: boolean }>;
+  onToggleCoverImage?: (index: number, isCover: boolean) => void;
+  onTogglePublicAccess?: (index: number, isPublic: boolean) => void;
+  allowMetadataEditing?: boolean;
 }
 
 export default function ImageUploadForm({
@@ -41,11 +45,16 @@ export default function ImageUploadForm({
   setAddedImages,
   setDeletedImages,
   ref,
+  newImageMetadata,
+  onToggleCoverImage,
+  onTogglePublicAccess,
+  allowMetadataEditing,
 }: ImageUploadFormProps) {
   const t = useTranslations();
   const { isLoggedIn, jwtUserInfo } = useGlobalState();
   const [existingImages, setExistingImages] = useState<ExistingImage[]>([]); // Existing images from the catch
   const [newImages, setNewImages] = useState<string[]>([]); // Previews for newly uploaded images
+  const [selectedImage, setSelectedImage] = useState<{ type: 'existing' | 'new'; index: number } | null>(null);
 
   const isSmallScreen = useMediaQuery('(max-width: 64em)');
 
@@ -89,6 +98,14 @@ export default function ImageUploadForm({
     setExistingImages((prev) => prev.filter((_, i) => i !== index));
   };
 
+  const handleImageClick = (type: 'existing' | 'new', index: number) => {
+    if (selectedImage && selectedImage.type === type && selectedImage.index === index) {
+      setSelectedImage(null); // Deselect if already selected
+    } else {
+      setSelectedImage({ type, index });
+    }
+  };
+
   useImperativeHandle(ref, () => ({
     clearImages: () => {
       setNewImages([]);
@@ -99,7 +116,7 @@ export default function ImageUploadForm({
   return (
     <Stack gap={0}>
       <Text size="md" fw={500} mb={4}>
-        {t('NewCatchPage.AddPicture')}
+        {t('ImageUploadForm.AddPictures')}
       </Text>
       <Dropzone
         onDrop={handleDrop}
@@ -126,10 +143,10 @@ export default function ImageUploadForm({
           </Dropzone.Idle>
           <div>
             <Text size="md" inline>
-              {t('NewCatchPage.AddPictureInfo')}
+              {t('ImageUploadForm.AddPictureInfo')}
             </Text>
             <Text size="sm" c="var(--mantine-color-dimmed)" inline mt={7}>
-              {t('NewCatchPage.AddPictureInfo2')}
+              {t('ImageUploadForm.AddPictureInfo2')}
             </Text>
           </div>
         </Group>
@@ -137,11 +154,11 @@ export default function ImageUploadForm({
 
       {(newImages.length > 0 || existingImages.length > 0) && (
         <Box mt="md">
-          <Text fw={500} mb={4}>{`${t('NewCatchPage.Pictures')} (${[...existingImages, ...newImages].length})`}</Text>
+          <Text fw={500} mb={4}>{`${t('ImageUploadForm.Pictures')} (${[...existingImages, ...newImages].length})`}</Text>
           <Carousel
             height={110}
             slideSize={150}
-            slideGap="xs"
+            slideGap={4}
             align="start"
             dragFree
             withControls={!isSmallScreen}
@@ -159,33 +176,63 @@ export default function ImageUploadForm({
                     radius="md"
                     w="100%"
                     h="100%"
-                    onClick={() => setFullscreenImage(img.url)}
-                    style={{ cursor: 'pointer' }}
+                    onClick={() => handleImageClick('existing', index)}
+                    style={{
+                      cursor: 'pointer',
+                      outline:
+                        selectedImage?.type === 'existing' && selectedImage?.index === index
+                          ? '3px solid white'
+                          : 'none',
+                      boxSizing: 'border-box',
+                    }}
                   />
                   {setDeletedImages && (
                     <ActionIcon
                       size="sm"
                       variant="light"
                       pos="absolute"
-                      top={5}
-                      right={5}
+                      top={8}
+                      right={8}
                       bg="rgba(0, 0, 0, 0.75)"
                       onClick={() => handleDeleteExistingImage(index)}
                     >
                       <IconTrash size={16} color="white" />
                     </ActionIcon>
                   )}
-                  {/* <ActionIcon
+                  <ActionIcon
                     size="sm"
                     variant="light"
                     pos="absolute"
-                    bottom={5}
-                    right={5}
+                    bottom={8}
+                    right={8}
                     bg="rgba(0, 0, 0, 0.75)"
-                    onClick={() => setFullscreenImage(url)}
+                    onClick={() => setFullscreenImage(img.url)}
                   >
                     <IconMaximize size={16} color="white" />
-                  </ActionIcon> */}
+                  </ActionIcon>
+                  {/* <Group
+                    pos="absolute"
+                    top={8}
+                    left={8}
+                    gap={4}
+                  >
+                    {newImageMetadata && newImageMetadata[index].coverImage &&
+                      <ActionIcon
+                        size="sm"
+                        variant="subtle"
+                        bg="rgba(0, 0, 0, 0.75)"
+                      >
+                        <IconPhotoStar size={16} color="white" />
+                      </ActionIcon>}
+                    {newImageMetadata && newImageMetadata[index].publicAccess &&
+                      <ActionIcon
+                        size="sm"
+                        variant="subtle"
+                        bg="rgba(0, 0, 0, 0.75)"
+                      >
+                        <IconLockOpen2 size={16} color="white" />
+                      </ActionIcon>}
+                  </Group> */}
                 </Box>
               </Carousel.Slide>
             ))}
@@ -193,7 +240,7 @@ export default function ImageUploadForm({
             {/* Render new images */}
             {newImages.map((url, index) => (
               <Carousel.Slide key={`new-${index}`}>
-                <Box pos="relative" w={150} h={110}>
+                <Box pos="relative" w={150} h={110} p={3}>
                   <Image
                     src={url}
                     fallbackSrc="/no-image-placeholder.png"
@@ -202,35 +249,123 @@ export default function ImageUploadForm({
                     radius="md"
                     w="100%"
                     h="100%"
-                    onClick={() => setFullscreenImage(url)}
-                    style={{ cursor: 'pointer' }}
+                    onClick={() => handleImageClick('new', index)}
+                    style={{
+                      cursor: 'pointer',
+                      outline:
+                        selectedImage?.type === 'new' && selectedImage?.index === index ? '3px solid white' : 'none',
+                      boxSizing: 'border-box',
+                    }}
                   />
                   <ActionIcon
                     size="sm"
                     variant="light"
                     pos="absolute"
-                    top={5}
-                    right={5}
+                    top={8}
+                    right={8}
                     bg="rgba(0, 0, 0, 0.75)"
                     onClick={() => handleDeleteNewImage(index)}
                   >
                     <IconTrash size={16} color="white" />
                   </ActionIcon>
-                  {/* <ActionIcon
+                  <ActionIcon
                     size="sm"
                     variant="light"
                     pos="absolute"
-                    bottom={5}
-                    right={5}
+                    bottom={8}
+                    right={8}
                     bg="rgba(0, 0, 0, 0.75)"
                     onClick={() => setFullscreenImage(url)}
                   >
                     <IconMaximize size={16} color="white" />
-                  </ActionIcon> */}
+                  </ActionIcon>
+                  <Group
+                    pos="absolute"
+                    top={8}
+                    left={8}
+                    gap={4}
+                  >
+                    {allowMetadataEditing && newImageMetadata && newImageMetadata[index] && newImageMetadata[index].coverImage &&
+                      <ActionIcon
+                        size="sm"
+                        variant="subtle"
+                        bg="rgba(0, 0, 0, 0.75)"
+                      >
+                        <IconPhotoStar size={16} color="white" />
+                      </ActionIcon>}
+                    {allowMetadataEditing &&  newImageMetadata && newImageMetadata[index] && newImageMetadata[index].publicAccess &&
+                      <ActionIcon
+                        size="sm"
+                        variant="subtle"
+                        bg="rgba(0, 0, 0, 0.75)"
+                      >
+                        <IconLockOpen2 size={16} color="white" />
+                      </ActionIcon>}
+                  </Group>
                 </Box>
               </Carousel.Slide>
             ))}
           </Carousel>
+
+          {allowMetadataEditing && newImageMetadata && onToggleCoverImage && onTogglePublicAccess && (
+            <Stack mt="md" gap="xs">
+              <Group gap={'sm'} align='center'>
+                <Text size="md" fw={500}>{t('ImageUploadForm.PictureSettings')} {selectedImage ? `(${t('Common.Picture')} ${selectedImage.index + 1})` : ''}</Text>
+                {!selectedImage && <Tooltip
+                  onClick={(event) => event.preventDefault()}
+                  label={t('ImageUploadForm.PictureSettingsInfo')}
+                  position="top"
+                  withArrow
+                  multiline
+                  w={200}
+                  events={{ hover: true, focus: true, touch: true }}
+                >
+                  <IconInfoCircle size={22} stroke={2} color="var(--mantine-color-dimmed)" />
+                </Tooltip>}
+              </Group>
+              <Group gap={'sm'} align='center'>
+                <Switch
+                  size='md'
+                  label={t('ImageUploadForm.CoverPicture')}
+                  disabled={!selectedImage}
+                  checked={selectedImage ? newImageMetadata[selectedImage.index]?.coverImage || false : false}
+                  onChange={(event) => selectedImage ? onToggleCoverImage(selectedImage.index, event.currentTarget.checked) : null}
+                />
+                <Tooltip
+                  onClick={(event) => event.preventDefault()}
+                  label={t('ImageUploadForm.CoverPictureInfo')}
+                  position="top"
+                  withArrow
+                  multiline
+                  w={200}
+                  events={{ hover: true, focus: true, touch: true }}
+                >
+                  <IconInfoCircle size={22} color="var(--mantine-color-dimmed)" />
+                </Tooltip>
+              </Group>
+              <Group gap={'sm'} align='center'>
+                <Switch
+                  size='md'
+                  label={t('ImageUploadForm.PublicAccess')}
+                  disabled={!selectedImage}
+                  checked={selectedImage ? newImageMetadata[selectedImage.index]?.publicAccess || false : false}
+                  onChange={(event) => selectedImage ? onTogglePublicAccess(selectedImage.index, event.currentTarget.checked) : null}
+                />
+                <Tooltip
+                  onClick={(event) => event.preventDefault()}
+                  label={t('ImageUploadForm.PublicAccessInfo')}
+                  position="top"
+                  withArrow
+                  multiline
+                  w={200}
+                  events={{ hover: true, focus: true, touch: true }}
+                >
+                  <IconInfoCircle size={22} color="var(--mantine-color-dimmed)" />
+                </Tooltip>
+              </Group>
+            </Stack>
+          )}
+
         </Box>
       )}
     </Stack>

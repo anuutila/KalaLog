@@ -1,21 +1,30 @@
 import { z } from 'zod';
 
 const PopulatedUserSchema = z.object({
-  id: z.string().regex(/^[a-f\d]{24}$/i, 'Invalid user ID'),
+  id: z.string(),
   username: z.string(),
   firstName: z.string(),
   lastName: z.string(),
-}).nullable();
+})
 
 const BaseEventSchema = z.object({
-  id: z.string(),
+  id: z.string().regex(/^[a-f\d]{24}$/i, 'Invalid event ID'),
   name: z.string().min(3, 'Event name must be at least 3 characters long'),
   startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid start date format (YYYY-MM-DD)'),
   endDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid end date format (YYYY-MM-DD)'),
-  participants: z.array(PopulatedUserSchema),
+  participants: z.array(PopulatedUserSchema).nullable(),
   unregisteredParticipants: z.array(z.string().min(1, "Participant name cannot be empty")).optional(),
   bodiesOfWater: z.array(z.string().min(1, "Body of water name cannot be empty"))
     .min(1, "At least one body of water is required"),
+  images: z.array(
+    z.object({
+      publicId: z.string().min(1, 'Public ID is required'),
+      description: z.string().optional().nullable(),
+      coverImage: z.boolean().optional(),
+      publicAccess: z.boolean().optional(),
+      signedUrl: z.string().url().optional(),
+    })
+  ).optional(),
   createdBy: PopulatedUserSchema,
   createdAt: z.date().optional(),
   updatedAt: z.date().optional(),
@@ -45,6 +54,7 @@ export const CreateEventInputSchema = BaseEventSchema.omit({
   participants: true,
   unregisteredParticipants: true,
 }).extend({
+  _id: z.string().regex(/^[a-f\d]{24}$/i, 'Invalid user ID'),
   participants: z.array(z.string().regex(/^[a-f\d]{24}$/i, 'Invalid user ID')),
   unregisteredParticipants: z.array(z.string().min(1, "Participant name cannot be empty")).optional()
 }).refine(data => data.participants.length > 0 || (data.unregisteredParticipants && data.unregisteredParticipants.length > 0), {
@@ -72,6 +82,13 @@ export type PopulatedEvent = {
   unregisteredParticipants?: string[];
   createdBy?: PopulatedUserDetails;
   bodiesOfWater?: string[];
+  images?: {
+    publicId: string;
+    description?: string | null;
+    coverImage?: boolean;
+    publicAccess?: boolean;
+    signedUrl?: string;
+  }[];
   createdAt?: Date;
   updatedAt?: Date;
 };

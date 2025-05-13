@@ -16,6 +16,8 @@ export const adminRoles = [UserRole.SUPERADMIN, UserRole.ADMIN];
 
 export const creatorRoles = [UserRole.TRUSTED_CREATOR, UserRole.CREATOR];
 
+export const trustedRoles = [UserRole.SUPERADMIN, UserRole.ADMIN, UserRole.EDITOR, UserRole.TRUSTED_CREATOR];
+
 export const allRoles = [
   UserRole.SUPERADMIN,
   UserRole.ADMIN,
@@ -46,10 +48,9 @@ export const IUserSchema = z.object({
     .min(6, 'Password must be at least 6 characters long')
     .max(100, 'Password cannot exceed 100 characters'),
   role: UserRoleSchema,
-  profilePictureUrl: z
+  profilePicturePublicId: z
     .string()
-    .url('Invalid URL')
-    .max(200, 'Profile picture URL cannot exceed 200 characters')
+    .min(1, 'Public ID is required')
     .optional(),
   createdAt: z.date().optional(), // ISO date string for creation timestamp
   id: z.string().optional(),
@@ -63,7 +64,7 @@ export const PublicUserProfileSchema = z.object({
   username: z.string(),
   firstName: z.string(),
   lastName: z.string(),
-  profilePictureUrl: z.string().url().optional().nullable(),
+  profilePicturePublicId: z.string().url().optional().nullable(),
   createdAt: z.date().optional().nullable(),
   level: z.number().int().min(0),
   totalXP: z.number().int().min(0),

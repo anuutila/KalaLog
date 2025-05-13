@@ -86,7 +86,12 @@ export type AchievementsUpdatedResponse = Required<BaseResponse<{ count: number 
 
 export type UserCatchesLinkedResponse = Required<BaseResponse<{ count: number; linkedName: string }>>;
 
-export type EventCreatedResponse = Required<BaseResponse<IEvent>>;
+export interface EventCreatedResponseData {
+  event: IEvent;
+  failedImageUploads: boolean;
+}
+
+export type EventCreatedResponse = Required<BaseResponse<EventCreatedResponseData>>;
 
 export type EventsResponse = Required<BaseResponse<IEvent[]>>;
 

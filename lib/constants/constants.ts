@@ -1,5 +1,6 @@
 export enum ApiEndpoints {
-  UploadImage = '/api/images/imageUpload',
+  UploadCatchImage = '/api/images/catchImageUpload',
+  UploadEventImage = '/api/images/eventImageUpload',
   SignedImageURLs = '/api/images/signedImageURLs',
   DeleteImages = '/api/images/deleteImages',
   Catches = '/api/catches',
@@ -20,6 +21,9 @@ export enum ApiEndpoints {
 export const DEFAULT_BODY_OF_WATER = 'Nerkoonjärvi';
 
 export const LEVEL_BASE_CONSTANT = 100;
+
+export const defaultPlaceholder = '/no-image-placeholder.png';
+export const noAccessPlaceholder = '/no-access-placeholder.png';
 
 export enum FixedFishColors {
   kuha = 'blue',

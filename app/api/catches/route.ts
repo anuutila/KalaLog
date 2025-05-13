@@ -16,7 +16,7 @@ import {
 import { creatorRoles, editorRoles } from '@/lib/types/user';
 import { requireRole } from '@/lib/utils/authorization';
 import { handleError } from '@/lib/utils/handleError';
-import { extractNextImageIndex, generateFolderName, generatePublicId } from '@/lib/utils/utils';
+import { extractNextImageIndex, generateCatchFolderName, generateCatchPublicId } from '@/lib/utils/cloudinaryUtils';
 
 export async function GET(): Promise<NextResponse<CatchesResponse | ErrorResponse>> {
   await dbConnect();
@@ -121,8 +121,8 @@ export async function POST(req: NextRequest): Promise<NextResponse<CatchCreaeted
     for (const [index, image] of imageFiles.entries()) {
       try {
         // Generate folder and public_id based on catchNumber and index
-        const folderName = generateFolderName(nextCatchNumber);
-        const publicId = generatePublicId(nextCatchNumber, index + 1);
+        const folderName = generateCatchFolderName(nextCatchNumber);
+        const publicId = generateCatchPublicId(nextCatchNumber, index + 1);
 
         const formData = new FormData();
         formData.append('file', image);
@@ -131,7 +131,7 @@ export async function POST(req: NextRequest): Promise<NextResponse<CatchCreaeted
         formData.append('metadata', JSON.stringify(catchMetadata));
 
         const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000';
-        const response = await fetch(`${apiBase}${ApiEndpoints.UploadImage}`, {
+        const response = await fetch(`${apiBase}${ApiEndpoints.UploadCatchImage}`, {
           method: 'POST',
           headers: {
             Cookie: `KALALOG_TOKEN=${token}`, // Include the JWT token
@@ -148,7 +148,7 @@ export async function POST(req: NextRequest): Promise<NextResponse<CatchCreaeted
           throw new Error();
         }
       } catch (error) {
-        console.error(`Failed to upload image: ${generatePublicId(nextCatchNumber, index)}`, error);
+        console.error(`Failed to upload image: ${generateCatchPublicId(nextCatchNumber, index)}`, error);
         failedImageUploads.push(image);
       }
     }
@@ -424,8 +424,8 @@ export async function PUT(req: NextRequest): Promise<NextResponse<CatchEditedRes
     for (const [index, image] of toBeAddedImages.entries()) {
       try {
         // Generate folder and public_id based on catchNumber and index
-        const folderName = generateFolderName(catchData.catchNumber);
-        const publicId = generatePublicId(
+        const folderName = generateCatchFolderName(catchData.catchNumber);
+        const publicId = generateCatchPublicId(
           catchData.catchNumber,
           extractNextImageIndex(existingImages.map((img) => img.publicId) || []) + index
         );
@@ -437,7 +437,7 @@ export async function PUT(req: NextRequest): Promise<NextResponse<CatchEditedRes
         formData.append('metadata', JSON.stringify(catchMetadata));
 
         const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000';
-        const response = await fetch(`${apiBase}${ApiEndpoints.UploadImage}`, {
+        const response = await fetch(`${apiBase}${ApiEndpoints.UploadCatchImage}`, {
           method: 'POST',
           headers: {
             Cookie: `KALALOG_TOKEN=${token}`, // Include the JWT token
@@ -454,7 +454,7 @@ export async function PUT(req: NextRequest): Promise<NextResponse<CatchEditedRes
           throw new Error();
         }
       } catch (error) {
-        console.error(`Failed to upload image: ${generatePublicId(catchData.catchNumber, index)}`, error);
+        console.error(`Failed to upload image: ${generateCatchPublicId(catchData.catchNumber, index)}`, error);
         failedImageUploads.push(image);
       }
     }

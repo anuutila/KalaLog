@@ -13,11 +13,23 @@ const EventSchema = new Schema<IEventModel>(
     startDate: { type: String, required: true }, // Store as YYYY-MM-DD string
     endDate: { type: String, required: true },   // Store as YYYY-MM-DD string
     participants: [{ type: Schema.Types.ObjectId, ref: 'User', required: true }],
-    unregisteredParticipants: { type: [String], default: [] },
-    bodiesOfWater: {
-      type: [String],
-      required: true
-    },
+    unregisteredParticipants: [{ type: String, default: [] }],
+    bodiesOfWater: [{ type: String, required: true }],
+    images: [
+      {
+        publicId: { type: String, required: false, default: null, trim: true },
+        description: {
+          type: String,
+          required: false,
+          default: null,
+          trim: true,
+          set: (value: string | null) => (value === '' ? null : capitalizeFirstLetter(value)),
+        },
+        coverImage: { type: Boolean, default: false },
+        publicAccess: { type: Boolean, default: false },
+        signedUrl: { type: String, required: false, default: null, trim: true },
+      },
+    ],
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   },
   {

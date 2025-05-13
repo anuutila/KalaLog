@@ -4,7 +4,7 @@ import User from '@lib/mongo/models/user'; // Mongoose model
 import { IUser, IUserSchema } from '@lib/types/user'; // Zod schema
 import bcrypt from 'bcryptjs';
 import { ErrorResponse, SignUpResponse } from '@/lib/types/responses';
-import { linkCatchesToUser } from '@/lib/utils/apiUtils';
+import { linkCatchesToUser } from '@/lib/utils/apiUtils/apiUtils';
 import { CustomError } from '@/lib/utils/customError';
 import { handleError } from '@/lib/utils/handleError';
 

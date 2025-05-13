@@ -2,6 +2,7 @@ import dbConnect from '@lib/mongo/dbConnect';
 import Catch from '@lib/mongo/models/catch';
 import { ICatch, ICatchSchema } from '@/lib/types/catch';
 import { IUser } from '@/lib/types/user';
+import cloudinary from '@/lib/cloudinary/cloudinary';
 
 export const linkCatchesToUser = async (
   user: Omit<IUser, 'password' | 'email'>
@@ -102,3 +103,12 @@ export const linkCatchesToUser = async (
     throw new Error(`An error occurred while linking catches to the new user`);
   }
 };
+
+export function generateSignedImageUrl(publicId: string): string {
+  return cloudinary.url(publicId, {
+    type: 'upload',
+    sign_url: true,
+    secure: true,
+    transformation: [{ quality: 'auto' }, { fetch_format: 'auto' }],
+  });
+}

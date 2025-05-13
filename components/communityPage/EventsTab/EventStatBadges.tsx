@@ -18,16 +18,6 @@ export default function EventStatBadges({ event, eventStats }: EventStatBadgesPr
         px={12}
         pt={1}
         h={28}
-        color="green"
-        variant="light"
-        size="lg" leftSection={<Stack pb={1}><IconMapPin size={20} /></Stack>}
-      >
-        {event.bodiesOfWater.join(', ')}
-      </Badge>
-      <Badge
-        px={12}
-        pt={1}
-        h={28}
         color="blue"
         variant="light"
         size="lg"
@@ -35,6 +25,18 @@ export default function EventStatBadges({ event, eventStats }: EventStatBadgesPr
       >
         {eventStats.totalCatches} {tCommunity('FishCount')}
       </Badge>
+      {event.bodiesOfWater.map((bodyOfWater) => (
+        <Badge
+          key={bodyOfWater}
+          px={12}
+          pt={1}
+          h={28}
+          color="green"
+          variant="light"
+          size="lg" leftSection={<Stack pb={1}><IconMapPin size={20} /></Stack>}
+        >
+          {bodyOfWater}
+        </Badge>))}
     </>
   );
 }

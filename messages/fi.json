@@ -67,10 +67,6 @@
     "CaughtBy": "Kalastaja",
     "SelectUser": "Valitse käyttäjä",
     "NoUser": "Ei käyttäjätiliä",
-    "AddPicture": "Lisää kuva",
-    "AddPictureInfo": "Lisää kuvia saaliista",
-    "AddPictureInfo2": "Kuvan maksimikoko 10Mt",
-    "Pictures": "Kuvat",
     "Submit": "Lähetä",
     "Placeholders": {
       "Lure": "Vieheen merkki ja malli",
@@ -79,6 +75,18 @@
       "CaughtBy": "Kalastajan etunimi",
       "Comment": "Vapaamuotoinen kommentti"
     }
+  },
+  "ImageUploadForm": {
+    "AddPictures": "Lisää kuvia",
+    "AddPictureInfo": "Lisää kuvia saaliista",
+    "AddPictureInfo2": "Kuvan maksimikoko 10Mt",
+    "Pictures": "Kuvat",
+    "CoverPicture": "Kansikuva",
+    "PublicAccess": "Julkinen",
+    "PictureSettings": "Kuva-asetukset",
+    "PictureSettingsInfo": "Valitse kuva muuttaaksesi sen asetuksia",
+    "CoverPictureInfo": "Kuva näkyy tapahtuman kansikuvana",
+    "PublicAccessInfo": "Kuva on julkinen ja näkyy kaikille käyttäjille, myös rekisteröitymättömille vierailijoille"
   },
   "CatchesPage": {
     "CatchDetails": "Saaliin tiedot",
@@ -170,7 +178,7 @@
     "EventDetails": "Tapahtuman tiedot",
     "Participants": "Kalastajat",
     "Leaderboard": "Tulostaulukko",
-    "CatchMapNote": "Näytetään {amount}/{totalAmount} saalista",
+    "CatchMapNote": "Sijaintitiedot saatavilla {amount}/{totalAmount} saaliille",
     "EventForm": {
       "Name": "Tapahtuman nimi",
       "StartDate": "Alkamispäivämäärä",
@@ -317,7 +325,7 @@
   "Notifications": {
     "NewAchievement": "Uusi saavutus avattu!",
     "LinkCopiedTitle": "Linkki kopioitu!",
-    "LinkCopiedMessage": "Linkki saaliiseen #{catchNumber} on nyt kopioitu leikepöydälle!",
+    "CatchLinkCopiedMessage": "Linkki saaliiseen #{catchNumber} on nyt kopioitu leikepöydälle!",
     "EventLinkCopiedMessage": "Linkki tapahtumaan ({eventName}) on nyt kopioitu leikepöydälle!"
   },
   "Tooltips": {

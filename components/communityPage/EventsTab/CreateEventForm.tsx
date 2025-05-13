@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useImperativeHandle, useRef, useState, useEffect } from 'react';
 import { TextInput, Button, Group, Stack, MultiSelect, TagsInput, Paper, Container, Fieldset, Title, ActionIcon, TagsInputProps, MultiSelectProps, Avatar, Text } from '@mantine/core';
 import { createEvent } from '@/services/api/eventService';
 import { showNotification } from '@/lib/notifications/notifications';
@@ -16,10 +16,13 @@ import { IconX, IconCheck, IconTrash, IconLabel, IconCalendar } from '@tabler/ic
 import { nameToColor } from '@/lib/utils/utils';
 import { IPublicUserProfile } from '@/lib/types/user';
 import { UnregisteredUserInfo } from '@/app/community/page';
-
+import ImageUploadForm, { ImageUploadFormRef } from '@/components/ImageUploadForm/ImageUploadForm';
+import FullscreenImage from '@/components/catchesPage/CatchDetails/FullscreenImage';
+import mongoose from 'mongoose';
+import { optimizeImage } from '@/lib/utils/clientUtils/clientUtils';
 
 interface CreateEventFormProps {
-  users: (IPublicUserProfile | UnregisteredUserInfo)[];
+  users: (IPublicUserProfile | UnregisteredUserInfo)[]; 
   catches: ICatch[];
   onSuccessAction: () => void;
   onCancelAction: () => void;
@@ -37,6 +40,10 @@ export default function CreateEventForm({ users, catches, onSuccessAction, onCan
   const { showLoading, hideLoading } = useLoadingOverlay();
   const formRef = useRef<HTMLFormElement>(null);
   const [isFormValid, setIsFormValid] = useState(false);
+  const imageUploadFormRef = useRef<ImageUploadFormRef>(null);
+  const [fullscreenImage, setFullscreenImage] = useState<string | null>(null);
+  const [files, setFiles] = useState<File[]>([]);
+  const [newImageMetadata, setNewImageMetadata] = useState<{ coverImage: boolean; publicAccess: boolean; }[]>([]);
 
   // Format user data for MultiSelect
   const userSelectData: Record<string, { username: string | undefined; id: string | undefined }> = users.reduce((acc, u,) => {
@@ -44,6 +51,34 @@ export default function CreateEventForm({ users, catches, onSuccessAction, onCan
     acc[`${user.firstName}${user.lastName ? ' ' : ''}${user.lastName ?? ''}`] = { username: user.username ?? '', id: user.id ?? '' };
     return acc;
   }, {} as Record<string, { username: string | undefined; id: string | undefined }>);
+
+  // Effect to synchronize previews and metadata with files
+  useEffect(() => {
+    setNewImageMetadata(prevMetadata => {
+      const updatedMetadata = files.map((_file, index) => {
+        return prevMetadata[index] || { coverImage: false, publicAccess: false };
+      });
+      // Ensure metadata array is not longer than files array
+      return updatedMetadata.slice(0, files.length);
+    });
+  }, [files]);
+
+  const handleToggleCoverImage = (index: number, isCover: boolean) => {
+    setNewImageMetadata(prev =>
+      prev.map((meta, i) => ({
+        ...meta,
+        // If current image is set to cover, set it. If not, it remains as is unless another is chosen.
+        // If isCover is true for current index, all others are set to false.
+        coverImage: i === index ? isCover : (isCover ? false : meta.coverImage),
+      }))
+    );
+  };
+
+  const handleTogglePublicAccess = (index: number, isPublic: boolean) => {
+    setNewImageMetadata(prev =>
+      prev.map((meta, i) => (i === index ? { ...meta, publicAccess: isPublic } : meta))
+    );
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -66,6 +101,7 @@ export default function CreateEventForm({ users, catches, onSuccessAction, onCan
     }
 
     const eventData: CreateEventData = {
+      _id: new mongoose.Types.ObjectId().toString(),
       name,
       startDate: startDate,
       endDate: endDate,
@@ -77,7 +113,27 @@ export default function CreateEventForm({ users, catches, onSuccessAction, onCan
     showLoading();
     setLoading(true);
     try {
-      const eventResponse: EventCreatedResponse = await createEvent(eventData);
+
+      // Optimize images before uploading
+      let optimizedFiles: File[] | undefined = undefined;
+      if (files.length > 0) {
+        console.log('Optimizing images...');
+        optimizedFiles = await Promise.all(
+          files.map(async (file) => {
+            const optimizedFile = await optimizeImage(file);
+            return optimizedFile;
+          })
+        );
+      }
+
+      if (optimizedFiles?.length !== files.length) {
+        throw new Error('Optimized files length does not match original files length.');
+      }
+
+      console.log('Creating event...', eventData);
+      console.log('With image metadata:', newImageMetadata);
+
+      const eventResponse: EventCreatedResponse = await createEvent(eventData, optimizedFiles ?? [], newImageMetadata);
       showNotification('success', 'Event created successfully!', { withTitle: false, duration: 3000 });
       onSuccessAction();
     } catch (err: any) {
@@ -89,7 +145,6 @@ export default function CreateEventForm({ users, catches, onSuccessAction, onCan
   };
 
   const handleFormChange = (name: string, startDate: string, endDate: string, participants: string[], bodiesOfWater: string[]) => {
-    console.log('Form changed:', { name, startDate, endDate, participants, bodiesOfWater });
     setIsFormValid(
       name.length > 0
       && startDate.length > 0
@@ -231,6 +286,19 @@ export default function CreateEventForm({ users, catches, onSuccessAction, onCan
                   required
                   data={CatchUtils.getUniqueBodiesOfWater(catches).map(item => item.bodyOfWater)}
                 />
+
+                <ImageUploadForm
+                  ref={imageUploadFormRef}
+                  setFullscreenImage={setFullscreenImage}
+                  setAddedImages={setFiles}
+                  newImageMetadata={newImageMetadata}
+                  onToggleCoverImage={handleToggleCoverImage}
+                  onTogglePublicAccess={handleTogglePublicAccess}
+                  allowMetadataEditing={true}
+                />
+
+                {fullscreenImage && <FullscreenImage src={fullscreenImage} onClose={() => setFullscreenImage(null)} />}
+
                 <Group grow mt="md">
                   <Button
                     size='md'

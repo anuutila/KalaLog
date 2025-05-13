@@ -11,7 +11,7 @@ const UserSchema = new Schema<IUserModel>({
   email: { type: String, required: true, unique: true, trim: true },
   password: { type: String, required: true },
   role: { type: String, enum: UserRole, required: true, default: UserRole.CREATOR },
-  profilePictureUrl: { type: String, required: false },
+  profilePicturePublicId: { type: String, required: false },
   createdAt: { type: Date, default: Date.now },
 });
 

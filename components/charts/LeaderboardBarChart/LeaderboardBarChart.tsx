@@ -629,10 +629,12 @@ export default function LeaderboardBarChart({ catches, userInfo, userDisplayName
   const primaryMetricOptions = useMemo(() => getPrimaryMetricOptions(primaryMetricKeys, primaryMetric, t), [primaryMetric, t]);
   const secondaryMetricOptions = useMemo(() => getSecondaryMetricOptions(['count', 'weight', 'length'], secondaryMetric, t), [secondaryMetric, t]);
 
+  const isFishMetric = ['pike', 'zander', 'perch'].includes(primaryMetric);
+
   return (
     <Stack w={'100%'} h={'100%'} gap={0}>
       <Group mb="md" wrap='nowrap' pr={6}>
-        <Box flex={1.5}>
+        <Box flex={isFishMetric ? 1.5 : 2}>
           <Combobox
             store={primaryCombobox}
             onOptionSubmit={(val) => {
@@ -667,7 +669,7 @@ export default function LeaderboardBarChart({ catches, userInfo, userDisplayName
         </Box>
 
         <Box flex={1}>
-          {['pike', 'zander', 'perch'].includes(primaryMetric) && (
+          {isFishMetric && (
             <Combobox
             store={secondaryCombobox}
             onOptionSubmit={(val) => {

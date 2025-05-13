@@ -15,14 +15,12 @@ import {
   ScriptableContext
 } from 'chart.js';
 import Chart from 'chartjs-plugin-datalabels';
-import { AchievementChartColors, BarChartBgColors, ChartColorsRGBA, fixedBarChartBgColorMap, fixedColorMap } from '../../charts/chartConstants';
+import { BarChartBgColors, ChartColorsRGBA, fixedBarChartBgColorMap, fixedColorMap } from '../../charts/chartConstants';
 import { JwtUserInfo } from '@/lib/types/jwtUserInfo';
 import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
 import { Bar } from 'react-chartjs-2';
 import { Box, Combobox, Group, Input, InputBase, Stack, useCombobox } from '@mantine/core';
-import { IPublicUserProfile } from '@/lib/types/user';
-import { StarRarityCounts } from '@/lib/utils/achievementUtils';
 import { capitalizeFirstLetter } from '@/lib/utils/utils';
 import { IconListNumbers, IconRuler2, IconTallymarks, IconWeight } from '@tabler/icons-react';
 import { getPrimaryMetricOptions, getSecondaryMetricOptions } from '@/components/catchesPage/optionGenerators';

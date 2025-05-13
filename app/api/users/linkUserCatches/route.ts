@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ErrorResponse, UserCatchesLinkedResponse } from '@/lib/types/responses';
 import { adminRoles, IUser } from '@/lib/types/user';
-import { linkCatchesToUser } from '@/lib/utils/apiUtils';
+import { linkCatchesToUser } from '@/lib/utils/apiUtils/apiUtils';
 import { requireRole } from '@/lib/utils/authorization';
 import { handleError } from '@/lib/utils/handleError';
 

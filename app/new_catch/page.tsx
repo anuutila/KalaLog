@@ -50,10 +50,11 @@ import { CatchCreaetedResponse, UsersByFirstNameResponse } from '@/lib/types/res
 import { editorRoles, UserRole } from '@/lib/types/user';
 import { CatchUtils } from '@/lib/utils/catchUtils';
 import { handleApiError } from '@/lib/utils/handleApiError';
-import { defaultSort, optimizeImage } from '@/lib/utils/utils';
+import { defaultSort } from '@/lib/utils/utils';
 import { createCatch } from '@/services/api/catchService';
 import { getUsersByFirstName } from '@/services/api/userService';
 import classes from './page.module.css';
+import { optimizeImage } from '@/lib/utils/clientUtils/clientUtils';
 
 export default function Page() {
   const t = useTranslations();

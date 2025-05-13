@@ -4,7 +4,7 @@ import { ErrorResponse, ImageDeletionResponse } from '@/lib/types/responses';
 import { creatorRoles, editorRoles } from '@/lib/types/user';
 import { requireRole } from '@/lib/utils/authorization';
 import { handleError } from '@/lib/utils/handleError';
-import { extractFolderName } from '@/lib/utils/utils';
+import { extractFolderName } from '@/lib/utils/cloudinaryUtils';
 
 export async function POST(req: NextRequest): Promise<NextResponse<ImageDeletionResponse | ErrorResponse>> {
   try {

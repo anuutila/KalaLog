@@ -5,7 +5,7 @@ import { IAchievement, IAchievementConfigOneTime, IAchievementOneTime, IAchievem
 import { getAchievementDescription } from '../utils/achievementUtils';
 import classes from './achievementNotifications.module.css';
 import { confetti } from "@tsparticles/confetti";
-import { achievementConfigMap } from '@/achievements/achievementConfigs';
+import { achievementConfigMap } from '@/lib/achievements/achievementConfigs';
 import { AchievementColors } from '@/components/achievements/AchievementItem/AchievementItem';
 
 type NotificationType = 'success' | 'error' | 'warning' | 'info';

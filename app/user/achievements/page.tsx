@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { IconChevronLeft, IconStarFilled } from '@tabler/icons-react';
 import { ActionIcon, Badge, Box, Container, Group, Paper, Skeleton, Stack, Title } from '@mantine/core';
-import { achievementConfigMap, allAchievements } from '@/achievements/achievementConfigs';
+import { achievementConfigMap, allAchievements } from '@/lib/achievements/achievementConfigs';
 import AchievementItem, { AchievementColors } from '@/components/achievements/AchievementItem/AchievementItem';
 import { useGlobalState } from '@/context/GlobalState';
 import { useHeaderActions } from '@/context/HeaderActionsContext';

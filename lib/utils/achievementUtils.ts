@@ -1,5 +1,5 @@
-import { achievementConfigMap, allAchievements } from '@/achievements/achievementConfigs';
-import { achievementEvaluators } from '@/achievements/achievementEvaluators';
+import { achievementConfigMap, allAchievements } from '@/lib/achievements/achievementConfigs';
+import { achievementEvaluators } from '@/lib/achievements/achievementEvaluators';
 import { getUserAchievements, updateAchievements } from '@/services/api/achievementService';
 import { showAchievementNotification } from '../notifications/notifications';
 import { IAchievement, IAchievementConfig, IAchievementConfigOneTime, IAchievementConfigTiered, IAchievementTiered } from '../types/achievement';

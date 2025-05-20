@@ -115,7 +115,7 @@
       "FiltersInfo": "Show filters that can be used to filter the catches table by each column",
       "ImageIcons": "Show Camera Icons",
       "ImageIconsInfo": "Show a camera icon in the species column if one or more pictures have been added to the catch",
-      "LocationIcons": "Show location icons",
+      "LocationIcons": "Show Location Icons",
       "LocationIconsInfo": "Show a location icon in the location column if precise coordinates have been added to the catch",
       "Restore": "Restore Defaults"
     },

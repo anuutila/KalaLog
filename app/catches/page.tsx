@@ -220,11 +220,13 @@ export default function CatchesPage() {
 
   useEffect(() => {
     // Set the header actions for this page
-    setActions(
-      <ActionIcon bg="var(--mantine-color-dark-8)" variant="default" onClick={open} disabled={catchDetailsOpen}>
-        <IconAdjustments size={20} />
-      </ActionIcon>
-    );
+    if (!catchDetailsOpen) {
+      setActions(
+        <ActionIcon bg="var(--mantine-color-dark-8)" variant="default" onClick={open} disabled={catchDetailsOpen}>
+          <IconAdjustments size={20} />
+        </ActionIcon>
+      );
+    }
 
     // Cleanup when leaving the page
     return () => setActions(null);

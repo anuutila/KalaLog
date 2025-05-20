@@ -26,7 +26,8 @@
     "Total": "Total",
     "Others": "others",
     "Other": "Other",
-    "OneOrMore": "Select one or more"
+    "OneOrMore": "Select one or more",
+    "Alert": "Alert"
   },
   "Fish": {
     "Pike": "Pike",
@@ -45,7 +46,18 @@
   "FishEnFi": {
     "Pike": "Hauki",
     "Perch": "Ahven",
-    "Zander": "Kuha"
+    "Zander": "Kuha",
+    "Bream": "Lahna",
+    "Roach": "Särki",
+    "Ruffe": "Kiiski"
+  },
+  "FishFiEn": {
+    "Hauki": "Pike",
+    "Ahven": "Perch",
+    "Kuha": "Zander",
+    "Lahna": "Bream",
+    "Särki": "Roach",
+    "Kiiski": "Ruffe"
   },
   "Pages": {
     "NewCatch": "New Catch",
@@ -54,7 +66,8 @@
     "Account": "Profile",
     "Achievements": "Achievements",
     "KalaLog": "KalaLog",
-    "Community": "Community"
+    "Community": "Community",
+    "Settings": "Settings"
   },
   "NewCatchPage": {
     "CatchInfo": "Catch Information",
@@ -201,9 +214,21 @@
     "PersonalBests": "Personal Bests",
     "Achievements": "Achievements",
     "Stars": "Stars",
+    "Settings": "Settings",
     "Logout": "Log out",
     "AdminPanel": "Admin panel",
     "ProfileNotFound": "Profile not found"
+  },
+  "SettingsPage": {
+    "Title": "Settings",
+    "PushNotifications": "Push Notifications",
+    "PushNotSupported": "Push notifications are not supported in this browser.",
+    "YouAreSubscribed": "You are subscribed to push notifications.",
+    "YouAreNotSubscribed": "You are not subscribed to push notifications.",
+    "Subscribe": "Subscribe",
+    "Unsubscribe": "Unsubscribe",
+    "PushSubscriptionInfo": "Subscribe to receive notifications about new catches and events.",
+    "TestNotification": "Test Notification"
   },
   "AchievementsPage": {
     "MyTitle": "My Achievements",
@@ -326,7 +351,9 @@
     "NewAchievement": "New achievement unlocked!",
     "LinkCopiedTitle": "Link Copied!",
     "CatchLinkCopiedMessage": "Link to Catch #{catchNumber} is now on your clipboard!",
-    "EventLinkCopiedMessage": "Link to event ({eventName}) is now on your clipboard!"
+    "EventLinkCopiedMessage": "Link to event ({eventName}) is now on your clipboard!",
+    "PushSubscription": "Succesfully subscribed to push notifications!",
+    "PushUnsubscription": "Succesfully unsubscribed from push notifications!"
   },
   "Tooltips": {
     "CopyLink": "Copy shareable link",

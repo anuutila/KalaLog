@@ -16,6 +16,8 @@ export enum ApiEndpoints {
   UserAchievements = '/api/user/achievements',
   AllUsers = '/api/users/all',
   Events = '/api/events',
+  pushSubscription = '/api/push/subscribe',
+  pushSubscriptionTest = '/api/push/subscribe/send-test-to-self',
 }
 
 export const DEFAULT_BODY_OF_WATER = 'Nerkoonjärvi';

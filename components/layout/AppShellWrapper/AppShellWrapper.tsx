@@ -29,6 +29,7 @@ const pages: Page[] = [
   { path: '/user', label: 'Pages.Account' },
   { path: '/login', label: 'Pages.Account' },
   { path: '/signup', label: 'Pages.Account' },
+  { path: '/settings', label: 'Pages.Settings' },
   { path: '/user/achievements', label: 'Pages.Achievements' },
 ];
 

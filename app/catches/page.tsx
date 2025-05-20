@@ -228,7 +228,7 @@ export default function CatchesPage() {
 
     // Cleanup when leaving the page
     return () => setActions(null);
-  }, []);
+  }, [catchDetailsOpen]);
 
   const updateRowCount = useCallback(() => {
     const count = gridRef.current!.api.getDisplayedRowCount();

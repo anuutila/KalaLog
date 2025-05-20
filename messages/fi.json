@@ -26,7 +26,8 @@
     "Total": "Yhteensä",
     "Others": "muuta",
     "Other": "Muut",
-    "OneOrMore": "Valitse yksi tai useampi"
+    "OneOrMore": "Valitse yksi tai useampi",
+    "Alert": "Huomio"
   },
   "Fish": {
     "Pike": "Hauki",
@@ -45,7 +46,18 @@
   "FishEnFi": {
     "Pike": "Hauki",
     "Perch": "Ahven",
-    "Zander": "Kuha"
+    "Zander": "Kuha",
+    "Bream": "Lahna",
+    "Roach": "Särki",
+    "Ruffe": "Kiiski"
+  },
+  "FishFiEn": {
+    "Hauki": "Pike",
+    "Ahven": "Perch",
+    "Kuha": "Zander",
+    "Lahna": "Bream",
+    "Särki": "Roach",
+    "Kiiski": "Ruffe"
   },
   "Pages": {
     "NewCatch": "Uusi saalis",
@@ -54,7 +66,8 @@
     "Account": "Profiili",
     "Achievements": "Saavutukset",
     "KalaLog": "KalaLog",
-    "Community": "Yhteisö"
+    "Community": "Yhteisö",
+    "Settings": "Asetukset"
   },
   "NewCatchPage": {
     "CatchInfo": "Saaliin tiedot",
@@ -201,9 +214,21 @@
     "PersonalBests": "Ennätykset",
     "Achievements": "Saavutukset",
     "Stars": "Tähdet",
+    "Settings": "Asetukset",
     "Logout": "Kirjaudu ulos",
     "AdminPanel": "Admin paneeli",
     "ProfileNotFound": "Profiilia ei löytynyt"
+  },
+  "SettingsPage": {
+    "Title": "Asetukset",
+    "PushNotifications": "Ilmoitukset",
+    "PushNotSupported": "Selaimesi ei tue ilmoituksia.",
+    "YouAreSubscribed": "Olet tilannut ilmoitukset.",
+    "YouAreNotSubscribed": "Et ole tilannut ilmoituksia.",
+    "Subscribe": "Tilaa ilmoitukset",
+    "Unsubscribe": "Poista tilaus",
+    "PushSubscriptionInfo": "Tilaa ilmoitukset saadaksesi tietoa uusista saaliista ja tapahtumista.",
+    "TestNotification": "Testi-ilmoitus"
   },
   "AchievementsPage": {
     "MyTitle": "Omat saavutukset",
@@ -326,7 +351,9 @@
     "NewAchievement": "Uusi saavutus avattu!",
     "LinkCopiedTitle": "Linkki kopioitu!",
     "CatchLinkCopiedMessage": "Linkki saaliiseen #{catchNumber} on nyt kopioitu leikepöydälle!",
-    "EventLinkCopiedMessage": "Linkki tapahtumaan ({eventName}) on nyt kopioitu leikepöydälle!"
+    "EventLinkCopiedMessage": "Linkki tapahtumaan ({eventName}) on nyt kopioitu leikepöydälle!",
+    "PushSubscription": "Ilmoitukset otettu käyttöön onnistuneesti!",
+    "PushUnsubscription": "Ilmoitukset poistettu käytöstä onnistuneesti!"
   },
   "Tooltips": {
     "CopyLink": "Kopioi jaettava linkki",

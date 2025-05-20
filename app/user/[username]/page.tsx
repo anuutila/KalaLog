@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { IconChevronLeft, IconFish, IconLogout, IconStarFilled, IconTrophy, IconUserCog } from '@tabler/icons-react';
+import { IconChevronLeft, IconFish, IconLogout, IconSettings, IconStarFilled, IconTrophy, IconUserCog } from '@tabler/icons-react';
 import { useTranslations } from 'next-intl';
 import { Avatar, Box, Button, Center, Container, Modal, Stack, Text, Alert, ActionIcon, Skeleton, rem, Paper, Title, Group, Badge } from '@mantine/core';
 import { IconAlertCircle } from '@tabler/icons-react';
@@ -288,18 +288,26 @@ export default function UserProfilePage() {
             </Stack>
           </Stack>
 
-          {/* Show Admin/Logout buttons only on own profile */}
+          {/* Show Settings/Admin/Logout buttons only on own profile */}
           {isOwnProfile && (
-            <Stack>
+            <Stack justify='center' align='center'>
+              {/* Settings Button */}
+              <Link href={'/settings'} passHref prefetch>
+                <Button variant="subtle" size="md" leftSection={<IconSettings />}>
+                  {t('UserPage.Settings')}
+                </Button>
+              </Link>
               {/* Admin Panel Modal Logic */}
               <Modal opened={adminPanelOpen} onClose={() => setAdminPanelOpen(false)} title={t('UserPage.AdminPanel')} size="lg">
                 <AdminPanel />
               </Modal>
+              {/* Admin Panel Button */}
               {(jwtUserInfo?.role === UserRole.ADMIN || jwtUserInfo?.role === UserRole.SUPERADMIN) && (
                 <Button variant="subtle" leftSection={<IconUserCog />} size="md" onClick={() => setAdminPanelOpen(true)}>
                   {t('UserPage.AdminPanel')}
                 </Button>
               )}
+              {/* Log out Button */}
               <Button variant="subtle" size="md" onClick={handleLogout} leftSection={<IconLogout />}>
                 {t('UserPage.Logout')}
               </Button>

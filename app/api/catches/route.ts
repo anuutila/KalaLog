@@ -17,6 +17,11 @@ import { creatorRoles, editorRoles } from '@/lib/types/user';
 import { requireRole } from '@/lib/utils/authorization';
 import { handleError } from '@/lib/utils/handleError';
 import { extractNextImageIndex, generateCatchFolderName, generateCatchPublicId } from '@/lib/utils/cloudinaryUtils';
+import { initializeWebPush, webpush as configuredWebpush } from '@/lib/webpush/webpush';
+import PushSubscription from '@/lib/mongo/models/pushSubscription';
+import { getTranslations } from 'next-intl/server';
+
+initializeWebPush();
 
 export async function GET(): Promise<NextResponse<CatchesResponse | ErrorResponse>> {
   await dbConnect();
@@ -180,6 +185,62 @@ export async function POST(req: NextRequest): Promise<NextResponse<CatchCreaeted
       },
       createdBy: newCatch.createdBy?.toString(),
     });
+
+    // Send push notifications about the new catch
+    if (parsedNewCatch.caughtBy.userId && process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
+      try {
+        const anglerId = parsedNewCatch.caughtBy.userId;
+        const anglerName = parsedNewCatch.caughtBy.name;
+        const species = parsedNewCatch.species;
+        const catchWeight = parsedNewCatch.weight;
+        const catchLength = parsedNewCatch.length;
+
+        const tFishEn = await getTranslations('FishFiEn');
+        const speciesInEnglish = tFishEn.has(species) ? tFishEn(species) : species;
+
+        // Fetch all subscriptions except those of the user who made the catch
+        const subscriptionsToSend = await PushSubscription.find({
+          userId: { $ne: anglerId }
+        });
+
+        if (subscriptionsToSend.length > 0) {
+          let notificationBody = `${anglerName} just caught a ${speciesInEnglish.toLowerCase()}!`;
+          if (catchWeight || catchLength) {
+            const weight = catchWeight ? `${catchWeight}kg` : '';
+            const length = catchLength ? `${catchLength}cm` : '';
+            notificationBody = notificationBody + ` (${weight}${weight && length ? ', ' : ''}${length})`;
+          }
+
+          const notificationPayload = JSON.stringify({
+            title: `New Catch!`,
+            body: notificationBody,
+            icon: '/kalalog_icon_maskable_gradient-512.png', // App icon
+            badge: '/kalalog_icon_maskable_gradient-192.png', // Badge for Android
+            data: {
+              url: `/catches?catchNumber=${parsedNewCatch.catchNumber}` // Link to the new catch
+            }
+          });
+
+          const sendPromises = subscriptionsToSend.map(subDoc => {
+            const sub = subDoc.subscriptionObject as import('web-push').PushSubscription;
+            return configuredWebpush.sendNotification(sub, notificationPayload)
+              .catch(error => {
+                console.error(`Error sending notification to endpoint ${sub.endpoint}:`, error.body || error.message);
+                if (error.statusCode === 410 || error.statusCode === 404) {
+                  PushSubscription.deleteOne({ 'subscriptionObject.endpoint': sub.endpoint }).exec()
+                    .then(() => console.log(`Removed invalid subscription: ${sub.endpoint}`))
+                    .catch(deleteError => console.error(`Error removing invalid subscription ${sub.endpoint}:`, deleteError));
+                }
+              });
+          });
+
+          await Promise.allSettled(sendPromises);
+          console.log(`Attempted to send notifications to ${subscriptionsToSend.length} eligible subscribers.`);
+        }
+      } catch (pushError) {
+        console.error('Error in push notification sending process:', pushError);
+      }
+    }
 
     if (failedImageUploads.length > 0) {
       return NextResponse.json<CatchCreaetedResponse>(

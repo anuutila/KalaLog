@@ -7,7 +7,7 @@ import { creatorRoles, editorRoles, UserRole } from "@/lib/types/user";
 import { generateAllParticipantNames, IEventStats } from "@/lib/utils/eventUtils";
 import { nameToColor, navigateBack } from "@/lib/utils/utils";
 import { Accordion, ActionIcon, Avatar, Box, Container, CopyButton, Group, Paper, Stack, Text, Title, Tooltip, Transition } from "@mantine/core";
-import { IconCalendar, IconCheck, IconChevronLeft, IconChevronRight, IconPencil, IconShare, IconTrash, IconUser, IconX } from "@tabler/icons-react";
+import { IconCalendar, IconCheck, IconChevronLeft, IconChevronRight, IconPencil, IconShare, IconTrash, IconX } from "@tabler/icons-react";
 import { useFormatter, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -18,13 +18,9 @@ import CatchMap from "@/components/CatchMap/CatchMap";
 import EventLeaderboardBarChart from "./EventLeaderBoardBarChart";
 import EventDetailsStatBadges from "./EventDetailsStatBadges";
 import classes from './EventDetails.module.css';
-import { getSignedImageURLs } from "@/services/api/imageService";
-import { SignedImageURLsResponse } from "@/lib/types/responses";
-import { handleApiError } from "@/lib/utils/handleApiError";
 import CatchImageCarousel from "@/components/catchesPage/CatchDetails/CatchImageCarousel";
 import FullscreenImage from "@/components/catchesPage/CatchDetails/FullscreenImage";
 import { noAccessPlaceholder } from "@/lib/constants/constants";
-import { set } from "mongoose";
 
 export interface EventDetailsProps {
   event: IEvent;

@@ -182,7 +182,7 @@ export default function CatchDetails({ selectedCatch, setSelectedCatch }: CatchD
     try {
       const catchDeletedResponse: CatchDeletedResponse = await deleteCatch(catchId);
       console.log(catchDeletedResponse.message, catchDeletedResponse.data);
-      showNotification('success', catchDeletedResponse.message, { withTitle: false });
+      showNotification('success', catchDeletedResponse.message, t, { withTitle: false });
 
       // Close the modal
       navigateBack(router, previousPath);
@@ -280,6 +280,7 @@ export default function CatchDetails({ selectedCatch, setSelectedCatch }: CatchD
                           showNotification(
                             'success',
                             t('Notifications.CatchLinkCopiedMessage', { catchNumber: selectedCatch.catchNumber }),
+                            t,
                             { withTitle: true, title: t('Notifications.LinkCopiedTitle') }
                           );
                         }}

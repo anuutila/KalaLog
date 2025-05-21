@@ -101,7 +101,7 @@ export default function UserProfilePage() {
   const handleLogout = async () => {
     try {
       const logoutResponse: LogoutResponse = await logout();
-      showNotification('success', `${logoutResponse.message} See you later ${jwtUserInfo?.firstname}! 👋`);
+      showNotification('success', `${logoutResponse.message} See you later ${jwtUserInfo?.firstname}! 👋`, t);
       setIsLoggedIn(false);
       setJwtUserInfo(null);
       router.push('/login');

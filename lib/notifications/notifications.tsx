@@ -54,15 +54,18 @@ const notificationDefaults: Record<NotificationType, { color: string; icon: JSX.
 export function showNotification(
   type: NotificationType,
   message: string,
+  t: any,
   options?: { title?: string; withTitle?: boolean; duration?: number }
 ) {
   const { color, icon, defaultTitle } = notificationDefaults[type];
+
+  console.log(t(`Notifications.${defaultTitle}`))
 
   notifications.show({
     color,
     icon,
     withCloseButton: true,
-    title: options?.withTitle !== false ? options?.title || defaultTitle : undefined,
+    title: options?.withTitle !== false ? options?.title || t(`Notifications.${defaultTitle}`) : undefined,
     message,
     position: 'bottom-right',
     withBorder: true,

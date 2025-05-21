@@ -11,6 +11,7 @@ import { recalculateUserAchievements } from '@/lib/utils/achievementUtils';
 import { handleApiError } from '@/lib/utils/handleApiError';
 import { linkUserCatches } from '@/services/api/userService';
 import RoleIndicator from './RoleIndicator';
+import { useTranslations } from 'next-intl';
 
 const rolesWithoutAdmins = Object.values(
   allRoles.filter((role) => role !== UserRole.ADMIN && role !== UserRole.SUPERADMIN)
@@ -18,6 +19,7 @@ const rolesWithoutAdmins = Object.values(
 const rolesWithoutSuperAdmin = Object.values(allRoles.filter((role) => role !== UserRole.SUPERADMIN)).reverse();
 
 export default function AdminPanel() {
+  const t = useTranslations();
   const { catches, jwtUserInfo } = useGlobalState();
   const [users, setUsers] = useState<IUser[]>([]);
   const { showLoading, hideLoading } = useLoadingOverlay();
@@ -31,11 +33,11 @@ export default function AdminPanel() {
           const data = await response.json();
           setUsers(data.users);
         } else {
-          showNotification('error', 'Failed to fetch users', { withTitle: true });
+          showNotification('error', 'Failed to fetch users', t, { withTitle: true });
         }
       } catch (error) {
         console.error('Error fetching users:', error);
-        showNotification('error', 'An unexpected error occurred', { withTitle: true });
+        showNotification('error', 'An unexpected error occurred', t, { withTitle: true });
       } finally {
         hideLoading();
       }
@@ -58,13 +60,13 @@ export default function AdminPanel() {
       if (response.ok) {
         const updatedUser = await response.json();
         setUsers((prev) => prev.map((user) => (user.id === updatedUser.data.id ? updatedUser.data : user)));
-        showNotification('success', 'User role updated successfully', { withTitle: false });
+        showNotification('success', 'User role updated successfully', t, { withTitle: false });
       } else {
-        showNotification('error', 'Failed to update user role', { withTitle: true });
+        showNotification('error', 'Failed to update user role', t, { withTitle: true });
       }
     } catch (error) {
       console.error('Error updating user role:', error);
-      showNotification('error', 'An unexpected error occurred', { withTitle: true });
+      showNotification('error', 'An unexpected error occurred', t, { withTitle: true });
     } finally {
       hideLoading();
     }
@@ -80,10 +82,11 @@ export default function AdminPanel() {
           showNotification(
             'success',
             `Linked ${linkingResult.data.count} catches to user named ${linkingResult.data.linkedName}.`,
+            t,
             { withTitle: false, duration: linkingResult.data.count > 0 ? 10000 : 4000 }
           );
         } else {
-          showNotification('warning', 'No catches to link.', { withTitle: false });
+          showNotification('warning', 'No catches to link.', t, { withTitle: false });
         }
       } catch (error) {
         handleApiError(error, 'catch creation');
@@ -95,7 +98,7 @@ export default function AdminPanel() {
   async function syncUserAchievements(user: IUser) {
     showLoading();
     const { count } = await recalculateUserAchievements(user.id ?? '', catches);
-    showNotification('success', `Updated ${count} achievements for user`, { withTitle: false });
+    showNotification('success', `Updated ${count} achievements for user`, t, { withTitle: false });
     hideLoading();
   }
 

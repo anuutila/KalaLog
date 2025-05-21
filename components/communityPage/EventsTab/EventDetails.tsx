@@ -414,6 +414,7 @@ export default function EventDetails({ event, stats }: EventDetailsProps) {
                                     showNotification(
                                       'success',
                                       t('Notifications.EventLinkCopiedMessage', { eventName: event.name }),
+                                      t,
                                       { withTitle: true, title: t('Notifications.LinkCopiedTitle') }
                                     );
                                   }}

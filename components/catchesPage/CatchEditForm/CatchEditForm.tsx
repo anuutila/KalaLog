@@ -252,9 +252,9 @@ export default function CatchEditForm({
       );
       console.log(catchUpdateResponse.message, catchUpdateResponse.data);
       if (catchUpdateResponse.data.failedImageOperations) {
-        showNotification('warning', catchUpdateResponse.message, { withTitle: true });
+        showNotification('warning', catchUpdateResponse.message, t, { withTitle: true });
       } else {
-        showNotification('success', catchUpdateResponse.message, { withTitle: false });
+        showNotification('success', catchUpdateResponse.message, t, { withTitle: false });
       }
 
       // Update the catches state

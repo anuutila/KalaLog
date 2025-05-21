@@ -79,7 +79,7 @@ export const GlobalStateProvider = ({ children }: { children: React.ReactNode })
       setCatches(catchesRespose.data);
       setCatchesError(null);
       if (catchesRespose.message.includes('validation')) {
-        showNotification('warning', catchesRespose.message, { withTitle: true });
+        showNotification('warning', catchesRespose.message, t, { withTitle: true });
       }
     } catch (error) {
       handleApiError(error, 'fetching catches');

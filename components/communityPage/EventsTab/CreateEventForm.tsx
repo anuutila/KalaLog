@@ -91,11 +91,11 @@ export default function CreateEventForm({ users, catches, onSuccessAction, onCan
 
     // Basic Client-side validation
     if (!name || startDate === '' || endDate === '' || participants.length === 0 || bodiesOfWater.length === 0) {
-      showNotification('error', 'Please fill in all fields.', { withTitle: true });
+      showNotification('error', 'Please fill in all fields.', t, { withTitle: true });
       return;
     }
     if (dayjs(endDate).isBefore(dayjs(startDate))) {
-      showNotification('error', 'End date cannot be earlier than start date.', { withTitle: true });
+      showNotification('error', 'End date cannot be earlier than start date.', t, { withTitle: true });
       return;
     }
 
@@ -116,7 +116,7 @@ export default function CreateEventForm({ users, catches, onSuccessAction, onCan
       console.log('With image metadata:', newImageMetadata);
 
       const eventResponse: EventCreatedResponse = await createEvent(eventData, files ?? [], newImageMetadata);
-      showNotification('success', 'Event created successfully!', { withTitle: false, duration: 3000 });
+      showNotification('success', 'Event created successfully!', t, { withTitle: false, duration: 3000 });
       onSuccessAction();
     } catch (err: any) {
       handleApiError(err, 'creating event');

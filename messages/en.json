@@ -348,6 +348,10 @@
     }
   },
   "Notifications": {
+    "Success": "Success!",
+    "Error": "Error!",
+    "Warning": "Warning!",
+    "Info": "Info!",
     "NewAchievement": "New achievement unlocked!",
     "LinkCopiedTitle": "Link Copied!",
     "CatchLinkCopiedMessage": "Link to Catch #{catchNumber} is now on your clipboard!",

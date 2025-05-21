@@ -3,7 +3,7 @@
 import { showNotification } from '@/lib/notifications/notifications'
 import { handleApiError } from '@/lib/utils/handleApiError'
 import { sendTestNotification, subscribe, unsubscribe } from '@/services/api/pushSubscriptionService'
-import { Alert, Box, Button, rem, Stack, Text } from '@mantine/core'
+import { Alert, Button, rem, Stack, Text } from '@mantine/core'
 import { IconAlertCircle, IconBellOff, IconBellRingingFilled, IconCircleCheck, IconCircleX, IconSend } from '@tabler/icons-react'
 import { useTranslations } from 'next-intl'
 import { useState, useEffect } from 'react'
@@ -56,7 +56,7 @@ export default function PushNotificationManager() {
       setSubscription(sub);
 
       const response = await subscribe(sub);
-      showNotification('success', t('Notifications.PushSubscription'));
+      showNotification('success', t('Notifications.PushSubscription'), t);
 
     } catch (error) {
       setSubscription(null);
@@ -72,7 +72,7 @@ export default function PushNotificationManager() {
       setSubscription(null);
 
       const response = await unsubscribe(endpoint);
-      showNotification('success', t('Notifications.PushUnsubscription'));
+      showNotification('success', t('Notifications.PushUnsubscription'), t);
 
     } catch (error) {
       handleApiError(error, 'unsubscribing to push notifications');

@@ -354,9 +354,9 @@ export default function Page() {
       const catchCreatedResponse: CatchCreaetedResponse = await createCatch(parsedFormData, files ?? []);
       console.log(catchCreatedResponse.message, catchCreatedResponse.data);
       if (catchCreatedResponse.data.failedImageUploads) {
-        showNotification('warning', catchCreatedResponse.message, { withTitle: true });
+        showNotification('warning', catchCreatedResponse.message, t, { withTitle: true });
       } else {
-        showNotification('success', catchCreatedResponse.message, { withTitle: false, duration: 3000 });
+        showNotification('success', catchCreatedResponse.message, t, { withTitle: false, duration: 3000 });
       }
 
       // Update the catches in global state

@@ -348,6 +348,10 @@
     }
   },
   "Notifications": {
+    "Success": "Onnistui!",
+    "Error": "Virhe!",
+    "Warning": "Varoitus!",
+    "Info": "Info!",
     "NewAchievement": "Uusi saavutus avattu!",
     "LinkCopiedTitle": "Linkki kopioitu!",
     "CatchLinkCopiedMessage": "Linkki saaliiseen #{catchNumber} on nyt kopioitu leikepöydälle!",

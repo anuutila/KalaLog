@@ -14,6 +14,7 @@ import { signup } from '@/services/api/authservice';
 import { HttpClientError } from '@/services/httpClient';
 
 export default function Page() {
+  const tAll = useTranslations();
   const t = useTranslations('SignupPage');
   const [formData, setFormData] = useState({
     username: '',
@@ -58,7 +59,7 @@ export default function Page() {
           ? `${signupResponse.message}. Linked ${linkedCatchesCount} catches caught by ${linkedName} to the new account.`
           : signupResponse.message;
 
-      showNotification('success', message, { withTitle: false, duration: linkedCatchesCount > 0 ? 10000 : 4000 });
+      showNotification('success', message, tAll, { withTitle: false, duration: linkedCatchesCount > 0 ? 10000 : 4000 });
 
       // Redirect to login page after successful registration
       router.push('/login');

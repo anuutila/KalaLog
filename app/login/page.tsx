@@ -15,6 +15,7 @@ import { login } from '@/services/api/authservice';
 export default function Page() {
   const { isLoggedIn, setIsLoggedIn, setJwtUserInfo } = useGlobalState();
   const t = useTranslations('LoginPage');
+  const tAll = useTranslations();
 
   const [emailOrUsername, setEmailOrUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -28,7 +29,7 @@ export default function Page() {
     try {
       const loginResponse: LoginResponse = await login(emailOrUsername, password);
       console.log(loginResponse.message);
-      showNotification('success', loginResponse.message, { withTitle: false });
+      showNotification('success', loginResponse.message, tAll, { withTitle: false });
 
       // Update global state
       setIsLoggedIn(true);

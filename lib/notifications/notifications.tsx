@@ -4,6 +4,7 @@ import { rem, Stack } from '@mantine/core';
 import { IAchievement, IAchievementConfigOneTime, IAchievementOneTime, IAchievementTiered } from '../types/achievement';
 import { getAchievementDescription } from '../utils/achievementUtils';
 import classes from './achievementNotifications.module.css';
+import classes2 from './notifications.module.css';
 import { confetti } from "@tsparticles/confetti";
 import { achievementConfigMap } from '@/lib/achievements/achievementConfigs';
 import { AchievementColors } from '@/components/achievements/AchievementItem/AchievementItem';
@@ -72,6 +73,7 @@ export function showNotification(
     radius: 'lg',
     bg: 'var(--mantine-color-dark-8)',
     autoClose: options?.duration || 4000,
+    classNames: { root: classes2.notificationRoot, icon: classes2.notificationIcon + ' ' + classes2[`iconBg${type.charAt(0).toUpperCase() + type.slice(1)}`] },
   });
 }
 

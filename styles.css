@@ -13,9 +13,14 @@ body,
 
 :root {
   --success-notification-color: var(--mantine-color-green-filled);
+  --success-notification-icon-bg-color: rgba(64, 192, 87, 0.10);
   --error-notification-color: var(--mantine-color-red-filled);
+  --error-notification-icon-bg-color: rgba(250, 82, 82, 0.10);
   --info-notification-color: var(--mantine-color-blue-filled);
+  --info-notification-icon-bg-color: rgba(34, 139, 230, 0.10);
   --warning-notification-color: var(--mantine-color-orange-filled);
+  --warning-notification-icon-bg-color: rgba(253, 126, 20, 0.10);
+
   --my-ui-item-background-color: #1b1b1b;
 
   --header-background-color: var(--mantine-color-dark-9);

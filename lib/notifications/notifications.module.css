@@ -1,0 +1,39 @@
+.notificationRoot::before {
+  content: "";
+  display: block;
+  position: absolute;
+  width: calc(.375rem * var(--mantine-scale));
+  top: calc(var(--notification-radius) - 20px);
+  bottom: calc(var(--notification-radius) - 20px);
+  /* inset-inline-start: calc(.25rem * var(--mantine-scale)); */
+  inset-inline-start: 0;
+  background-color: var(--notification-color);
+}
+
+.notificationIcon {
+  background-color: var(--notification-color);
+  outline: 2px solid var(--notification-color);
+  outline-offset: 0;
+  margin-inline-start: var(--mantine-spacing-xs);
+  color: var(--notification-color);
+
+  svg {
+    filter: brightness(130%);
+  }
+}
+
+.iconBgSuccess {
+  background-color: var(--success-notification-icon-bg-color);
+}
+
+.iconBgError {
+  background-color: var(--error-notification-icon-bg-color);
+}
+
+.iconBgInfo {
+  background-color: var(--info-notification-icon-bg-color);
+}
+
+.iconBgWarning {
+  background-color: var(--warning-notification-icon-bg-color);
+}

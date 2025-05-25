@@ -45,12 +45,7 @@ export default function CatchesOverview({
         <Box w={24} h={{ base: '100%', md: 24 }}>
           <IconMapPinFilled size={24} color="rgba(255,255,255,0.35)" stroke={1.5} />
         </Box>
-        <Title c="white" order={2} p={0} onClick={() => {
-          showNotification('success', 'message', t, { duration: 180000})
-          showNotification('error', 'message', t, { duration: 180000})
-          showNotification('info', 'message', t, { duration: 180000})
-          showNotification('warning', 'message', t, { duration: 180000})
-          }}>
+        <Title c="white" order={2} p={0}>
           {bodyOfWaterTitle ??
             <Group
               h={'calc(var(--mantine-h2-line-height)*var(--mantine-h2-font-size))'}

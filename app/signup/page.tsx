@@ -23,7 +23,7 @@ export default function Page() {
     email: '',
     password: '',
     confirmPassword: '',
-    role: UserRole.CREATOR,
+    role: UserRole.VIEWER, // Default role
   });
 
   const [isFormValid, setIsFormValid] = useState(false);

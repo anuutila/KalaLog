@@ -169,7 +169,14 @@ export default function UserProfilePage() {
   }
 
   return (
-    <Container size="sm" pt="xl" px={'md'} pb={'md'}>
+    <Container size="sm" pt="xl" px={'md'} pb={'md'} 
+      mih={{
+        base: 'calc(100dvh - var(--app-shell-footer-offset, 0rem) - var(--app-shell-header-offset, 0rem) - env(safe-area-inset-bottom))',
+        md: 'calc(100dvh - var(--app-shell-header-offset, 0rem) - env(safe-area-inset-bottom))',
+      }} 
+      display={'flex'} 
+      style={{ flexDirection: 'column' }}
+    >
       <Center h="100%" w="100%">
         <Stack align="center" gap="xl" justify="space-between" h="100%" w="100%">
           <Stack align="center" gap="xl" w={'100%'}>
@@ -315,6 +322,13 @@ export default function UserProfilePage() {
           )}
         </Stack>
       </Center>
+
+      {isOwnProfile && (
+        <Text size="sm" c="dimmed" ta="center" mt="auto" pt={0}>
+          Made with ❤️ by <Text span fw={500}>Akseli</Text>
+        </Text>
+      )}
+
     </Container>
   );
 }

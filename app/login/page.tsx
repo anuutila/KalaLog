@@ -45,8 +45,15 @@ export default function Page() {
   };
 
   return (
-    <Container size="xs" px="md" py="xl">
-      <Stack align="stretch">
+    <Container size="xs" p="md" pt="xl"
+      mih={{
+        base: 'calc(100dvh - var(--app-shell-footer-offset, 0rem) - var(--app-shell-header-offset, 0rem) - env(safe-area-inset-bottom))',
+        md: 'calc(100dvh - var(--app-shell-header-offset, 0rem) - env(safe-area-inset-bottom))',
+      }}
+      display={'flex'}
+      style={{ flexDirection: 'column' }}
+    >
+      <Stack align="stretch" my={'auto'}>
         <Center mb="md">
           <Title order={2} c="white">
             {t('Title')}
@@ -105,6 +112,11 @@ export default function Page() {
           </Stack>
         </Stack>
       </Stack>
+
+      <Text size="sm" c="dimmed" ta="center" mt="auto" pt={'xl'}>
+        Made with ❤️ by <Text span fw={500}>Akseli</Text>
+      </Text>
+
     </Container>
   );
 }

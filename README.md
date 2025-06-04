@@ -40,7 +40,7 @@
 - **Development, Testing & Deployment**:
   - **Code Quality**: [ESLint](https://eslint.org/) + [Prettier](https://prettier.io/)
   - **Testing Tools**: [Jest](https://jestjs.io/)
-  - **Develompment**: [Visual Studio Code](https://code.visualstudio.com/)
+  - **Development**: [Visual Studio Code](https://code.visualstudio.com/)
   - **Task management**: [GitHub Projects](https://docs.github.com/en/issues/planning-and-tracking-with-projects/learning-about-projects/about-projects) 
   - **Version Control:** [Git](https://git-scm.com/) with code hosted on [GitHub](https://github.com/)
   - **Hosting & Deployment:** [Vercel](https://vercel.com/) – automatically deploys production builds on push to GitHub

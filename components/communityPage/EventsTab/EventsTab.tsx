@@ -224,7 +224,7 @@ export default function EventsTab({ allUsers }: EventsTabProps) {
       </Stack>
 
       {canCreateEvents && !showCreateForm && !eventDetailsOpen && (
-        <Affix bottom={{ base: 'calc(var(--app-shell-footer-offset) + env(safe-area-inset-bottom) + 20px)', md: 0 }} right={20} zIndex={350}>
+        <Affix bottom={{ base: 'calc(var(--app-shell-footer-offset) + env(safe-area-inset-bottom) + 20px)', md: 20 }} right={{ base: 20, md: 20 }} zIndex={350}>
           <Tooltip label={tCommunity('CreateButtonTooltip')} position="left" withArrow>
             <ActionIcon
               size="56"

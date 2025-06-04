@@ -324,7 +324,7 @@ export default function UserProfilePage() {
       </Center>
 
       {isOwnProfile && (
-        <Text size="sm" c="dimmed" ta="center" mt="auto" pt={0}>
+        <Text size="sm" c="dimmed" ta="center" mt="auto" pt={60}>
           Made with ❤️ by <Text span fw={500}>Akseli</Text>
         </Text>
       )}
